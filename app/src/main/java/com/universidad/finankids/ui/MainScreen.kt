@@ -32,17 +32,6 @@ fun MainScreen() {
         Spacer(modifier = Modifier.weight(1f)) // Empuja el fondo hacia abajo
 
         // Usar VectorDrawable directamente como clickeable
-        Image(
-            painter = painterResource(id = R.drawable.btngris), // Tu archivo VectorDrawable
-            contentDescription = "Fondo Clickeable",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .clickable {
-                    // Acción al hacer clic en el vector
-                    println("Vector clickeado")
-                }
-        )
     }
 }
 
