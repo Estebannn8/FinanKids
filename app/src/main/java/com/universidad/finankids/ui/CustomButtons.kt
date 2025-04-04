@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,25 +46,25 @@ fun CustomButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier
-            .width(287.dp)
-            .height(37.dp),
         enabled = enabled,
+        modifier = modifier
+            .fillMaxWidth(0.8f) // responsive horizontal
+            .aspectRatio(287f / 37f), // mantiene proporción original
         shape = RoundedCornerShape(40.88.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
         contentPadding = PaddingValues(0.dp)
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column(
+        Box(modifier = Modifier.fillMaxSize()) {
+
+            // Fondo gradiente + borde
+            Box(
                 modifier = Modifier
-                    .matchParentSize()
+                    .fillMaxSize()
                     .background(
                         brush = Brush.linearGradient(
                             colors = listOf(gradientLight, gradientDark),
                             start = Offset.Zero,
-                            end = Offset(0F, 36.72F),
+                            end = Offset(0f, Float.POSITIVE_INFINITY)
                         ),
                         shape = RoundedCornerShape(40.88.dp)
                     )
@@ -71,37 +73,33 @@ fun CustomButton(
                         color = baseColor,
                         shape = RoundedCornerShape(40.88.dp)
                     )
+            )
+
+            // Columna base color un poco más abajo del centro
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.7f) // altura del rectángulo base
+                    .align(Alignment.TopCenter)
+                    .offset(y = 6.dp) // desplazado para dejar más visible el gradiente arriba
+                    .background(
+                        color = baseColor,
+                        shape = RoundedCornerShape(40.88.dp)
+                    ),
+                contentAlignment = Alignment.Center // centra el texto vertical y horizontalmente
             ) {
-                Column(
-                    modifier = Modifier
-                        .offset(y = 5.05.dp)
-                        .padding(2.06.dp)
-                        .fillMaxWidth()
-                        .height(23.06.dp)
-                        .background(
-                            color = baseColor,
-                            shape = RoundedCornerShape(40.88.dp)
-                        )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(19.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AppTypography.BalooStroke(
-                            text = buttonText,
-                            strokeColor = Color.White,
-                            fillColor = Color.White,
-                            fontSize = 16.88.sp,
-                            letterSpacing = 3.07.sp,
-                            textAlign = TextAlign.Center,
-                            lineHeight = 18.99.sp,
-                        )
-                    }
-                }
+                AppTypography.BalooStroke(
+                    text = buttonText,
+                    strokeColor = Color.White,
+                    fillColor = Color.White,
+                    fontSize = 16.88.sp,
+                    letterSpacing = 3.07.sp,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 18.99.sp,
+                )
             }
+
+            // Brillo decorativo
             Image(
                 painter = painterResource(id = R.drawable.ic_refresh),
                 contentDescription = "Brillo del botón",
@@ -114,15 +112,27 @@ fun CustomButton(
     }
 }
 
-@Preview
+
+
+
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 100)
 @Composable
 fun CustomButtonPreview() {
-    CustomButton(
-        buttonText = "RESTABLECER",
-        gradientLight = Color(0xFF9C749A),
-        gradientDark = Color(0xFF431441),
-        baseColor = Color(0xFF53164F),
-        onClick = {}
-    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFEDEDED)), // fondo suave para visualizar bordes
+        contentAlignment = Alignment.Center
+    ) {
+        CustomButton(
+            buttonText = "RESTABLECER",
+            gradientLight = Color(0xFF9C749A),
+            gradientDark = Color(0xFF431441),
+            baseColor = Color(0xFF53164F),
+            onClick = {}
+        )
+    }
 }
+
 
