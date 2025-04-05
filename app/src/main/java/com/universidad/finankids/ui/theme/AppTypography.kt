@@ -22,9 +22,10 @@ object AppTypography {
         fillColor: Color = Color.White,
         letterSpacing: TextUnit = 3.07.sp,
         textAlign: TextAlign = TextAlign.Center,
-        lineHeight: TextUnit = 18.99.sp
+        lineHeight: TextUnit = 18.99.sp,
+        strokeWidth: Float = 0.5f
     ) {
-        StrokeText(text = text, fontSize = fontSize, fontFamily = Baloo, strokeColor = strokeColor, fillColor = fillColor, letterSpacing = letterSpacing, textAlign = textAlign, lineHeight = lineHeight)
+        StrokeText(text = text, fontSize = fontSize, fontFamily = Baloo, strokeColor = strokeColor, fillColor = fillColor, letterSpacing = letterSpacing, textAlign = textAlign, lineHeight = lineHeight, strokeWidth = strokeWidth)
     }
 
     @Composable
