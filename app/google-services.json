@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "9314716039",
+    "project_id": "finankids",
+    "storage_bucket": "finankids.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9314716039:android:1eac3abd90521dd6872b22",
+        "android_client_info": {
+          "package_name": "com.universidad.finankids"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUM25dCTUBS_Vl0OGVO1Rd9BE7aPKgtGw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
