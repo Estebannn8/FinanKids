@@ -10,5 +10,5 @@ val Baloo = FontFamily(Font(R.font.baloo_regular, FontWeight.Normal))
 val Itim = FontFamily(Font(R.font.itim_regular, FontWeight.Normal))
 val Poppins = FontFamily(
     Font(R.font.poppins_regular, FontWeight.Normal),
-    Font(R.font.poppins_bold, FontWeight.Bold)
+    Font(R.font.poppins_bold, FontWeight.Bold),
 )
