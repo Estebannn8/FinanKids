@@ -18,18 +18,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,11 +42,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
+import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.ui.theme.AppTypography
 
 @Composable
-fun AuthScreen(startInLogin: Boolean) {
+fun AuthScreen(startInLogin: Boolean, navController: NavController) {
     val painterEmail = painterResource(id = R.drawable.ic_email)
     val painterPassword = painterResource(id = R.drawable.ic_password)
     val painterUser = painterResource(id = R.drawable.ic_person)
@@ -77,7 +78,8 @@ fun AuthScreen(startInLogin: Boolean) {
             LoginForm(
                 painterEmail = painterEmail,
                 painterPassword = painterPassword,
-                onNavigateToRegister = { isLoginSelected = false }
+                onNavigateToRegister = { isLoginSelected = false },
+                navController = navController
             )
         } else {
             RegisterForm(
@@ -155,12 +157,20 @@ fun AuthHeader(
 
 
 @Composable
-fun LoginForm(painterEmail: Painter, painterPassword: Painter, onNavigateToRegister: () -> Unit) {
+fun LoginForm(
+    painterEmail: Painter,
+    painterPassword: Painter,
+    onNavigateToRegister: () -> Unit,
+    navController: NavController
+) {
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Text("Correo electrónico", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2A2A2A), fontFamily = AppTypography.PoppinsFont)
             Spacer(modifier = Modifier.height(14.dp))
-            CustomTextField(value = "", onValueChange = {}, placeholder = "Ingrese correo", leadingIcon = painterEmail)
+            CustomTextField(value = email, onValueChange = { email = it }, placeholder = "Ingrese correo", leadingIcon = painterEmail)
         }
 
         Spacer(modifier = Modifier.height(29.dp))
@@ -168,7 +178,7 @@ fun LoginForm(painterEmail: Painter, painterPassword: Painter, onNavigateToRegis
         Column(modifier = Modifier.fillMaxWidth()) {
             Text("Contraseña", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2A2A2A), fontFamily = AppTypography.PoppinsFont)
             Spacer(modifier = Modifier.height(14.dp))
-            CustomTextField(value = "", onValueChange = {}, placeholder = "Ingrese contraseña", leadingIcon = painterPassword, isPassword = true)
+            CustomTextField(value = password, onValueChange = { password = it }, placeholder = "Ingrese contraseña", leadingIcon = painterPassword, isPassword = true)
         }
 
         Spacer(modifier = Modifier.height(29.dp))
@@ -178,12 +188,11 @@ fun LoginForm(painterEmail: Painter, painterPassword: Painter, onNavigateToRegis
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("Contraseña Incorrecta", fontSize = 12.sp, color = Color(0xFFFF9E1B), fontFamily = AppTypography.PoppinsFont)
-            Text("¿Olvidaste la Contraseña?", fontSize = 12.sp, color = Color(0xFF52154E), fontFamily = AppTypography.PoppinsFont, modifier = Modifier.clickable { })
+            Text("¿Olvidaste la Contraseña?", fontSize = 12.sp, color = Color(0xFF52154E),fontWeight = FontWeight.SemiBold, fontFamily = AppTypography.PoppinsFont, modifier = Modifier.clickable { navController.navigate(AppScreens.RecoveryScreen.route) })
         }
 
         Spacer(modifier = Modifier.height(29.dp))
 
-        // Botón centrado
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             CustomButton(
                 buttonText = "CONTINUAR",
@@ -210,63 +219,32 @@ fun RegisterForm(
     painterPassword: Painter,
     onNavigateToLogin: () -> Unit
 ) {
-    var isChecked by remember { mutableStateOf(false) }
+    var username by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var isChecked by rememberSaveable { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                "Nombre de usuario",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF2A2A2A),
-                fontFamily = AppTypography.PoppinsFont
-            )
+            Text("Nombre de usuario", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2A2A2A), fontFamily = AppTypography.PoppinsFont)
             Spacer(modifier = Modifier.height(14.dp))
-            CustomTextField(
-                value = "",
-                onValueChange = {},
-                placeholder = "Ingrese nombre de usuario",
-                leadingIcon = painterUser
-            )
+            CustomTextField(value = username, onValueChange = { username = it }, placeholder = "Ingrese nombre de usuario", leadingIcon = painterUser)
         }
 
         Spacer(modifier = Modifier.height(29.dp))
 
         Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                "Correo electrónico",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF2A2A2A),
-                fontFamily = AppTypography.PoppinsFont
-            )
+            Text("Correo electrónico", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2A2A2A), fontFamily = AppTypography.PoppinsFont)
             Spacer(modifier = Modifier.height(14.dp))
-            CustomTextField(
-                value = "",
-                onValueChange = {},
-                placeholder = "Ingrese correo",
-                leadingIcon = painterEmail
-            )
+            CustomTextField(value = email, onValueChange = { email = it }, placeholder = "Ingrese correo", leadingIcon = painterEmail)
         }
 
         Spacer(modifier = Modifier.height(29.dp))
 
         Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                "Contraseña",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF2A2A2A),
-                fontFamily = AppTypography.PoppinsFont
-            )
+            Text("Contraseña", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2A2A2A), fontFamily = AppTypography.PoppinsFont)
             Spacer(modifier = Modifier.height(14.dp))
-            CustomTextField(
-                value = "",
-                onValueChange = {},
-                placeholder = "Ingrese contraseña",
-                leadingIcon = painterPassword,
-                isPassword = true
-            )
+            CustomTextField(value = password, onValueChange = { password = it }, placeholder = "Ingrese contraseña", leadingIcon = painterPassword, isPassword = true)
         }
 
         Spacer(modifier = Modifier.height(29.dp))
@@ -339,8 +317,9 @@ fun SocialLoginSection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Divider(
-                modifier = Modifier.weight(1f).height(2.dp),
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                thickness = 2.dp,
                 color = Color(0xFFF8B528)
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -351,8 +330,9 @@ fun SocialLoginSection(
                 color = Color(0xFFF8B528)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Divider(
-                modifier = Modifier.weight(1f).height(2.dp),
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                thickness = 2.dp,
                 color = Color(0xFFF8B528)
             )
         }
@@ -442,13 +422,15 @@ fun SocialLoginSection(
 @Preview(showBackground = true, name = "AuthScreen - Login")
 @Composable
 fun PreviewAuthScreenLogin() {
-    AuthScreen(startInLogin = true)
+    val navController = rememberNavController()
+    AuthScreen(startInLogin = true, navController = navController)
 }
 
 @Preview(showBackground = true, name = "AuthScreen - Register")
 @Composable
 fun PreviewAuthScreenRegister() {
-    AuthScreen(startInLogin = false)
+    val navController = rememberNavController()
+    AuthScreen(startInLogin = false, navController = navController)
 }
 
 @Preview(showBackground = true)

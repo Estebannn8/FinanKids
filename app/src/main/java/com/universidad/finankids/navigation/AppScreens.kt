@@ -6,5 +6,7 @@ sealed class  AppScreens(val route: String){
     object AuthScreen : AppScreens("auth_screen/{startInLogin}") {
         fun createRoute(startInLogin: Boolean) = "auth_screen/$startInLogin"
     }
+    object RecoveryScreen: AppScreens(route = "recovery_screen")
+
 }
 

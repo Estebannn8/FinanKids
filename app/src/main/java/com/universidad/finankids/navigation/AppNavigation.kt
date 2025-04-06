@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.universidad.finankids.ui.AuthScreen
 import com.universidad.finankids.ui.MainScreen
+import com.universidad.finankids.ui.RecoveryScreen
 import com.universidad.finankids.ui.SplashScreen
 
 @Composable
@@ -32,7 +33,11 @@ fun AppNavigation(modifier: Modifier = Modifier){
             arguments = listOf(navArgument("startInLogin") { type = NavType.BoolType })
         ) { backStackEntry ->
             val startInLogin = backStackEntry.arguments?.getBoolean("startInLogin") ?: true
-            AuthScreen(startInLogin)
+            AuthScreen(startInLogin, navController = navController)
+        }
+
+        composable(AppScreens.RecoveryScreen.route) {
+            RecoveryScreen(navController)
         }
 
     }
