@@ -12,7 +12,20 @@
           "package_name": "com.universidad.finankids"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "9314716039-f5m18cd2ev5ftegpgsevglhimh0v7h70.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.universidad.finankids",
+            "certificate_hash": "9b6e63506236a55fab2b2ba6d161b7c3960258e7"
+          }
+        },
+        {
+          "client_id": "9314716039-uso36denpeiadv5pt1otm8ee42kmsps9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDUM25dCTUBS_Vl0OGVO1Rd9BE7aPKgtGw"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9314716039-uso36denpeiadv5pt1otm8ee42kmsps9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
