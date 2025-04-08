@@ -63,4 +63,16 @@ dependencies {
 
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
+
+    // Autenticación
+    implementation("com.google.firebase:firebase-auth")
+
+    // Firestore
+    implementation("com.google.firebase:firebase-firestore")
+
+    // Google
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
 }
