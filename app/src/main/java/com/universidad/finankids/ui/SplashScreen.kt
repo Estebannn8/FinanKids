@@ -13,21 +13,36 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.universidad.finankids.navigation.AppScreens
+import com.universidad.finankids.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavHostController){
+fun SplashScreen(
+    navController: NavHostController,
+    viewModel: AuthViewModel = viewModel()
+) {
+    LaunchedEffect(Unit) {
+        delay(3000) // Puedes ajustar el tiempo
 
-    LaunchedEffect(key1 = true) {
-        delay(5000)
-        navController.popBackStack()
-        navController.navigate(AppScreens.MainScreen.route)
+        val isUserAuthenticated = viewModel.getCurrentUserId() != null
+
+        if (isUserAuthenticated) {
+            navController.navigate(AppScreens.HomeScreen.route) {
+                popUpTo(AppScreens.SplashScreen.route) { inclusive = true }
+            }
+        } else {
+            navController.navigate(AppScreens.MainScreen.route) {
+                popUpTo(AppScreens.SplashScreen.route) { inclusive = true }
+            }
+        }
     }
 
     Splash()
 }
+
 
 @Composable
 fun Splash(){
