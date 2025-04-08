@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 
 class AuthViewModel : ViewModel() {
@@ -255,40 +256,67 @@ class AuthViewModel : ViewModel() {
             return
         }
 
-        val userData = hashMapOf(
-            "uid" to user.uid,
-            "nickname" to (user.displayName ?: generateRandomNickname()),
-            "correo" to (user.email ?: ""),
-            "avatarActual" to "avatar_01",
-            "marcoActual" to "clasico",
-            "avataresDesbloqueados" to listOf("avatar_01"),
-            "marcosDesbloqueados" to listOf("clasico"),
-            "nivel" to 1,
-            "exp" to 0,
-            "dinero" to 0,
-            "logros" to emptyList<String>(),
-            "insignias" to emptyList<String>(),
-            "progresoCategorias" to mapOf(
-                "ahorro" to 0,
-                "inversion" to 0,
-                "deudas" to 0
-            ),
-            "leccionesCompletadas" to emptyMap<String, Any>(),
-            "racha" to mapOf(
-                "actual" to 0,
-                "maxima" to 0,
-                "ultimoRegistro" to null
-            )
-        )
+        viewModelScope.launch {
+            try {
+                val uniqueNickname = generateUniqueNickname()
 
-        firestore.collection("usuarios")
-            .document(user.uid)
-            .set(userData)
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { e ->
-                onError("Error al guardar usuario: ${e.message}")
+                val userData = hashMapOf(
+                    "uid" to user.uid,
+                    "nickname" to uniqueNickname,
+                    "correo" to (user.email ?: ""),
+                    "avatarActual" to "avatar_01",
+                    "marcoActual" to "clasico",
+                    "avataresDesbloqueados" to listOf("avatar_01"),
+                    "marcosDesbloqueados" to listOf("clasico"),
+                    "nivel" to 1,
+                    "exp" to 0,
+                    "dinero" to 0,
+                    "logros" to emptyList<String>(),
+                    "insignias" to emptyList<String>(),
+                    "progresoCategorias" to mapOf(
+                        "ahorro" to 0,
+                        "inversion" to 0,
+                        "deudas" to 0
+                    ),
+                    "leccionesCompletadas" to emptyMap<String, Any>(),
+                    "racha" to mapOf(
+                        "actual" to 0,
+                        "maxima" to 0,
+                        "ultimoRegistro" to null
+                    )
+                )
+
+                firestore.collection("usuarios")
+                    .document(user.uid)
+                    .set(userData)
+                    .addOnSuccessListener { onSuccess() }
+                    .addOnFailureListener { e ->
+                        onError("Error al guardar usuario: ${e.message}")
+                    }
+
+            } catch (e: Exception) {
+                onError("Error al generar nickname: ${e.message}")
             }
+        }
     }
+
+
+    private suspend fun generateUniqueNickname(): String {
+        var nickname: String
+        var exists: Boolean
+
+        do {
+            nickname = generateRandomNickname()
+            val result = firestore.collection("usuarios")
+                .whereEqualTo("nickname", nickname)
+                .get()
+                .await()
+            exists = !result.isEmpty
+        } while (exists)
+
+        return nickname
+    }
+
 
     // Función para generar un nickname aleatorio
     private fun generateRandomNickname(): String {
