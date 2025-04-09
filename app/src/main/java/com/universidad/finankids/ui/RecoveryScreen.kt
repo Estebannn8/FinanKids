@@ -17,6 +17,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -30,19 +33,37 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
+import com.universidad.finankids.events.AuthEvent
 import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.ui.theme.AppTypography
+import com.universidad.finankids.viewmodel.AuthViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RecoveryScreen(navController: NavController) {
+    val authViewModel: AuthViewModel = viewModel()
+    val state by authViewModel.state.collectAsState()
+
     val painterEmail = painterResource(id = R.drawable.ic_email)
     val painterBack = painterResource(id = R.drawable.ic_atras_recovery)
+
+    // Manejar éxito en recuperación
+    LaunchedEffect(state.isRecoverySuccess) {
+        if (state.isRecoverySuccess) {
+            // Podrías navegar a otra pantalla o mostrar un mensaje
+            // Por ahora solo limpiamos el estado después de 3 segundos
+            kotlinx.coroutines.delay(3000)
+            authViewModel.clearRecoveryState()
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(WindowInsets.statusBars.asPaddingValues())
-            .padding(horizontal = 24.dp),
+            .padding(horizontal = 24.dp)
+            .verticalScroll(rememberScrollState()),
     ) {
         Spacer(modifier = Modifier.height(48.dp))
 
@@ -52,9 +73,14 @@ fun RecoveryScreen(navController: NavController) {
             modifier = Modifier
                 .size(32.dp)
                 .clickable {
+                    authViewModel.clearRecoveryState()
                     navController.navigate(
                         AppScreens.AuthScreen.createRoute(startInLogin = true)
-                    )
+                    ) {
+                        popUpTo(AppScreens.RecoveryScreen.route) {
+                            inclusive = true
+                        }
+                    }
                 },
             tint = Color.Unspecified
         )
@@ -93,6 +119,17 @@ fun RecoveryScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Mostrar mensaje de éxito/error
+        state.recoveryMessage?.let { message ->
+            Text(
+                text = message,
+                color = if (state.isRecoverySuccess) Color(0xFF388E3C) else Color(0xFFD32F2F),
+                fontSize = 14.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
         Text(
             text = "Correo electrónico",
             fontSize = 14.sp,
@@ -104,8 +141,10 @@ fun RecoveryScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(12.dp))
 
         CustomTextField(
-            value = "",
-            onValueChange = {},
+            value = state.recoveryEmail,
+            onValueChange = { email ->
+                authViewModel.onEvent(AuthEvent.RecoveryEmailChanged(email))
+            },
             placeholder = "Ingrese correo",
             leadingIcon = painterEmail
         )
@@ -114,13 +153,14 @@ fun RecoveryScreen(navController: NavController) {
 
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             CustomButton(
-                buttonText = "RESTABLECER",
+                buttonText = if (state.isLoading) "ENVIANDO..." else "RESTABLECER",
                 gradientLight = Color(0xFF9C749A),
                 gradientDark = Color(0xFF431441),
                 baseColor = Color(0xFF53164F),
                 onClick = {
-                    // Acción del botón
-                }
+                    authViewModel.onEvent(AuthEvent.SendPasswordReset)
+                },
+                enabled = !state.isLoading
             )
         }
 
@@ -128,12 +168,9 @@ fun RecoveryScreen(navController: NavController) {
     }
 }
 
-
 @Preview(showBackground = true, name = "RecoveryScreen Preview")
 @Composable
 fun RecoveryScreenPreview() {
-    // Crea un NavController simulado
     val navController = rememberNavController()
-
     RecoveryScreen(navController = navController)
 }

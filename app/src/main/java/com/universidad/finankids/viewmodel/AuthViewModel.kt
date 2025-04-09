@@ -45,6 +45,12 @@ class AuthViewModel : ViewModel() {
             is AuthEvent.TermsAcceptedChanged -> {
                 _state.value = _state.value.copy(termsAccepted = event.accepted)
             }
+            is AuthEvent.RecoveryEmailChanged -> {
+                _state.value = _state.value.copy(recoveryEmail = event.email)
+            }
+            AuthEvent.SendPasswordReset -> {
+                sendPasswordResetEmail(_state.value.recoveryEmail)
+            }
             AuthEvent.Login -> {
                 login()
             }
@@ -422,6 +428,75 @@ class AuthViewModel : ViewModel() {
         val randomPrefix = prefixes.random()
         val randomNumber = (100..999).random()
         return "$randomPrefix$randomNumber"
+    }
+
+    private fun sendPasswordResetEmail(email: String) {
+        if (email.isEmpty()) {
+            _state.value = _state.value.copy(
+                recoveryMessage = "Por favor ingresa tu correo electrónico",
+                isRecoverySuccess = false
+            )
+            return
+        }
+
+        if (!isValidEmail(email)) {
+            _state.value = _state.value.copy(
+                recoveryMessage = "Por favor ingresa un correo electrónico válido",
+                isRecoverySuccess = false
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            _state.value = _state.value.copy(
+                isLoading = true,
+                recoveryMessage = null,
+                isRecoverySuccess = false
+            )
+
+            try {
+                auth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                isRecoverySuccess = true,
+                                recoveryMessage = "Correo de recuperación enviado. Por favor revisa tu bandeja de entrada.",
+                                recoveryEmail = email
+                            )
+                        } else {
+                            val error = task.exception
+                            val message = when (error?.message) {
+                                "The email address is badly formatted." ->
+                                    "El formato del correo es inválido."
+                                "There is no user record corresponding to this identifier." ->
+                                    "No existe una cuenta con este correo electrónico."
+                                else -> error?.localizedMessage ?: "Error al enviar correo de recuperación."
+                            }
+
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                isRecoverySuccess = false,
+                                recoveryMessage = message
+                            )
+                        }
+                    }
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    isRecoverySuccess = false,
+                    recoveryMessage = "Error inesperado: ${e.localizedMessage}"
+                )
+            }
+        }
+    }
+
+    fun clearRecoveryState() {
+        _state.value = _state.value.copy(
+            recoveryMessage = null,
+            isRecoverySuccess = false,
+            recoveryEmail = ""
+        )
     }
 
     fun clearFields() {

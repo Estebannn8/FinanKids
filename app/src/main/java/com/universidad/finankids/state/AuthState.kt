@@ -8,5 +8,8 @@ data class AuthState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val isLoginSelected: Boolean = true,
-    val isSuccess: Boolean = false
+    val isSuccess: Boolean = false,
+    val recoveryEmail: String = "",
+    val isRecoverySuccess: Boolean = false,
+    val recoveryMessage: String? = null
 )
