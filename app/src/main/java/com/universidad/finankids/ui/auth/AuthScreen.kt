@@ -36,7 +36,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,7 +54,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
+import com.universidad.finankids.events.AuthEvent
 import com.universidad.finankids.navigation.AppScreens
+import com.universidad.finankids.state.AuthState
 import com.universidad.finankids.ui.CustomButton
 import com.universidad.finankids.ui.CustomTextField
 import com.universidad.finankids.ui.theme.AppTypography
@@ -66,31 +67,40 @@ import kotlinx.coroutines.launch
 fun AuthScreen(
     startInLogin: Boolean,
     navController: NavController,
-    viewModel: AuthViewModel
+    viewModel: AuthViewModel = viewModel()
 ) {
+    val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    var isLoginSelected by rememberSaveable { mutableStateOf(startInLogin) }
+    val context = LocalContext.current
 
-    // Observar estados del ViewModel
-    val errorMessage by viewModel.errorMessage.collectAsState()
-    val successEvent by viewModel.successEvent.collectAsState()
-    val loading by viewModel.loading.collectAsState()
+    // Establecer el estado inicial basado en startInLogin
+    LaunchedEffect(Unit) {
+        if (startInLogin != state.isLoginSelected) {
+            viewModel.onEvent(
+                if (startInLogin) AuthEvent.NavigateToLogin
+                else AuthEvent.NavigateToRegister
+            )
+        }
+    }
 
     // Manejar eventos de éxito/error
-    LaunchedEffect(successEvent) {
-        if (successEvent) {
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess) {
             navController.navigate(AppScreens.HomeScreen.route) {
                 popUpTo(AppScreens.AuthScreen.route) { inclusive = true }
                 popUpTo(AppScreens.MainScreen.route) { inclusive = true }
             }
+            viewModel.clearFields()
         }
     }
 
-    LaunchedEffect(errorMessage) {
-        errorMessage?.let { message ->
+    LaunchedEffect(state.errorMessage) {
+        state.errorMessage?.let { message ->
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(message)
+                // Limpiar el mensaje de error después de mostrarlo
+                viewModel.onEvent(AuthEvent.EmailChanged(state.email)) // Simular un evento para actualizar el estado
             }
         }
     }
@@ -121,51 +131,35 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(29.dp))
 
             AuthHeader(
-                isLoginSelected = isLoginSelected,
-                onLoginClick = { isLoginSelected = true },
-                onRegisterClick = { isLoginSelected = false }
+                isLoginSelected = state.isLoginSelected,
+                onLoginClick = { viewModel.onEvent(AuthEvent.NavigateToLogin) },
+                onRegisterClick = { viewModel.onEvent(AuthEvent.NavigateToRegister) }
             )
 
             Spacer(modifier = Modifier.height(29.dp))
 
-            if (isLoginSelected) {
+            if (state.isLoginSelected) {
                 LoginForm(
                     painterEmail = painterResource(id = R.drawable.ic_email),
                     painterPassword = painterResource(id = R.drawable.ic_password),
-                    viewModel = viewModel,
-                    navController = navController,
-                    showSnackbar = { message ->
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar(message)
-                        }
-                    },
-                    onSwitchToRegister = {
-                        viewModel.clearFields()
-                        isLoginSelected = false
-                    }
+                    state = state,
+                    onEvent = viewModel::onEvent,
+                    onSignInWithGoogle = { viewModel.signInWithGoogle(context) },
+                    navController = navController
                 )
             } else {
                 RegisterForm(
                     painterUser = painterResource(id = R.drawable.ic_person),
                     painterEmail = painterResource(id = R.drawable.ic_email),
                     painterPassword = painterResource(id = R.drawable.ic_password),
-                    viewModel = viewModel,
-                    navController = navController,
-                    showSnackbar = { message ->
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar(message)
-                        }
-                    },
-                    onSwitchToLogin = {
-                        viewModel.clearFields()
-                        isLoginSelected = true // <-- cambiamos el estado local para mostrar el login
-                    }
+                    state = state,
+                    onEvent = viewModel::onEvent,
+                    onSignInWithGoogle = { viewModel.signInWithGoogle(context) }
                 )
             }
         }
     }
 }
-
 
 @Composable
 fun AuthHeader(
@@ -234,20 +228,17 @@ fun AuthHeader(
 fun LoginForm(
     painterEmail: Painter,
     painterPassword: Painter,
-    viewModel: AuthViewModel,
-    navController: NavController,
-    showSnackbar: (String) -> Unit,
-    onSwitchToRegister: () -> Unit
+    state: AuthState,
+    onEvent: (AuthEvent) -> Unit,
+    onSignInWithGoogle: () -> Unit,
+    navController: NavController
 ) {
-    val email by viewModel.email.collectAsState()
-    val password by viewModel.password.collectAsState()
-
     Column(modifier = Modifier.fillMaxWidth()) {
         Text("Correo electrónico", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2A2A2A), fontFamily = AppTypography.PoppinsFont)
         Spacer(modifier = Modifier.height(14.dp))
         CustomTextField(
-            value = email,
-            onValueChange = { viewModel.onEmailChanged(it) },
+            value = state.email,
+            onValueChange = { onEvent(AuthEvent.EmailChanged(it)) },
             placeholder = "Ingrese correo",
             leadingIcon = painterEmail
         )
@@ -257,8 +248,8 @@ fun LoginForm(
         Text("Contraseña", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2A2A2A), fontFamily = AppTypography.PoppinsFont)
         Spacer(modifier = Modifier.height(14.dp))
         CustomTextField(
-            value = password,
-            onValueChange = { viewModel.onPasswordChanged(it) },
+            value = state.password,
+            onValueChange = { onEvent(AuthEvent.PasswordChanged(it)) },
             placeholder = "Ingrese contraseña",
             leadingIcon = painterPassword,
             isPassword = true
@@ -284,19 +275,7 @@ fun LoginForm(
                 gradientLight = Color(0xFF9C749A),
                 gradientDark = Color(0xFF431441),
                 baseColor = Color(0xFF53164F),
-                onClick = {
-                    viewModel.login(
-                        onSuccess = {
-                            navController.navigate(AppScreens.HomeScreen.route) {
-                                popUpTo(AppScreens.AuthScreen.route) { inclusive = true }
-                                popUpTo(AppScreens.MainScreen.route) { inclusive = true }
-                            }
-                        },
-                        onError = { message ->
-                            showSnackbar(message)
-                        }
-                    )
-                }
+                onClick = { onEvent(AuthEvent.Login) }
             )
         }
 
@@ -304,14 +283,8 @@ fun LoginForm(
 
         SocialLoginSection(
             isLogin = true,
-            viewModel = viewModel,
-            onAuthSuccess = {
-                // Se maneja automáticamente con el successEvent
-            },
-            showError = { message ->
-                showSnackbar(message)
-            },
-            onNavigateToRegister = { onSwitchToRegister() }
+            onSignInWithGoogle = onSignInWithGoogle,
+            onNavigateToRegister = { onEvent(AuthEvent.NavigateToRegister) }
         )
     }
 }
@@ -321,16 +294,10 @@ fun RegisterForm(
     painterUser: Painter,
     painterEmail: Painter,
     painterPassword: Painter,
-    viewModel: AuthViewModel,
-    navController: NavController,
-    showSnackbar: (String) -> Unit,
-    onSwitchToLogin: () -> Unit
+    state: AuthState,
+    onEvent: (AuthEvent) -> Unit,
+    onSignInWithGoogle: () -> Unit
 ) {
-    val username by viewModel.username.collectAsState()
-    val email by viewModel.email.collectAsState()
-    val password by viewModel.password.collectAsState()
-    val termsAccepted by viewModel.termsAccepted.collectAsState()
-
     var showTermsDialog by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -338,8 +305,8 @@ fun RegisterForm(
         Text("Nombre de usuario", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2A2A2A), fontFamily = AppTypography.PoppinsFont)
         Spacer(modifier = Modifier.height(14.dp))
         CustomTextField(
-            value = username,
-            onValueChange = { viewModel.onUsernameChanged(it) },
+            value = state.username,
+            onValueChange = { onEvent(AuthEvent.UsernameChanged(it)) },
             placeholder = "Ingrese nombre de usuario",
             leadingIcon = painterUser
         )
@@ -350,8 +317,8 @@ fun RegisterForm(
         Text("Correo electrónico", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2A2A2A), fontFamily = AppTypography.PoppinsFont)
         Spacer(modifier = Modifier.height(14.dp))
         CustomTextField(
-            value = email,
-            onValueChange = { viewModel.onEmailChanged(it) },
+            value = state.email,
+            onValueChange = { onEvent(AuthEvent.EmailChanged(it)) },
             placeholder = "Ingrese correo",
             leadingIcon = painterEmail
         )
@@ -362,8 +329,8 @@ fun RegisterForm(
         Text("Contraseña", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2A2A2A), fontFamily = AppTypography.PoppinsFont)
         Spacer(modifier = Modifier.height(14.dp))
         CustomTextField(
-            value = password,
-            onValueChange = { viewModel.onPasswordChanged(it) },
+            value = state.password,
+            onValueChange = { onEvent(AuthEvent.PasswordChanged(it)) },
             placeholder = "Ingrese contraseña",
             leadingIcon = painterPassword,
             isPassword = true
@@ -377,8 +344,8 @@ fun RegisterForm(
             modifier = Modifier.fillMaxWidth()
         ) {
             Checkbox(
-                checked = termsAccepted,
-                onCheckedChange = { viewModel.onTermsAcceptedChanged(it) },
+                checked = state.termsAccepted,
+                onCheckedChange = { onEvent(AuthEvent.TermsAcceptedChanged(it)) },
                 colors = CheckboxDefaults.colors(
                     checkedColor = Color(0xFF52154E),
                     checkmarkColor = Color.White
@@ -409,17 +376,7 @@ fun RegisterForm(
                 gradientLight = Color(0xFF9C749A),
                 gradientDark = Color(0xFF431441),
                 baseColor = Color(0xFF53164F),
-                onClick = {
-                    viewModel.register(
-                        onSuccess = {
-                            showSnackbar("Registro exitoso")
-                            onSwitchToLogin()
-                        },
-                        onError = { message ->
-                            showSnackbar(message)
-                        }
-                    )
-                }
+                onClick = { onEvent(AuthEvent.Register) }
             )
         }
 
@@ -427,14 +384,8 @@ fun RegisterForm(
 
         SocialLoginSection(
             isLogin = false,
-            viewModel = viewModel,
-            onAuthSuccess = {
-                // Esto se manejará automáticamente con el successEvent
-            },
-            showError = { message ->
-                showSnackbar(message)
-            },
-            onNavigateToLogin = { onSwitchToLogin() }
+            onSignInWithGoogle = onSignInWithGoogle,
+            onNavigateToLogin = { onEvent(AuthEvent.NavigateToLogin) }
         )
 
         // Diálogo de Términos
@@ -474,19 +425,13 @@ fun RegisterForm(
     }
 }
 
-
 @Composable
 fun SocialLoginSection(
     isLogin: Boolean,
-    viewModel: AuthViewModel,
-    onAuthSuccess: () -> Unit,
-    showError: (String) -> Unit,
+    onSignInWithGoogle: () -> Unit,
     onNavigateToRegister: (() -> Unit)? = null,
     onNavigateToLogin: (() -> Unit)? = null
 ) {
-
-    val context = LocalContext.current
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
@@ -521,7 +466,7 @@ fun SocialLoginSection(
 
         // Botón Google
         OutlinedButton(
-            onClick = { viewModel.signInWithGoogle(context) },
+            onClick = onSignInWithGoogle,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
@@ -598,8 +543,6 @@ fun SocialLoginSection(
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
-
-
 
 @Preview(showBackground = true, name = "AuthScreen - Login")
 @Composable

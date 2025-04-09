@@ -15,174 +15,70 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.universidad.finankids.R
+import com.universidad.finankids.events.AuthEvent
+import com.universidad.finankids.state.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-
 class AuthViewModel : ViewModel() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    // Estados para manejar la autenticación
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+    private val _state = MutableStateFlow(AuthState())
+    val state: StateFlow<AuthState> = _state.asStateFlow()
 
-    private val _successEvent = MutableStateFlow(false)
-    val successEvent: StateFlow<Boolean> = _successEvent.asStateFlow()
-
-    private val _loading = MutableStateFlow(false)
-    val loading: StateFlow<Boolean> = _loading.asStateFlow()
-
-    // Función para resetear los estados
-    fun resetAuthState() {
-        _errorMessage.value = null
-        _successEvent.value = false
-        _loading.value = false
-    }
-
-    private val _username = MutableStateFlow("")
-    val username: StateFlow<String> = _username
-
-    private val _email = MutableStateFlow("")
-    val email: StateFlow<String> = _email
-
-    private val _password = MutableStateFlow("")
-    val password: StateFlow<String> = _password
-
-    private val _termsAccepted = MutableStateFlow(false)
-    val termsAccepted: StateFlow<Boolean> = _termsAccepted
-
-    fun onTermsAcceptedChanged(accepted: Boolean) {
-        _termsAccepted.value = accepted
-    }
-
-    fun onUsernameChanged(newUsername: String) {
-        _username.value = newUsername
-    }
-
-    fun onEmailChanged(newEmail: String) {
-        _email.value = newEmail
-    }
-
-    fun onPasswordChanged(newPassword: String) {
-        _password.value = newPassword
-    }
-
-    fun register(
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
-    ) {
-        val currentEmail = email.value.trim()
-        val currentPassword = password.value
-        val currentUsername = username.value.trim()
-
-        if (currentEmail.isEmpty() || currentPassword.isEmpty() || currentUsername.isEmpty()) {
-            onError("Por favor completa todos los campos.")
-            return
-        }
-
-        if (!termsAccepted.value) {
-            onError("Debes aceptar los términos y condiciones.")
-            return
-        }
-
-        if (!isValidPassword(currentPassword)) {
-            onError("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.")
-            return
-        }
-
-        if (!isValidEmail(currentEmail)) {
-            onError("Por favor ingresa un correo electrónico válido.")
-            return
-        }
-
-        viewModelScope.launch {
-            auth.createUserWithEmailAndPassword(currentEmail, currentPassword)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val user = auth.currentUser
-                        user?.updateProfile(
-                            userProfileChangeRequest {
-                                displayName = currentUsername
-                            }
-                        )
-
-                        val userId = user?.uid ?: return@addOnCompleteListener
-
-                        val userData = hashMapOf(
-                            "uid" to userId,
-                            "nickname" to currentUsername,
-                            "correo" to currentEmail,
-                            "avatarActual" to "avatar_01",
-                            "marcoActual" to "clasico",
-                            "avataresDesbloqueados" to listOf("avatar_01"),
-                            "marcosDesbloqueados" to listOf("clasico"),
-                            "nivel" to 1,
-                            "exp" to 0,
-                            "dinero" to 0,
-                            "logros" to emptyList<String>(),
-                            "insignias" to emptyList<String>(),
-                            "progresoCategorias" to mapOf(
-                                "ahorro" to 0,
-                                "inversion" to 0,
-                                "deudas" to 0
-                            ),
-                            "leccionesCompletadas" to emptyMap<String, Any>(),
-                            "racha" to mapOf(
-                                "actual" to 0,
-                                "maxima" to 0,
-                                "ultimoRegistro" to null
-                            )
-                        )
-
-                        firestore.collection("usuarios")
-                            .document(userId)
-                            .set(userData)
-                            .addOnSuccessListener {
-                                onSuccess()
-                            }
-                            .addOnFailureListener { e ->
-                                onError("Error al guardar usuario: ${e.message}")
-                            }
-
-                    } else {
-                        onError(task.exception?.localizedMessage ?: "Error al registrar usuario.")
-                    }
-                }
+    fun onEvent(event: AuthEvent) {
+        when (event) {
+            is AuthEvent.EmailChanged -> {
+                _state.value = _state.value.copy(email = event.email)
+            }
+            is AuthEvent.PasswordChanged -> {
+                _state.value = _state.value.copy(password = event.password)
+            }
+            is AuthEvent.UsernameChanged -> {
+                _state.value = _state.value.copy(username = event.username)
+            }
+            is AuthEvent.TermsAcceptedChanged -> {
+                _state.value = _state.value.copy(termsAccepted = event.accepted)
+            }
+            AuthEvent.Login -> {
+                login()
+            }
+            AuthEvent.Register -> {
+                register()
+            }
+            AuthEvent.SignInWithGoogle -> {
+                // Se manejará desde la UI ya que necesita el contexto
+            }
+            AuthEvent.SignInWithFacebook -> {
+                // Implementar lógica para Facebook
+            }
+            AuthEvent.NavigateToRegister -> {
+                _state.value = _state.value.copy(
+                    isLoginSelected = false,
+                    errorMessage = null
+                )
+            }
+            AuthEvent.NavigateToLogin -> {
+                _state.value = _state.value.copy(
+                    isLoginSelected = true,
+                    errorMessage = null
+                )
+            }
+            AuthEvent.ForgotPassword -> {
+                // Implementar lógica para recuperación de contraseña
+            }
         }
     }
 
-    fun login(
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
-    ) {
-        val currentEmail = email.value.trim()
-        val currentPassword = password.value
-
-        if (currentEmail.isEmpty() || currentPassword.isEmpty()) {
-            onError("Por favor completa todos los campos.")
-            return
-        }
-
-        viewModelScope.launch {
-            auth.signInWithEmailAndPassword(currentEmail, currentPassword)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        onSuccess()
-                    } else {
-                        onError(task.exception?.localizedMessage ?: "Error al iniciar sesión.")
-                    }
-                }
-        }
-    }
-
-    // Función para iniciar el flujo de Google Sign-In
     fun signInWithGoogle(context: Context) {
         viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true, errorMessage = null)
+
             try {
                 val credentialManager = CredentialManager.create(context)
 
@@ -203,9 +99,191 @@ class AuthViewModel : ViewModel() {
 
                 handleGoogleSignInResult(response.credential)
             } catch (e: GetCredentialException) {
-                _errorMessage.value = "Error en autenticación: ${e.message}"
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    errorMessage = "Error en autenticación: ${e.message}"
+                )
             } catch (e: Exception) {
-                _errorMessage.value = "Error desconocido: ${e.message}"
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    errorMessage = "Error desconocido: ${e.message}"
+                )
+            }
+        }
+    }
+
+    private fun login() {
+        val currentEmail = _state.value.email.trim()
+        val currentPassword = _state.value.password
+
+        if (currentEmail.isEmpty() || currentPassword.isEmpty()) {
+            _state.value = _state.value.copy(
+                errorMessage = "Por favor completa todos los campos."
+            )
+            return
+        }
+
+        if (!isValidEmail(currentEmail)) {
+            _state.value = _state.value.copy(
+                errorMessage = "Correo electrónico no válido."
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true)
+
+            auth.signInWithEmailAndPassword(currentEmail, currentPassword)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            isSuccess = true
+                        )
+                    } else {
+                        val error = task.exception
+                        val message = when (error?.message) {
+                            "The email address is badly formatted." ->
+                                "El formato del correo es inválido."
+                            "There is no user record corresponding to this identifier. The user may have been deleted." ->
+                                "No existe un usuario con ese correo."
+                            "The password is invalid or the user does not have a password." ->
+                                "Contraseña incorrecta."
+                            else -> error?.localizedMessage ?: "Error al iniciar sesión."
+                        }
+
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            errorMessage = message
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun register() {
+        val currentEmail = _state.value.email.trim()
+        val currentPassword = _state.value.password
+        val currentUsername = _state.value.username.trim()
+
+        if (currentEmail.isEmpty() || currentPassword.isEmpty() || currentUsername.isEmpty()) {
+            _state.value = _state.value.copy(
+                errorMessage = "Por favor completa todos los campos."
+            )
+            return
+        }
+
+        if (!_state.value.termsAccepted) {
+            _state.value = _state.value.copy(
+                errorMessage = "Debes aceptar los términos y condiciones."
+            )
+            return
+        }
+
+        if (!isValidPassword(currentPassword)) {
+            _state.value = _state.value.copy(
+                errorMessage = "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial."
+            )
+            return
+        }
+
+        if (!isValidEmail(currentEmail)) {
+            _state.value = _state.value.copy(
+                errorMessage = "Por favor ingresa un correo electrónico válido."
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true)
+
+            try {
+                // Validar si el nickname ya existe
+                val result = firestore.collection("usuarios")
+                    .whereEqualTo("nickname", currentUsername)
+                    .get()
+                    .await()
+
+                if (!result.isEmpty) {
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        errorMessage = "El nombre de usuario ya está en uso."
+                    )
+                    return@launch
+                }
+
+                // Crear usuario si el nickname no existe
+                auth.createUserWithEmailAndPassword(currentEmail, currentPassword)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val user = auth.currentUser
+                            user?.updateProfile(userProfileChangeRequest {
+                                displayName = currentUsername
+                            })
+
+                            val userId = user?.uid ?: run {
+                                _state.value = _state.value.copy(
+                                    isLoading = false,
+                                    errorMessage = "Error al obtener ID de usuario"
+                                )
+                                return@addOnCompleteListener
+                            }
+
+                            val userData = hashMapOf(
+                                "uid" to userId,
+                                "nickname" to currentUsername,
+                                "correo" to currentEmail,
+                                "avatarActual" to "avatar_01",
+                                "marcoActual" to "clasico",
+                                "avataresDesbloqueados" to listOf("avatar_01"),
+                                "marcosDesbloqueados" to listOf("clasico"),
+                                "nivel" to 1,
+                                "exp" to 0,
+                                "dinero" to 0,
+                                "logros" to emptyList<String>(),
+                                "insignias" to emptyList<String>(),
+                                "progresoCategorias" to mapOf(
+                                    "ahorro" to 0,
+                                    "inversion" to 0,
+                                    "deudas" to 0
+                                ),
+                                "leccionesCompletadas" to emptyMap<String, Any>(),
+                                "racha" to mapOf(
+                                    "actual" to 0,
+                                    "maxima" to 0,
+                                    "ultimoRegistro" to null
+                                )
+                            )
+
+                            firestore.collection("usuarios")
+                                .document(userId)
+                                .set(userData)
+                                .addOnSuccessListener {
+                                    _state.value = _state.value.copy(
+                                        isLoading = false,
+                                        isSuccess = true
+                                    )
+                                }
+                                .addOnFailureListener { e ->
+                                    _state.value = _state.value.copy(
+                                        isLoading = false,
+                                        errorMessage = "Error al guardar usuario: ${e.message}"
+                                    )
+                                }
+
+                        } else {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                errorMessage = task.exception?.localizedMessage ?: "Error al registrar usuario."
+                            )
+                        }
+                    }
+
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    errorMessage = "Error al verificar nombre de usuario: ${e.message}"
+                )
             }
         }
     }
@@ -228,31 +306,43 @@ class AuthViewModel : ViewModel() {
                         if (task.isSuccessful) {
                             handleNewGoogleUser(task.result?.additionalUserInfo?.isNewUser ?: false)
                         } else {
-                            _errorMessage.value = task.exception?.message ?: "Error en autenticación"
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                errorMessage = task.exception?.message ?: "Error en autenticación"
+                            )
                         }
                     }
             } catch (e: Exception) {
-                _errorMessage.value = "Error procesando credencial: ${e.message}"
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    errorMessage = "Error procesando credencial: ${e.message}"
+                )
             }
         } else {
-            _errorMessage.value = "Tipo de credencial no soportado"
+            _state.value = _state.value.copy(
+                isLoading = false,
+                errorMessage = "Tipo de credencial no soportado"
+            )
         }
     }
 
     private fun handleNewGoogleUser(isNewUser: Boolean) {
         if (isNewUser) {
-            saveNewGoogleUser(
-                onSuccess = { _successEvent.value = true },
-                onError = { error -> _errorMessage.value = error }
-            )
+            saveNewGoogleUser()
         } else {
-            _successEvent.value = true
+            _state.value = _state.value.copy(
+                isLoading = false,
+                isSuccess = true
+            )
         }
     }
 
-    private fun saveNewGoogleUser(onSuccess: () -> Unit, onError: (String) -> Unit) {
+    private fun saveNewGoogleUser() {
         val user = auth.currentUser ?: run {
-            onError("Usuario no encontrado")
+            _state.value = _state.value.copy(
+                isLoading = false,
+                errorMessage = "Usuario no encontrado"
+            )
             return
         }
 
@@ -289,17 +379,27 @@ class AuthViewModel : ViewModel() {
                 firestore.collection("usuarios")
                     .document(user.uid)
                     .set(userData)
-                    .addOnSuccessListener { onSuccess() }
+                    .addOnSuccessListener {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            isSuccess = true
+                        )
+                    }
                     .addOnFailureListener { e ->
-                        onError("Error al guardar usuario: ${e.message}")
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            errorMessage = "Error al guardar usuario: ${e.message}"
+                        )
                     }
 
             } catch (e: Exception) {
-                onError("Error al generar nickname: ${e.message}")
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    errorMessage = "Error al generar nickname: ${e.message}"
+                )
             }
         }
     }
-
 
     private suspend fun generateUniqueNickname(): String {
         var nickname: String
@@ -317,8 +417,6 @@ class AuthViewModel : ViewModel() {
         return nickname
     }
 
-
-    // Función para generar un nickname aleatorio
     private fun generateRandomNickname(): String {
         val prefixes = listOf("FinanKid", "MoneyHero", "CashMaster", "Piggy", "SaveBoss")
         val randomPrefix = prefixes.random()
@@ -327,14 +425,12 @@ class AuthViewModel : ViewModel() {
     }
 
     fun clearFields() {
-        _username.value = ""
-        _email.value = ""
-        _password.value = ""
-        _termsAccepted.value = false
+        _state.value = AuthState(isLoginSelected = _state.value.isLoginSelected)
     }
 
     fun logout() {
         auth.signOut()
+        _state.value = AuthState()
     }
 
     fun getCurrentUserId(): String? = auth.currentUser?.uid
