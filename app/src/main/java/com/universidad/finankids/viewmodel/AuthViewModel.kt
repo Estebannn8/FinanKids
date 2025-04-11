@@ -10,7 +10,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthEmailException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
@@ -148,14 +153,34 @@ class AuthViewModel : ViewModel() {
                         )
                     } else {
                         val error = task.exception
-                        val message = when (error?.message) {
-                            "The email address is badly formatted." ->
-                                "El formato del correo es inválido."
-                            "There is no user record corresponding to this identifier. The user may have been deleted." ->
-                                "No existe un usuario con ese correo."
-                            "The password is invalid or the user does not have a password." ->
-                                "Contraseña incorrecta."
-                            else -> error?.localizedMessage ?: "Error al iniciar sesión."
+                        val message = when {
+                            error is FirebaseAuthInvalidUserException -> {
+                                when (error.errorCode) {
+                                    "ERROR_USER_NOT_FOUND" -> "No existe un usuario con este correo electrónico."
+                                    "ERROR_USER_DISABLED" -> "Esta cuenta ha sido deshabilitada."
+                                    "ERROR_INVALID_EMAIL" -> "El formato del correo electrónico es inválido."
+                                    else -> "Usuario no válido."
+                                }
+                            }
+                            error is FirebaseAuthInvalidCredentialsException -> {
+                                when (error.errorCode) {
+                                    "ERROR_INVALID_EMAIL" -> "El formato del correo electrónico es inválido."
+                                    "ERROR_WRONG_PASSWORD" -> "Contraseña incorrecta."
+                                    else -> "Credenciales inválidas."
+                                }
+                            }
+                            error is FirebaseAuthEmailException -> {
+                                "Error con el correo electrónico."
+                            }
+                            error is FirebaseAuthWeakPasswordException -> {
+                                "La contraseña es demasiado débil."
+                            }
+                            error is FirebaseTooManyRequestsException -> {
+                                "Demasiados intentos fallidos. Por favor, inténtalo más tarde."
+                            }
+                            else -> {
+                                "Error al iniciar sesión."
+                            }
                         }
 
                         _state.value = _state.value.copy(
