@@ -1,6 +1,7 @@
 package com.universidad.finankids.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.credentials.Credential
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -232,6 +233,7 @@ class AuthViewModel : ViewModel() {
                 // Validar si el nickname ya existe
                 val result = firestore.collection("usuarios")
                     .whereEqualTo("nickname", currentUsername)
+                    .limit(1)
                     .get()
                     .await()
 
@@ -242,6 +244,26 @@ class AuthViewModel : ViewModel() {
                     )
                     return@launch
                 }
+
+                // 2. Obtener avatares con unlockType = "default"
+                val avatarsResult = firestore.collection("avatars")
+                    .whereEqualTo("unlockType", "default")
+                    .get()
+                    .await()
+
+                if (avatarsResult.isEmpty) {
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        errorMessage = "No se encontraron avatares predeterminados."
+                    )
+                    return@launch
+                }
+
+                // 3. Obtener IDs de los avatares desbloqueados
+                val unlockedAvatars = avatarsResult.documents.map { it.id }
+
+                // 4. Seleccionar avatar aleatorio
+                val randomAvatar = unlockedAvatars.random()
 
                 // Crear usuario si el nickname no existe
                 auth.createUserWithEmailAndPassword(currentEmail, currentPassword)
@@ -264,9 +286,9 @@ class AuthViewModel : ViewModel() {
                                 "uid" to userId,
                                 "nickname" to currentUsername,
                                 "correo" to currentEmail,
-                                "avatarActual" to "avatar_01",
+                                "avatarActual" to randomAvatar,
                                 "marcoActual" to "clasico",
-                                "avataresDesbloqueados" to listOf("avatar_01"),
+                                "avataresDesbloqueados" to unlockedAvatars,
                                 "marcosDesbloqueados" to listOf("clasico"),
                                 "nivel" to 1,
                                 "exp" to 0,
@@ -381,13 +403,30 @@ class AuthViewModel : ViewModel() {
             try {
                 val uniqueNickname = generateUniqueNickname()
 
+                // Obtener avatares con unlockType = "default"
+                val avatarsResult = firestore.collection("avatars")
+                    .whereEqualTo("unlockType", "default")
+                    .get()
+                    .await()
+
+                if (avatarsResult.isEmpty) {
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        errorMessage = "No se encontraron avatares predeterminados."
+                    )
+                    return@launch
+                }
+
+                val unlockedAvatars = avatarsResult.documents.map { it.id }
+                val randomAvatar = unlockedAvatars.random()
+
                 val userData = hashMapOf(
                     "uid" to user.uid,
                     "nickname" to uniqueNickname,
                     "correo" to (user.email ?: ""),
-                    "avatarActual" to "avatar_01",
+                    "avatarActual" to randomAvatar,
                     "marcoActual" to "clasico",
-                    "avataresDesbloqueados" to listOf("avatar_01"),
+                    "avataresDesbloqueados" to unlockedAvatars,
                     "marcosDesbloqueados" to listOf("clasico"),
                     "nivel" to 1,
                     "exp" to 0,
@@ -435,14 +474,20 @@ class AuthViewModel : ViewModel() {
     private suspend fun generateUniqueNickname(): String {
         var nickname: String
         var exists: Boolean
+        val usuariosRef = firestore.collection("usuarios")
 
         do {
             nickname = generateRandomNickname()
-            val result = firestore.collection("usuarios")
-                .whereEqualTo("nickname", nickname)
-                .get()
-                .await()
-            exists = !result.isEmpty
+            exists = try {
+                val query = usuariosRef
+                    .whereEqualTo("nickname", nickname)  // Esto es clave
+                    .limit(1)
+
+                !query.get().await().isEmpty
+            } catch (e: Exception) {
+                Log.e("FirestoreError", "Error al verificar nickname: ${e.message}")
+                throw Exception("No se pudo verificar el nickname. Intenta nuevamente.")
+            }
         } while (exists)
 
         return nickname
