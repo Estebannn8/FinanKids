@@ -11,8 +11,12 @@ import androidx.navigation.navArgument
 import com.universidad.finankids.ui.auth.AuthScreen
 import com.universidad.finankids.ui.HomeScreen
 import com.universidad.finankids.ui.MainScreen
+import com.universidad.finankids.ui.ProfileScreen
+import com.universidad.finankids.ui.ProgressScreen
 import com.universidad.finankids.ui.RecoveryScreen
 import com.universidad.finankids.ui.SplashScreen
+import com.universidad.finankids.ui.StoreScreen
+import com.universidad.finankids.ui.TrophyScreen
 import com.universidad.finankids.viewmodel.AuthViewModel
 
 @Composable
@@ -48,5 +52,20 @@ fun AppNavigation(modifier: Modifier = Modifier){
             HomeScreen(navController)
         }
 
+        composable(AppScreens.ProfileScreen.route) {
+            ProfileScreen(navController)
+        }
+
+        composable(AppScreens.TrophyScreen.route) {
+            TrophyScreen(navController)
+        }
+
+        composable(AppScreens.ProgressScreen.route) {
+            ProgressScreen(navController)
+        }
+
+        composable(AppScreens.StoreScreen.route) {
+            StoreScreen(navController)
+        }
     }
 }
