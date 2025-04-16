@@ -57,8 +57,8 @@ import com.universidad.finankids.R
 import com.universidad.finankids.events.AuthEvent
 import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.state.AuthState
-import com.universidad.finankids.ui.CustomButton
-import com.universidad.finankids.ui.CustomTextField
+import com.universidad.finankids.ui.Components.CustomButton
+import com.universidad.finankids.ui.Components.CustomTextField
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
