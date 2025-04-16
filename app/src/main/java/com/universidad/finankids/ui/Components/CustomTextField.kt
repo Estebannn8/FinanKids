@@ -1,4 +1,4 @@
-package com.universidad.finankids.ui
+package com.universidad.finankids.ui.Components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
