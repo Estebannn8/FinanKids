@@ -30,8 +30,7 @@ import com.universidad.finankids.ui.Components.BottomMenu
 fun ProfileScreen(navController: NavController) {
     var selectedItem by remember { mutableStateOf("perfil") }
 
-    val sectionBackgroundColor = Color(0xFFC9CED6) // mismo color que en el menú
-    val sectionMenuColor = Color(0xFFC9CED6) // mismo color para mantener consistencia
+    val sectionMenuColor = Color(0xFFC9CED6)
 
     Column(
         modifier = Modifier
