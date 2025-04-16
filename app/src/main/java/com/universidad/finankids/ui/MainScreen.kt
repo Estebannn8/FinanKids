@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
 import com.universidad.finankids.navigation.AppScreens
+import com.universidad.finankids.ui.Components.CustomButton
 import com.universidad.finankids.ui.theme.AppTypography
 
 @Composable

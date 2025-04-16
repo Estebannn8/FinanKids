@@ -38,7 +38,8 @@ import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.flow.collectLatest
+import com.universidad.finankids.ui.Components.CustomButton
+import com.universidad.finankids.ui.Components.CustomTextField
 
 @Composable
 fun RecoveryScreen(navController: NavController) {
