@@ -6,16 +6,21 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -36,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
@@ -107,6 +113,7 @@ fun HomeScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .background(section.backgroundColor)
+            .padding(WindowInsets.statusBars.asPaddingValues())
             .pointerInput(Unit) {
                 detectHorizontalDragGestures { _, dragAmount ->
                     when {
@@ -117,8 +124,155 @@ fun HomeScreen(navController: NavController) {
             },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Espacio reservado para el header
-        Spacer(modifier = Modifier.height(200.dp))
+
+        // Header
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp)
+        ) {
+            // --- Avatar y Nivel ---
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Box(
+                    modifier = Modifier.size(70.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Avatar
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_avatar_placeholder),
+                        contentDescription = "Avatar del usuario",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp)
+                            .offset(y = 2.dp),
+                        contentScale = ContentScale.Inside
+                    )
+
+                    // Marco
+                    val frameRes = when (section.color) {
+                        "azul" -> R.drawable.ic_frame_azul
+                        "morado" -> R.drawable.ic_frame_morado
+                        "amarillo" -> R.drawable.ic_frame_amarillo
+                        "naranja" -> R.drawable.ic_frame_naranja
+                        else -> R.drawable.ic_frame_azul
+                    }
+
+                    Image(
+                        painter = painterResource(id = frameRes),
+                        contentDescription = "Marco del avatar",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit
+                    )
+
+                    // Nivel
+                    val levelIconRes = when (section.color) {
+                        "azul" -> R.drawable.ic_nivel_azul
+                        "morado" -> R.drawable.ic_nivel_morado
+                        "amarillo" -> R.drawable.ic_nivel_amarillo
+                        "naranja" -> R.drawable.ic_nivel_naranja
+                        else -> R.drawable.ic_nivel_azul
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .align(Alignment.BottomCenter)
+                            .offset(y = 20.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = levelIconRes),
+                            contentDescription = "Icono de nivel",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                        Text(
+                            text = "100",
+                            color = Color.White,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+            // --- Barra de experiencia ---
+            val expBarRes = when (section.color) {
+                "azul" -> R.drawable.ic_exp_bar_azul
+                "morado" -> R.drawable.ic_exp_bar_morado
+                "amarillo" -> R.drawable.ic_exp_bar_amarillo
+                "naranja" -> R.drawable.ic_exp_bar_naranja
+                else -> R.drawable.ic_exp_bar_azul
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .height(32.dp)
+                    .align(Alignment.BottomStart)
+                    .offset(x = 80.dp, y = (-30).dp) // Ajusta según tu diseño
+                    .zIndex(2f) // Encima del quest
+            ) {
+                Image(
+                    painter = painterResource(id = expBarRes),
+                    contentDescription = "Barra de experiencia",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+
+            // --- Daily Quest ---
+            var questClicked by remember { mutableStateOf(false) }
+            val questScale by animateFloatAsState(
+                targetValue = if (questClicked) 1.2f else 1f,
+                animationSpec = tween(durationMillis = 200),
+                finishedListener = { questClicked = false }
+            )
+
+            val questFrameRes = when (section.color) {
+                "azul" -> R.drawable.ic_quest_frame_azul
+                "morado" -> R.drawable.ic_quest_frame_morado
+                "amarillo" -> R.drawable.ic_quest_frame_amarillo
+                "naranja" -> R.drawable.ic_quest_frame_naranja
+                else -> R.drawable.ic_quest_frame_azul
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(55.dp)
+                    .align(Alignment.BottomEnd)
+                    .offset(x = (-60).dp, y = 15.dp)
+                    .zIndex(1f) // Debajo de la barra de experiencia
+                    .clickable {
+                        questClicked = true
+                        // Evento de clic
+                    }
+            ) {
+                Image(
+                    painter = painterResource(id = questFrameRes),
+                    contentDescription = "Marco de Daily Quest",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_quest),
+                    contentDescription = "Icono de Daily Quest",
+                    modifier = Modifier
+                        .size(45.dp)
+                        .align(Alignment.Center)
+                        .scale(questScale),
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
+
+
+
 
         // Contenido principal (sección media + puntuación)
         Box(
