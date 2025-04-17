@@ -37,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -47,6 +48,7 @@ import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.Components.BottomMenu
+import com.universidad.finankids.ui.theme.AppTypography
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -226,6 +228,46 @@ fun HomeScreen(navController: NavController) {
                 )
             }
 
+            // --- Nickname y Dinero ---
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .align(Alignment.BottomStart)
+                    .offset(x = 88.dp, y = (-68).dp) // Justo encima de la barra
+                    .zIndex(3f), // Encima de todo
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppTypography.ItimStroke(
+                    text = "FinanKid12",   // <- Nickname
+                    strokeColor = Color.White,
+                    fillColor = Color.White,
+                    fontSize = 22.sp,
+                    textAlign = TextAlign.Start,
+                    lineHeight = 1.sp,
+                    letterSpacing = 1.sp
+                )
+
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(end = 20.dp)
+                ) {
+                    Text(
+                        text = "1500", // Dinero actual
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_coin),
+                        contentDescription = "Moneda",
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            }
+
             // --- Daily Quest ---
             var questClicked by remember { mutableStateOf(false) }
             val questScale by animateFloatAsState(
@@ -270,8 +312,6 @@ fun HomeScreen(navController: NavController) {
                 )
             }
         }
-
-
 
 
         // Contenido principal (sección media + puntuación)
