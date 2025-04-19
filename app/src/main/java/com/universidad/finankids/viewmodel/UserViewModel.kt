@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
+import com.universidad.finankids.data.model.Avatar
 import com.universidad.finankids.events.UserEvent
 import com.universidad.finankids.data.model.UserData
 import kotlinx.coroutines.channels.Channel
@@ -33,6 +34,11 @@ class UserViewModel : ViewModel() {
     private val _currentSectionIndex = mutableIntStateOf(0)
     val currentSectionIndex: IntState = _currentSectionIndex
 
+    // Avatar
+    private val _avatarData = MutableStateFlow<Avatar?>(null)
+    val avatarData: StateFlow<Avatar?> = _avatarData.asStateFlow()
+
+
     fun setCurrentSection(index: Int) {
         _currentSectionIndex.intValue = index
     }
@@ -54,6 +60,8 @@ class UserViewModel : ViewModel() {
     private fun handleEvent(event: UserEvent) {
         when (event) {
             is UserEvent.LoadUser -> loadUserData(event.uid)
+            is UserEvent.LoadAvatar -> loadAvatarData(event.avatarId)
+            // is UserEvent.LoadMarco -> loadMarcoData(event.marcoId)
             UserEvent.Logout -> logout()
             is UserEvent.LoadingSuccess -> updateUserData(event.userData)
             is UserEvent.LoadingFailed -> setError(event.error)
@@ -83,6 +91,30 @@ class UserViewModel : ViewModel() {
             }
         }
     }
+
+    fun loadAvatarData(avatarId: String) {
+        if (avatarId.isEmpty()) return
+
+        viewModelScope.launch {
+            try {
+                val snapshot = firestore.collection("avatars").document(avatarId).get().await()
+                val avatar = snapshot.toObject(Avatar::class.java)
+                if (avatar != null) {
+                    _avatarData.value = avatar
+                    Log.d("UserFlow", "Avatar cargado: $avatar")
+                } else {
+                    Log.w("UserFlow", "Avatar no encontrado con ID: $avatarId")
+                }
+            } catch (e: Exception) {
+                Log.e("UserFlow", "Error al cargar avatar", e)
+            }
+        }
+    }
+
+    fun loadMarcoData(){
+        // Funcion para cargar marco
+    }
+
 
     private fun updateUserData(userData: UserData) {
         _state.update {

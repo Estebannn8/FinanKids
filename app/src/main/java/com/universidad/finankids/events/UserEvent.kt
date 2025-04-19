@@ -4,6 +4,8 @@ import com.universidad.finankids.data.model.UserData
 
 sealed class UserEvent {
     data class LoadUser(val uid: String) : UserEvent()
+    data class LoadAvatar(val avatarId: String) : UserEvent()
+    // data class LoadMarco(val marcoId: String) : UserEvent()
     object Logout : UserEvent()
 
     // Estados de carga como eventos
