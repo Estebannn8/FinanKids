@@ -1,6 +1,9 @@
 package com.universidad.finankids.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.IntState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,6 +28,14 @@ class UserViewModel : ViewModel() {
     // Canal para eventos
     private val _events = Channel<UserEvent>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
+
+    // Add this for section tracking
+    private val _currentSectionIndex = mutableIntStateOf(0)
+    val currentSectionIndex: IntState = _currentSectionIndex
+
+    fun setCurrentSection(index: Int) {
+        _currentSectionIndex.intValue = index
+    }
 
     init {
         viewModelScope.launch {
@@ -98,4 +109,6 @@ class UserViewModel : ViewModel() {
     private fun logout() {
         _state.update { UserData() }
     }
+
+
 }

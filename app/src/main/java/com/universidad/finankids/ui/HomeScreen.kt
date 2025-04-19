@@ -6,7 +6,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,6 +56,7 @@ import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.Components.BottomMenu
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.UserViewModel
+import kotlin.math.abs
 
 @Composable
 fun HomeScreen(
@@ -62,6 +65,7 @@ fun HomeScreen(
 ) {
 
     val userState by userViewModel.state.collectAsState()
+    val currentSectionIndex by userViewModel.currentSectionIndex
 
     val sections = listOf(
         Section(
@@ -118,7 +122,6 @@ fun HomeScreen(
         )
     )
 
-    var currentSectionIndex by remember { mutableStateOf(0) }
     var selectedItem by remember { mutableStateOf("inicio") }
     val section = sections[currentSectionIndex]
 
@@ -134,15 +137,7 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(section.backgroundColor)
-            .padding(WindowInsets.statusBars.asPaddingValues())
-            .pointerInput(Unit) {
-                detectHorizontalDragGestures { _, dragAmount ->
-                    when {
-                        dragAmount < -50 -> currentSectionIndex = (currentSectionIndex + 1) % sections.size
-                        dragAmount > 50 -> currentSectionIndex = (currentSectionIndex - 1 + sections.size) % sections.size
-                    }
-                }
-            },
+            .padding(WindowInsets.statusBars.asPaddingValues()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -309,9 +304,11 @@ fun HomeScreen(
                     .align(Alignment.BottomEnd)
                     .offset(x = (-60).dp, y = 15.dp)
                     .zIndex(1f) // Debajo de la barra de experiencia
-                    .clickable {
-                        questClicked = true
-                        // Evento de clic
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            questClicked = true
+                            // Accion de Daily Quest
+                        }
                     }
             ) {
                 Image(
@@ -360,16 +357,53 @@ fun HomeScreen(
                         modifier = Modifier
                             .size(500.dp)
                             .padding(16.dp)
+                            .pointerInput(currentSectionIndex) {
+                                val currentSection = sections[currentSectionIndex]
+
+                                awaitEachGesture {
+                                    val down = awaitFirstDown()
+                                    var isDrag = false
+                                    var dragDistance = 0f
+                                    var isGestureHandled = false
+
+                                    val dragThreshold = 50f
+
+                                    while (true) {
+                                        val event = awaitPointerEvent()
+                                        val drag = event.changes.firstOrNull()
+
+                                        if (drag != null && drag.pressed) {
+                                            dragDistance = drag.position.x - down.position.x
+                                            if (abs(dragDistance) > 10f) {
+                                                isDrag = true
+                                            }
+                                        } else {
+                                            if (!isGestureHandled) {
+                                                isGestureHandled = true
+
+                                                if (isDrag && abs(dragDistance) > dragThreshold) {
+                                                    if (dragDistance > 0) {
+                                                        userViewModel.setCurrentSection((currentSectionIndex - 1 + sections.size) % sections.size)
+                                                    } else {
+                                                        userViewModel.setCurrentSection((currentSectionIndex + 1) % sections.size)
+                                                    }
+                                                } else if (!isDrag) {
+                                                    buildingClicked = true
+                                                    Log.d("Building", "Tap en ${currentSection.name}")
+                                                }
+                                            }
+                                            break
+                                        }
+                                    }
+                                }
+                            }
                     ) {
                         Image(
                             painter = painterResource(id = section.buildingImage),
                             contentDescription = "Edificio de ${section.name}",
                             modifier = Modifier
                                 .fillMaxSize()
-                                .scale(buildingScale)
-                                .clickable {
-                                    buildingClicked = true
-                                },
+                                .scale(buildingScale),
                             contentScale = ContentScale.Fit
                         )
 
@@ -379,7 +413,7 @@ fun HomeScreen(
                                 .padding(bottom = 10.dp, start = 10.dp)
                                 .align(Alignment.BottomStart)
                                 .clickable {
-                                    currentSectionIndex = (currentSectionIndex - 1 + sections.size) % sections.size
+                                    userViewModel.setCurrentSection((currentSectionIndex - 1 + sections.size) % sections.size)
                                 }
                         ) {
                             var leftArrowClicked by remember { mutableStateOf(false) }
@@ -395,9 +429,11 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .scale(leftArrowScale)
-                                    .clickable {
-                                        leftArrowClicked = true
-                                        currentSectionIndex = (currentSectionIndex - 1 + sections.size) % sections.size
+                                    .pointerInput(Unit) {
+                                        detectTapGestures {
+                                            leftArrowClicked = true
+                                            userViewModel.setCurrentSection((currentSectionIndex - 1 + sections.size) % sections.size)
+                                        }
                                     },
                                 contentScale = ContentScale.Fit
                             )
@@ -419,7 +455,7 @@ fun HomeScreen(
                                 .padding(bottom = 10.dp, end = 10.dp)
                                 .align(Alignment.BottomEnd)
                                 .clickable {
-                                    currentSectionIndex = (currentSectionIndex + 1) % sections.size
+                                    userViewModel.setCurrentSection((currentSectionIndex + 1) % sections.size)
                                 }
                         ) {
                             var rightArrowClicked by remember { mutableStateOf(false) }
@@ -435,9 +471,11 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .scale(rightArrowScale)
-                                    .clickable {
-                                        rightArrowClicked = true
-                                        currentSectionIndex = (currentSectionIndex + 1) % sections.size
+                                    .pointerInput(Unit) {
+                                        detectTapGestures {
+                                            rightArrowClicked = true
+                                            userViewModel.setCurrentSection((currentSectionIndex + 1) % sections.size)
+                                        }
                                     },
                                 contentScale = ContentScale.Fit
                             )
@@ -455,10 +493,9 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(bottom = 10.dp)
                     ) {
-                        val score = remember { mutableStateOf(100) } //Cambiar
 
                         Text(
-                            text = score.value.toString(),
+                            text = "100",
                             color = Color.White,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
@@ -485,8 +522,11 @@ fun HomeScreen(
                         contentDescription = "Jugar",
                         modifier = Modifier
                             .scale(playButtonScale)
-                            .clickable {
-                                playButtonClicked = true
+                            .pointerInput(Unit) {
+                                detectTapGestures {
+                                    playButtonClicked = true
+                                    // Aquí tu acción al hacer tap
+                                }
                             },
                         contentScale = ContentScale.Fit
                     )
