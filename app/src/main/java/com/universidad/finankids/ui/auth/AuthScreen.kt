@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -103,12 +105,12 @@ fun AuthScreen(
         if (!hasNavigated && userState.uid.isNotEmpty() && !userState.isLoading) {
             hasNavigated = true
             navController.navigate(AppScreens.HomeScreen.route) {
-                popUpTo("auth") { inclusive = true }
+                // Vacía toda la pila de navegación (back stack)
+                popUpTo(0) { inclusive = true }  // 0 = índice raíz del grafo de navegación
+                launchSingleTop = true
             }
         }
     }
-
-
 
     // Manejar errores de autenticación
     LaunchedEffect(state.errorMessage) {
@@ -157,42 +159,50 @@ fun AuthScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(paddingValues)
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(29.dp))
+            val scrollState = rememberScrollState()
 
-            AuthHeader(
-                isLoginSelected = state.isLoginSelected,
-                onLoginClick = { authViewModel.onEvent(AuthEvent.NavigateToLogin) },
-                onRegisterClick = { authViewModel.onEvent(AuthEvent.NavigateToRegister) }
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .padding(paddingValues)
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(29.dp))
 
-            Spacer(modifier = Modifier.height(29.dp))
-
-            if (state.isLoginSelected) {
-                LoginForm(
-                    painterEmail = painterResource(id = R.drawable.ic_email),
-                    painterPassword = painterResource(id = R.drawable.ic_password),
-                    state = state,
-                    onEvent = authViewModel::onEvent,
-                    onSignInWithGoogle = { authViewModel.signInWithGoogle(context) },
-                    navController = navController
+                AuthHeader(
+                    isLoginSelected = state.isLoginSelected,
+                    onLoginClick = { authViewModel.onEvent(AuthEvent.NavigateToLogin) },
+                    onRegisterClick = { authViewModel.onEvent(AuthEvent.NavigateToRegister) }
                 )
-            } else {
-                RegisterForm(
-                    painterUser = painterResource(id = R.drawable.ic_person),
-                    painterEmail = painterResource(id = R.drawable.ic_email),
-                    painterPassword = painterResource(id = R.drawable.ic_password),
-                    state = state,
-                    onEvent = authViewModel::onEvent,
-                    onSignInWithGoogle = { authViewModel.signInWithGoogle(context) }
-                )
+
+                Spacer(modifier = Modifier.height(29.dp))
+
+                if (state.isLoginSelected) {
+                    LoginForm(
+                        painterEmail = painterResource(id = R.drawable.ic_email),
+                        painterPassword = painterResource(id = R.drawable.ic_password),
+                        state = state,
+                        onEvent = authViewModel::onEvent,
+                        onSignInWithGoogle = { authViewModel.signInWithGoogle(context) },
+                        navController = navController
+                    )
+                } else {
+                    RegisterForm(
+                        painterUser = painterResource(id = R.drawable.ic_person),
+                        painterEmail = painterResource(id = R.drawable.ic_email),
+                        painterPassword = painterResource(id = R.drawable.ic_password),
+                        state = state,
+                        onEvent = authViewModel::onEvent,
+                        onSignInWithGoogle = { authViewModel.signInWithGoogle(context) }
+                    )
+                }
             }
         }
     }
