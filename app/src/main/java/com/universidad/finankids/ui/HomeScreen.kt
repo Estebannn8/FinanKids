@@ -258,7 +258,7 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppTypography.ItimStroke(
-                    text = "${userState.nickname}",   // <- Nickname
+                    text = userState.nickname,   // <- Nickname
                     strokeColor = Color.White,
                     fillColor = Color.White,
                     fontSize = 22.sp,
