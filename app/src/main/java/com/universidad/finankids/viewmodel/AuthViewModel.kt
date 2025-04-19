@@ -26,6 +26,7 @@ import com.universidad.finankids.state.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -97,7 +98,6 @@ class AuthViewModel : ViewModel() {
                 val googleIdOption = GetGoogleIdOption.Builder()
                     .setServerClientId(context.getString(R.string.default_web_client_id))
                     .setFilterByAuthorizedAccounts(false)
-                    .setAutoSelectEnabled(true)
                     .build()
 
                 val request = GetCredentialRequest.Builder()
@@ -567,6 +567,10 @@ class AuthViewModel : ViewModel() {
             isRecoverySuccess = false,
             recoveryEmail = ""
         )
+    }
+
+    fun clearError() {
+        _state.update { it.copy(errorMessage = null) }
     }
 
     fun clearFields() {

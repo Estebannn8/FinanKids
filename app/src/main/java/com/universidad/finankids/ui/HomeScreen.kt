@@ -1,5 +1,6 @@
 package com.universidad.finankids.ui
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -24,6 +25,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,15 +46,23 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.Components.BottomMenu
 import com.universidad.finankids.ui.theme.AppTypography
+import com.universidad.finankids.viewmodel.UserViewModel
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    userViewModel: UserViewModel = viewModel()
+) {
+
+    val userState by userViewModel.state.collectAsState()
+
     val sections = listOf(
         Section(
             "Ahorro",
@@ -110,6 +121,14 @@ fun HomeScreen(navController: NavController) {
     var currentSectionIndex by remember { mutableStateOf(0) }
     var selectedItem by remember { mutableStateOf("inicio") }
     val section = sections[currentSectionIndex]
+
+    LaunchedEffect(userState) {
+        Log.d("HomeScreen", "Estado actual del usuario: $userState")
+        Log.d("HomeScreen", "UID: ${userState.uid}")
+        Log.d("HomeScreen", "Nickname: ${userState.nickname}")
+        Log.d("HomeScreen", "Nivel: ${userState.nivel}")
+    }
+
 
     Column(
         modifier = Modifier
@@ -194,7 +213,7 @@ fun HomeScreen(navController: NavController) {
                             contentScale = ContentScale.Fit
                         )
                         Text(
-                            text = "100",
+                            text = "${userState.nivel}",  // <- Nivel
                             color = Color.White,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
@@ -239,7 +258,7 @@ fun HomeScreen(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppTypography.ItimStroke(
-                    text = "FinanKid12",   // <- Nickname
+                    text = "${userState.nickname}",   // <- Nickname
                     strokeColor = Color.White,
                     fillColor = Color.White,
                     fontSize = 22.sp,
@@ -254,7 +273,7 @@ fun HomeScreen(navController: NavController) {
                     modifier = Modifier.padding(end = 20.dp)
                 ) {
                     Text(
-                        text = "1500", // Dinero actual
+                        text = "${userState.dinero}", // Dinero actual
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White

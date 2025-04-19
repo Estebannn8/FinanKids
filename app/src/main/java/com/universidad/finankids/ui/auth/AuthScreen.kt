@@ -1,5 +1,6 @@
 package com.universidad.finankids.ui.auth
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -47,61 +49,97 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
 import com.universidad.finankids.events.AuthEvent
+import com.universidad.finankids.events.UserEvent
 import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.state.AuthState
 import com.universidad.finankids.ui.Components.CustomButton
 import com.universidad.finankids.ui.Components.CustomTextField
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AuthViewModel
+import com.universidad.finankids.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun AuthScreen(
     startInLogin: Boolean,
     navController: NavController,
-    viewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel(),
+    userViewModel: UserViewModel = viewModel()
 ) {
-    val state by viewModel.state.collectAsState()
+
+    val authState by authViewModel.state.collectAsState()
+    val state by authViewModel.state.collectAsState()
+    val userState by userViewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
     // Establecer el estado inicial basado en startInLogin
-    LaunchedEffect(Unit) {
+    LaunchedEffect(startInLogin) {
         if (startInLogin != state.isLoginSelected) {
-            viewModel.onEvent(
+            authViewModel.onEvent(
                 if (startInLogin) AuthEvent.NavigateToLogin
                 else AuthEvent.NavigateToRegister
             )
         }
     }
 
-    // Manejar eventos de éxito/error
-    LaunchedEffect(state.isSuccess) {
-        if (state.isSuccess) {
-            navController.navigate(AppScreens.HomeScreen.route) {
-                popUpTo(AppScreens.AuthScreen.route) { inclusive = true }
-                popUpTo(AppScreens.MainScreen.route) { inclusive = true }
+    LaunchedEffect(authState.isSuccess) {
+        if (authState.isSuccess) {
+            authViewModel.getCurrentUserId()?.let { uid ->
+                userViewModel.loadUserData(uid)
             }
-            viewModel.clearFields()
         }
     }
 
+    var hasNavigated by remember { mutableStateOf(false) }
+
+    LaunchedEffect(userState.uid, userState.isLoading) {
+        if (!hasNavigated && userState.uid.isNotEmpty() && !userState.isLoading) {
+            hasNavigated = true
+            navController.navigate(AppScreens.HomeScreen.route) {
+                popUpTo("auth") { inclusive = true }
+            }
+        }
+    }
+
+
+
+    // Manejar errores de autenticación
     LaunchedEffect(state.errorMessage) {
         state.errorMessage?.let { message ->
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(message)
-                // Limpiar el mensaje de error después de mostrarlo
-                viewModel.onEvent(AuthEvent.EmailChanged(state.email)) // Simular un evento para actualizar el estado
+                authViewModel.clearError()
             }
+        }
+    }
+
+    // Manejar errores de carga de usuario
+    LaunchedEffect(userState.errorMessage) {
+        userState.errorMessage?.let { error ->
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(error)
+                userViewModel.sendEvent(UserEvent.LoadingFailed("")) // Limpiar error
+            }
+        }
+    }
+
+    // Mostrar loading cuando sea necesario
+    if (state.isLoading || userState.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f)),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = Color.White)
         }
     }
 
@@ -132,8 +170,8 @@ fun AuthScreen(
 
             AuthHeader(
                 isLoginSelected = state.isLoginSelected,
-                onLoginClick = { viewModel.onEvent(AuthEvent.NavigateToLogin) },
-                onRegisterClick = { viewModel.onEvent(AuthEvent.NavigateToRegister) }
+                onLoginClick = { authViewModel.onEvent(AuthEvent.NavigateToLogin) },
+                onRegisterClick = { authViewModel.onEvent(AuthEvent.NavigateToRegister) }
             )
 
             Spacer(modifier = Modifier.height(29.dp))
@@ -143,8 +181,8 @@ fun AuthScreen(
                     painterEmail = painterResource(id = R.drawable.ic_email),
                     painterPassword = painterResource(id = R.drawable.ic_password),
                     state = state,
-                    onEvent = viewModel::onEvent,
-                    onSignInWithGoogle = { viewModel.signInWithGoogle(context) },
+                    onEvent = authViewModel::onEvent,
+                    onSignInWithGoogle = { authViewModel.signInWithGoogle(context) },
                     navController = navController
                 )
             } else {
@@ -153,8 +191,8 @@ fun AuthScreen(
                     painterEmail = painterResource(id = R.drawable.ic_email),
                     painterPassword = painterResource(id = R.drawable.ic_password),
                     state = state,
-                    onEvent = viewModel::onEvent,
-                    onSignInWithGoogle = { viewModel.signInWithGoogle(context) }
+                    onEvent = authViewModel::onEvent,
+                    onSignInWithGoogle = { authViewModel.signInWithGoogle(context) }
                 )
             }
         }
@@ -542,33 +580,5 @@ fun SocialLoginSection(
 
         Spacer(modifier = Modifier.height(24.dp))
     }
-}
-
-@Preview(showBackground = true, name = "AuthScreen - Login")
-@Composable
-fun PreviewAuthScreenLogin() {
-    val navController = rememberNavController()
-    val authViewModel: AuthViewModel = viewModel()
-    AuthScreen(startInLogin = true, navController = navController, viewModel = authViewModel)
-}
-
-@Preview(showBackground = true, name = "AuthScreen - Register")
-@Composable
-fun PreviewAuthScreenRegister() {
-    val navController = rememberNavController()
-    val authViewModel: AuthViewModel = viewModel()
-    AuthScreen(startInLogin = false, navController = navController, viewModel = authViewModel)
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAuthHeaderLoginSelected() {
-    AuthHeader(isLoginSelected = true)
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAuthHeaderRegisterSelected() {
-    AuthHeader(isLoginSelected = false)
 }
 

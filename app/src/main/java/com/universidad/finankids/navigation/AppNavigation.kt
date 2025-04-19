@@ -18,17 +18,23 @@ import com.universidad.finankids.ui.SplashScreen
 import com.universidad.finankids.ui.StoreScreen
 import com.universidad.finankids.ui.TrophyScreen
 import com.universidad.finankids.viewmodel.AuthViewModel
+import com.universidad.finankids.viewmodel.UserViewModel
 
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier){
+fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+
+    // Crear los ViewModels aquí para que sean compartidos
+    val authViewModel: AuthViewModel = viewModel()
+    val userViewModel: UserViewModel = viewModel()
+
     NavHost(
         navController = navController,
         startDestination = AppScreens.SplashScreen.route
-    ){
+    ) {
 
         composable(AppScreens.SplashScreen.route) {
-            SplashScreen(navController)
+            SplashScreen(navController, authViewModel, userViewModel)
         }
 
         composable(AppScreens.MainScreen.route) {
@@ -40,16 +46,15 @@ fun AppNavigation(modifier: Modifier = Modifier){
             arguments = listOf(navArgument("startInLogin") { type = NavType.BoolType })
         ) { backStackEntry ->
             val startInLogin = backStackEntry.arguments?.getBoolean("startInLogin") ?: true
-            val authViewModel: AuthViewModel = viewModel()
-            AuthScreen(startInLogin, navController = navController, viewModel = authViewModel)
+            AuthScreen(startInLogin, navController = navController, authViewModel = authViewModel, userViewModel = userViewModel)
         }
 
         composable(AppScreens.RecoveryScreen.route) {
             RecoveryScreen(navController)
         }
 
-        composable(AppScreens.HomeScreen.route){
-            HomeScreen(navController)
+        composable(AppScreens.HomeScreen.route) {
+            HomeScreen(navController, userViewModel)
         }
 
         composable(AppScreens.ProfileScreen.route) {
