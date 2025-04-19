@@ -95,7 +95,14 @@ fun AuthScreen(
         if (authState.isSuccess) {
             authViewModel.getCurrentUserId()?.let { uid ->
                 userViewModel.loadUserData(uid)
+
             }
+        }
+    }
+
+    LaunchedEffect(userState.avatarActual, userState.isLoading) {
+        if (!userState.isLoading && userState.avatarActual.isNotEmpty()) {
+            userViewModel.sendEvent(UserEvent.LoadAvatar(userState.avatarActual))
         }
     }
 

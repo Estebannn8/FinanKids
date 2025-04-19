@@ -38,15 +38,15 @@ fun SplashScreen(
 ) {
     val userState by userViewModel.state.collectAsState()
 
+    // Cargar datos de usuario tras delay inicial
     LaunchedEffect(Unit) {
         delay(3000)
-
         val uid = authViewModel.getCurrentUserId()
 
         if (uid != null) {
             userViewModel.sendEvent(UserEvent.LoadUser(uid))
 
-            // Espera a que se cargue el usuario
+            // Esperar carga del usuario
             while (userViewModel.state.value.isLoading) {
                 delay(100)
             }
@@ -67,12 +67,20 @@ fun SplashScreen(
         }
     }
 
+    // Cargar avatar una vez que se haya cargado el usuario
+    LaunchedEffect(userState.avatarActual, userState.isLoading) {
+        if (!userState.isLoading && userState.avatarActual.isNotEmpty()) {
+            userViewModel.sendEvent(UserEvent.LoadAvatar(userState.avatarActual))
+        }
+    }
+
     Splash()
 
     if (userState.isLoading) {
         LoadingOverlay()
     }
 }
+
 
 
 @Composable

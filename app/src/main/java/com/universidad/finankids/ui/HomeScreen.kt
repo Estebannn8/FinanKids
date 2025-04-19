@@ -57,6 +57,8 @@ import com.universidad.finankids.ui.Components.BottomMenu
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.UserViewModel
 import kotlin.math.abs
+import coil.compose.rememberAsyncImagePainter
+
 
 @Composable
 fun HomeScreen(
@@ -65,6 +67,7 @@ fun HomeScreen(
 ) {
 
     val userState by userViewModel.state.collectAsState()
+    val avatarData by userViewModel.avatarData.collectAsState()
     val currentSectionIndex by userViewModel.currentSectionIndex
 
     val sections = listOf(
@@ -160,15 +163,28 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     // Avatar
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_avatar_placeholder),
-                        contentDescription = "Avatar del usuario",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(8.dp)
-                            .offset(y = 2.dp),
-                        contentScale = ContentScale.Inside
-                    )
+                    if (avatarData != null && avatarData?.imageUrl?.isNotEmpty() == true) {
+                        Image(
+                            painter = rememberAsyncImagePainter(avatarData!!.imageUrl),
+                            contentDescription = "Avatar del usuario",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp)
+                                .offset(y = 2.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_avatar_placeholder),
+                            contentDescription = "Avatar del usuario",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp)
+                                .offset(y = 2.dp),
+                            contentScale = ContentScale.Inside
+                        )
+                    }
+
 
                     // Marco
                     val frameRes = when (section.color) {
