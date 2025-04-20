@@ -52,10 +52,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.universidad.finankids.R
 import com.universidad.finankids.events.AuthEvent
+import com.universidad.finankids.events.AvatarEvent
 import com.universidad.finankids.events.UserEvent
 import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.state.AuthState
@@ -63,6 +63,7 @@ import com.universidad.finankids.ui.Components.CustomButton
 import com.universidad.finankids.ui.Components.CustomTextField
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AuthViewModel
+import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
 
@@ -70,20 +71,25 @@ import kotlinx.coroutines.launch
 fun AuthScreen(
     startInLogin: Boolean,
     navController: NavController,
-    authViewModel: AuthViewModel = viewModel(),
-    userViewModel: UserViewModel = viewModel()
+    authViewModel: AuthViewModel,
+    userViewModel: UserViewModel,
+    avataresViewModel: AvataresViewModel
 ) {
 
+    // Estados observables
     val authState by authViewModel.state.collectAsState()
-    val state by authViewModel.state.collectAsState()
     val userState by userViewModel.state.collectAsState()
+    val avatarState by avataresViewModel.state.collectAsState()
+
+    // Estados locales
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    val hasNavigated = remember { mutableStateOf(false) }
 
     // Establecer el estado inicial basado en startInLogin
     LaunchedEffect(startInLogin) {
-        if (startInLogin != state.isLoginSelected) {
+        if (startInLogin != authState.isLoginSelected) {
             authViewModel.onEvent(
                 if (startInLogin) AuthEvent.NavigateToLogin
                 else AuthEvent.NavigateToRegister
@@ -91,37 +97,41 @@ fun AuthScreen(
         }
     }
 
+    // Cargar datos del usuario tras login o registro exitoso
     LaunchedEffect(authState.isSuccess) {
-        if (authState.isSuccess) {
+        if (authState.isSuccess && !hasNavigated.value) {
             authViewModel.getCurrentUserId()?.let { uid ->
-                userViewModel.loadUserData(uid)
-
+                userViewModel.sendEvent(UserEvent.LoadUser(uid))
             }
         }
     }
 
-    LaunchedEffect(userState.avatarActual, userState.isLoading) {
-        if (!userState.isLoading && userState.avatarActual.isNotEmpty()) {
-            userViewModel.sendEvent(UserEvent.LoadAvatar(userState.avatarActual))
+    // Cargar avatar actual después de que se cargue el usuario
+    LaunchedEffect(userState.userData.avatarActual, userState.isLoading) {
+        if (!userState.isLoading && userState.userData.avatarActual.isNotEmpty() && !hasNavigated.value) {
+            avataresViewModel.sendEvent(AvatarEvent.LoadAvatarById(userState.userData.avatarActual))
         }
     }
 
-    var hasNavigated by remember { mutableStateOf(false) }
-
-    LaunchedEffect(userState.uid, userState.isLoading) {
-        if (!hasNavigated && userState.uid.isNotEmpty() && !userState.isLoading) {
-            hasNavigated = true
+    // Navegar al Home cuando todo esté cargado
+    LaunchedEffect(userState.userData.uid, userState.isLoading, avatarState.isLoading) {
+        if (!hasNavigated.value &&
+            userState.userData.uid.isNotEmpty() &&
+            !userState.isLoading &&
+            !avatarState.isLoading &&
+            avatarState.currentAvatar != null
+        ) {
+            hasNavigated.value = true
             navController.navigate(AppScreens.HomeScreen.route) {
-                // Vacía toda la pila de navegación (back stack)
-                popUpTo(0) { inclusive = true }  // 0 = índice raíz del grafo de navegación
+                popUpTo(0) { inclusive = true }
                 launchSingleTop = true
             }
         }
     }
 
-    // Manejar errores de autenticación
-    LaunchedEffect(state.errorMessage) {
-        state.errorMessage?.let { message ->
+    // Mostrar errores de autenticación
+    LaunchedEffect(authState.errorMessage) {
+        authState.errorMessage?.let { message ->
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(message)
                 authViewModel.clearError()
@@ -129,18 +139,28 @@ fun AuthScreen(
         }
     }
 
-    // Manejar errores de carga de usuario
+    // Mostrar errores de carga de usuario
     LaunchedEffect(userState.errorMessage) {
         userState.errorMessage?.let { error ->
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(error)
-                userViewModel.sendEvent(UserEvent.LoadingFailed("")) // Limpiar error
+                userViewModel.clearError()
             }
         }
     }
 
-    // Mostrar loading cuando sea necesario
-    if (state.isLoading || userState.isLoading) {
+    // Mostrar errores de carga de avatar
+    LaunchedEffect(avatarState.error) {
+        avatarState.error?.let { error ->
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(error)
+                avataresViewModel.sendEvent(AvatarEvent.ClearError)
+            }
+        }
+    }
+
+    // Mostrar loading si es necesario
+    if (authState.isLoading || userState.isLoading || avatarState.isLoading) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -184,18 +204,18 @@ fun AuthScreen(
                 Spacer(modifier = Modifier.height(29.dp))
 
                 AuthHeader(
-                    isLoginSelected = state.isLoginSelected,
+                    isLoginSelected = authState.isLoginSelected,
                     onLoginClick = { authViewModel.onEvent(AuthEvent.NavigateToLogin) },
                     onRegisterClick = { authViewModel.onEvent(AuthEvent.NavigateToRegister) }
                 )
 
                 Spacer(modifier = Modifier.height(29.dp))
 
-                if (state.isLoginSelected) {
+                if (authState.isLoginSelected) {
                     LoginForm(
                         painterEmail = painterResource(id = R.drawable.ic_email),
                         painterPassword = painterResource(id = R.drawable.ic_password),
-                        state = state,
+                        state = authState,
                         onEvent = authViewModel::onEvent,
                         onSignInWithGoogle = { authViewModel.signInWithGoogle(context) },
                         navController = navController
@@ -205,7 +225,7 @@ fun AuthScreen(
                         painterUser = painterResource(id = R.drawable.ic_person),
                         painterEmail = painterResource(id = R.drawable.ic_email),
                         painterPassword = painterResource(id = R.drawable.ic_password),
-                        state = state,
+                        state = authState,
                         onEvent = authViewModel::onEvent,
                         onSignInWithGoogle = { authViewModel.signInWithGoogle(context) }
                     )

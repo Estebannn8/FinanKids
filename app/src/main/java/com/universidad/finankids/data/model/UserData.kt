@@ -15,7 +15,5 @@ data class UserData(
     val insignias: List<String> = emptyList(),
     val progresoCategorias: Map<String, Int> = emptyMap(),
     val leccionesCompletadas: Map<String, Any> = emptyMap(),
-    val racha: Map<String, Any?> = emptyMap(),
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val racha: Map<String, Any?> = emptyMap()
 )

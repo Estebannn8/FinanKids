@@ -58,17 +58,31 @@ import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.UserViewModel
 import kotlin.math.abs
 import coil.compose.rememberAsyncImagePainter
-
+import com.universidad.finankids.ui.Components.LoadingOverlay
+import com.universidad.finankids.viewmodel.AvataresViewModel
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    userViewModel: UserViewModel = viewModel()
+    userViewModel: UserViewModel,
+    avataresViewModel: AvataresViewModel
 ) {
 
+    // Estados observables
     val userState by userViewModel.state.collectAsState()
-    val avatarData by userViewModel.avatarData.collectAsState()
-    val currentSectionIndex by userViewModel.currentSectionIndex
+    val avatarState by avataresViewModel.state.collectAsState()
+    val currentSectionIndex = userState.currentSectionIndex
+
+    // Verificar si los datos están cargados
+    val isDataLoaded = remember(userState, avatarState) {
+        userState.userData.uid.isNotEmpty() && !userState.isLoading &&
+                avatarState.currentAvatar != null && !avatarState.isLoading
+    }
+
+    // Mostrar loading si los datos no están listos
+    if (!isDataLoaded) {
+        LoadingOverlay()
+    }
 
     val sections = listOf(
         Section(
@@ -128,13 +142,15 @@ fun HomeScreen(
     var selectedItem by remember { mutableStateOf("inicio") }
     val section = sections[currentSectionIndex]
 
+    // Log de estado
     LaunchedEffect(userState) {
         Log.d("HomeScreen", "Estado actual del usuario: $userState")
-        Log.d("HomeScreen", "UID: ${userState.uid}")
-        Log.d("HomeScreen", "Nickname: ${userState.nickname}")
-        Log.d("HomeScreen", "Nivel: ${userState.nivel}")
     }
 
+    // Efecto para loguear cambios en el índice de sección
+    LaunchedEffect(currentSectionIndex) {
+        Log.d("SectionDebug", "Current section index changed to: $currentSectionIndex")
+    }
 
     Column(
         modifier = Modifier
@@ -163,28 +179,44 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     // Avatar
-                    if (avatarData != null && avatarData?.imageUrl?.isNotEmpty() == true) {
-                        Image(
-                            painter = rememberAsyncImagePainter(avatarData!!.imageUrl),
-                            contentDescription = "Avatar del usuario",
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                                .offset(y = 2.dp),
-                            contentScale = ContentScale.Crop
-                        )
-                    } else {
+                    if (avatarState.isLoading || avatarState.currentAvatar == null) {
+                        // Mostrar placeholder mientras carga
                         Image(
                             painter = painterResource(id = R.drawable.ic_avatar_placeholder),
-                            contentDescription = "Avatar del usuario",
+                            contentDescription = "Avatar cargando",
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(8.dp)
-                                .offset(y = 2.dp),
+                                .offset(x = 0.6.dp, y = 2.4.dp),
                             contentScale = ContentScale.Inside
                         )
+                    } else {
+                        // Mostrar avatar cuando esté cargado
+                        avatarState.currentAvatar?.let { avatar ->
+                            if (avatar.imageUrl.isNotEmpty()) {
+                                Image(
+                                    painter = rememberAsyncImagePainter(avatar.imageUrl),
+                                    contentDescription = "Avatar del usuario",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp)
+                                        .offset(x = 0.6.dp, y = 2.4.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                // Mostrar placeholder si no hay imagen
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_avatar_placeholder),
+                                    contentDescription = "Avatar predeterminado",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp)
+                                        .offset(x = 0.6.dp, y = 2.4.dp),
+                                    contentScale = ContentScale.Inside
+                                )
+                            }
+                        }
                     }
-
 
                     // Marco
                     val frameRes = when (section.color) {
@@ -224,7 +256,7 @@ fun HomeScreen(
                             contentScale = ContentScale.Fit
                         )
                         Text(
-                            text = "${userState.nivel}",  // <- Nivel
+                            text = "${userState.userData.nivel}",  // <- Nivel
                             color = Color.White,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
@@ -269,7 +301,7 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppTypography.ItimStroke(
-                    text = userState.nickname,   // <- Nickname
+                    text = userState.userData.nickname,   // <- Nickname
                     strokeColor = Color.White,
                     fillColor = Color.White,
                     fontSize = 22.sp,
@@ -284,7 +316,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(end = 20.dp)
                 ) {
                     Text(
-                        text = "${userState.dinero}", // Dinero actual
+                        text = "${userState.userData.dinero}", // Dinero actual
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -423,6 +455,7 @@ fun HomeScreen(
                             contentScale = ContentScale.Fit
                         )
 
+                        // Flecha izquierda
                         Box(
                             modifier = Modifier
                                 .size(40.dp)
@@ -444,27 +477,12 @@ fun HomeScreen(
                                 contentDescription = "Flecha izquierda",
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .scale(leftArrowScale)
-                                    .pointerInput(Unit) {
-                                        detectTapGestures {
-                                            leftArrowClicked = true
-                                            userViewModel.setCurrentSection((currentSectionIndex - 1 + sections.size) % sections.size)
-                                        }
-                                    },
+                                    .scale(leftArrowScale),
                                 contentScale = ContentScale.Fit
                             )
                         }
 
-                        Image(
-                            painter = painterResource(id = section.textImage),
-                            contentDescription = "Texto de ${section.name}",
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(bottom = section.textBottomPadding)
-                                .size(width = 300.dp, height = section.textHeight),
-                            contentScale = ContentScale.Fit
-                        )
-
+                        // Flecha derecha
                         Box(
                             modifier = Modifier
                                 .size(40.dp)
@@ -486,13 +504,7 @@ fun HomeScreen(
                                 contentDescription = "Flecha derecha",
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .scale(rightArrowScale)
-                                    .pointerInput(Unit) {
-                                        detectTapGestures {
-                                            rightArrowClicked = true
-                                            userViewModel.setCurrentSection((currentSectionIndex + 1) % sections.size)
-                                        }
-                                    },
+                                    .scale(rightArrowScale),
                                 contentScale = ContentScale.Fit
                             )
                         }
@@ -581,11 +593,3 @@ data class Section(
     val starIcon: Int
 )
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun HomeScreenPreview() {
-    val navController = rememberNavController()
-    CompositionLocalProvider(LocalContext provides LocalContext.current) {
-        HomeScreen(navController = navController)
-    }
-}

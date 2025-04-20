@@ -18,6 +18,7 @@ import com.universidad.finankids.ui.SplashScreen
 import com.universidad.finankids.ui.StoreScreen
 import com.universidad.finankids.ui.TrophyScreen
 import com.universidad.finankids.viewmodel.AuthViewModel
+import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
 
 @Composable
@@ -27,6 +28,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     // Crear los ViewModels aquí para que sean compartidos
     val authViewModel: AuthViewModel = viewModel()
     val userViewModel: UserViewModel = viewModel()
+    val avataresViewModel: AvataresViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -34,7 +36,12 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     ) {
 
         composable(AppScreens.SplashScreen.route) {
-            SplashScreen(navController, authViewModel, userViewModel)
+            SplashScreen(
+                navController = navController,
+                authViewModel = authViewModel,
+                userViewModel = userViewModel,
+                avataresViewModel = avataresViewModel
+            )
         }
 
         composable(AppScreens.MainScreen.route) {
@@ -46,7 +53,13 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             arguments = listOf(navArgument("startInLogin") { type = NavType.BoolType })
         ) { backStackEntry ->
             val startInLogin = backStackEntry.arguments?.getBoolean("startInLogin") ?: true
-            AuthScreen(startInLogin, navController = navController, authViewModel = authViewModel, userViewModel = userViewModel)
+            AuthScreen(
+                startInLogin,
+                navController = navController,
+                authViewModel = authViewModel,
+                userViewModel = userViewModel,
+                avataresViewModel = avataresViewModel
+            )
         }
 
         composable(AppScreens.RecoveryScreen.route) {
@@ -54,7 +67,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
 
         composable(AppScreens.HomeScreen.route) {
-            HomeScreen(navController, userViewModel)
+            HomeScreen(
+                navController = navController,
+                userViewModel = userViewModel,
+                avataresViewModel = avataresViewModel
+            )
         }
 
         composable(AppScreens.ProfileScreen.route) {
