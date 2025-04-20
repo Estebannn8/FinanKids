@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,27 +38,23 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.universidad.finankids.R
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.Components.BottomMenu
+import com.universidad.finankids.ui.Components.LoadingOverlay
 import com.universidad.finankids.ui.theme.AppTypography
+import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
 import kotlin.math.abs
-import coil.compose.rememberAsyncImagePainter
-import com.universidad.finankids.ui.Components.LoadingOverlay
-import com.universidad.finankids.viewmodel.AvataresViewModel
 
 @Composable
 fun HomeScreen(
