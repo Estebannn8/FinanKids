@@ -84,8 +84,6 @@ class AvataresViewModel : ViewModel() {
         }
     }
 
-
-
     private fun clearError() {
         _state.update { it.copy(error = null) }
     }

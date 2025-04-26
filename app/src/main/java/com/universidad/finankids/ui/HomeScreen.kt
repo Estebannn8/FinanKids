@@ -517,6 +517,7 @@ fun HomeScreen(
                         modifier = Modifier.padding(bottom = 10.dp)
                     ) {
 
+                        // Puntuacion
                         Text(
                             text = "100",
                             color = Color.White,

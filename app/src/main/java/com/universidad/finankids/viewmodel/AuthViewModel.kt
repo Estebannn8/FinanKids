@@ -194,140 +194,125 @@ class AuthViewModel : ViewModel() {
     }
 
     private fun register() {
+        Log.d("AuthViewModel", "Starting registration")
+
         val currentEmail = _state.value.email.trim()
         val currentPassword = _state.value.password
         val currentUsername = _state.value.username.trim()
 
+        // Validaciones iniciales
         if (currentEmail.isEmpty() || currentPassword.isEmpty() || currentUsername.isEmpty()) {
             _state.value = _state.value.copy(
-                errorMessage = "Por favor completa todos los campos."
+                errorMessage = "Por favor completa todos los campos.",
+                isLoading = false
             )
             return
         }
 
         if (!_state.value.termsAccepted) {
             _state.value = _state.value.copy(
-                errorMessage = "Debes aceptar los términos y condiciones."
+                errorMessage = "Debes aceptar los términos y condiciones.",
+                isLoading = false
             )
             return
         }
 
         if (!isValidPassword(currentPassword)) {
             _state.value = _state.value.copy(
-                errorMessage = "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial."
+                errorMessage = "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.",
+                isLoading = false
             )
             return
         }
 
         if (!isValidEmail(currentEmail)) {
             _state.value = _state.value.copy(
-                errorMessage = "Por favor ingresa un correo electrónico válido."
+                errorMessage = "Por favor ingresa un correo electrónico válido.",
+                isLoading = false
             )
             return
         }
 
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
+            Log.d("AuthViewModel", "isLoading set to true")
 
             try {
-                // Validar si el nickname ya existe
-                val result = firestore.collection("usuarios")
+                // 1. Verificar si el nickname ya existe
+                val nicknameQuery = firestore.collection("usuarios")
                     .whereEqualTo("nickname", currentUsername)
                     .limit(1)
                     .get()
                     .await()
 
-                if (!result.isEmpty) {
+                if (!nicknameQuery.isEmpty) {
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        errorMessage = "El nombre de usuario ya está en uso."
+                        errorMessage = "El nombre de usuario ya está en uso. Por favor elige otro."
                     )
                     return@launch
                 }
 
-                // 2. Obtener avatares con unlockType = "default"
-                val avatarsResult = firestore.collection("avatars")
+                // 2. Obtener avatares predeterminados
+                val avatarsQuery = firestore.collection("avatars")
                     .whereEqualTo("unlockType", "default")
                     .get()
                     .await()
 
-                if (avatarsResult.isEmpty) {
+                if (avatarsQuery.isEmpty) {
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        errorMessage = "No se encontraron avatares predeterminados."
+                        errorMessage = "No se encontraron avatares predeterminados. Contacta al soporte."
                     )
                     return@launch
                 }
 
-                // 3. Obtener IDs de los avatares desbloqueados
-                val unlockedAvatars = avatarsResult.documents.map { it.id }
-
-                // 4. Seleccionar avatar aleatorio
+                val unlockedAvatars = avatarsQuery.documents.map { it.id }
                 val randomAvatar = unlockedAvatars.random()
 
-                // Crear usuario si el nickname no existe
+                // 3. Crear usuario en Firebase Auth
                 auth.createUserWithEmailAndPassword(currentEmail, currentPassword)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
+                    .addOnCompleteListener { authTask ->
+                        if (authTask.isSuccessful) {
                             val user = auth.currentUser
                             user?.updateProfile(userProfileChangeRequest {
                                 displayName = currentUsername
-                            })
-
-                            val userId = user?.uid ?: run {
-                                _state.value = _state.value.copy(
-                                    isLoading = false,
-                                    errorMessage = "Error al obtener ID de usuario"
-                                )
-                                return@addOnCompleteListener
+                            })?.addOnCompleteListener { profileTask ->
+                                if (profileTask.isSuccessful) {
+                                    saveUserDataToFirestore(
+                                        userId = user.uid,
+                                        username = currentUsername,
+                                        email = currentEmail,
+                                        avatarId = randomAvatar,
+                                        unlockedAvatars = unlockedAvatars
+                                    )
+                                } else {
+                                    _state.value = _state.value.copy(
+                                        isLoading = false,
+                                        errorMessage = "Error al actualizar el perfil: ${profileTask.exception?.localizedMessage ?: ""}"
+                                    )
+                                }
+                            }
+                        } else {
+                            val error = authTask.exception
+                            val message = when (error) {
+                                is com.google.firebase.auth.FirebaseAuthUserCollisionException -> {
+                                    "Ya existe una cuenta con este correo electrónico."
+                                }
+                                is FirebaseAuthWeakPasswordException -> {
+                                    "La contraseña es demasiado débil. Asegúrate de incluir mayúsculas, minúsculas, números y símbolos."
+                                }
+                                is FirebaseAuthInvalidCredentialsException -> {
+                                    "El correo electrónico no tiene un formato válido."
+                                }
+                                else -> {
+                                    "Error al registrar usuario: ${error?.localizedMessage ?: "Error desconocido."}"
+                                }
                             }
 
-                            val userData = hashMapOf(
-                                "uid" to userId,
-                                "nickname" to currentUsername,
-                                "correo" to currentEmail,
-                                "avatarActual" to randomAvatar,
-                                "marcoActual" to "clasico",
-                                "avataresDesbloqueados" to unlockedAvatars,
-                                "marcosDesbloqueados" to listOf("clasico"),
-                                "nivel" to 1,
-                                "exp" to 0,
-                                "dinero" to 0,
-                                "logros" to emptyList<String>(),
-                                "insignias" to emptyList<String>(),
-                                "progresoCategorias" to mapOf(
-                                    "ahorro" to 0,
-                                    "inversion" to 0,
-                                    "deudas" to 0
-                                ),
-                                "leccionesCompletadas" to emptyMap<String, Any>(),
-                                "racha" to mapOf(
-                                    "actual" to 0,
-                                    "maxima" to 0,
-                                    "ultimoRegistro" to null
-                                )
-                            )
-
-                            firestore.collection("usuarios")
-                                .document(userId)
-                                .set(userData)
-                                .addOnSuccessListener {
-                                    _state.value = _state.value.copy(
-                                        isLoading = false,
-                                        isSuccess = true
-                                    )
-                                }
-                                .addOnFailureListener { e ->
-                                    _state.value = _state.value.copy(
-                                        isLoading = false,
-                                        errorMessage = "Error al guardar usuario: ${e.message}"
-                                    )
-                                }
-
-                        } else {
                             _state.value = _state.value.copy(
                                 isLoading = false,
-                                errorMessage = task.exception?.localizedMessage ?: "Error al registrar usuario."
+                                errorMessage = message
                             )
                         }
                     }
@@ -335,10 +320,63 @@ class AuthViewModel : ViewModel() {
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
                     isLoading = false,
-                    errorMessage = "Error al verificar nombre de usuario: ${e.message}"
+                    errorMessage = "Error en el registro: ${e.message}"
                 )
             }
         }
+    }
+
+    private fun saveUserDataToFirestore(
+        userId: String,
+        username: String,
+        email: String,
+        avatarId: String,
+        unlockedAvatars: List<String>
+    ) {
+        val userData = hashMapOf(
+            "uid" to userId,
+            "nickname" to username,
+            "correo" to email,
+            "avatarActual" to avatarId,
+            "marcoActual" to "clasico",
+            "avataresDesbloqueados" to unlockedAvatars,
+            "marcosDesbloqueados" to listOf("clasico"),
+            "nivel" to 1,
+            "exp" to 0,
+            "dinero" to 0,
+            "logros" to emptyList<String>(),
+            "insignias" to emptyList<String>(),
+            "progresoCategorias" to mapOf(
+                "ahorro" to 0,
+                "inversion" to 0,
+                "compra" to 0,
+                "basica" to 0
+            ),
+            "leccionesCompletadas" to emptyMap<String, Any>(),
+            "racha" to mapOf(
+                "actual" to 0,
+                "maxima" to 0,
+                "ultimoRegistro" to null
+            )
+        )
+
+        firestore.collection("usuarios")
+            .document(userId)
+            .set(userData)
+            .addOnSuccessListener {
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    isSuccess = true
+                )
+            }
+            .addOnFailureListener { e ->
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    errorMessage = "Error al guardar datos del usuario: ${e.message}"
+                )
+                // Opcional: eliminar el usuario creado en Auth si falla Firestore
+                auth.currentUser?.delete()
+            }
     }
 
     private fun handleGoogleSignInResult(credential: Credential) {
@@ -436,7 +474,8 @@ class AuthViewModel : ViewModel() {
                     "progresoCategorias" to mapOf(
                         "ahorro" to 0,
                         "inversion" to 0,
-                        "deudas" to 0
+                        "compra" to 0,
+                        "basica" to 0
                     ),
                     "leccionesCompletadas" to emptyMap<String, Any>(),
                     "racha" to mapOf(

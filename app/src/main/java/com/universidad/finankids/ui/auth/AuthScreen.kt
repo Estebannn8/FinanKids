@@ -1,8 +1,10 @@
 package com.universidad.finankids.ui.auth
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -61,6 +64,7 @@ import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.state.AuthState
 import com.universidad.finankids.ui.Components.CustomButton
 import com.universidad.finankids.ui.Components.CustomTextField
+import com.universidad.finankids.ui.Components.LoadingOverlay
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AuthViewModel
 import com.universidad.finankids.viewmodel.AvataresViewModel
@@ -86,6 +90,12 @@ fun AuthScreen(
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val hasNavigated = remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+
+
+    LaunchedEffect(authState.isLoading) {
+        Log.d("AuthScreen", "isLoading state changed: ${authState.isLoading}")
+    }
 
     // Establecer el estado inicial basado en startInLogin
     LaunchedEffect(startInLogin) {
@@ -159,18 +169,6 @@ fun AuthScreen(
         }
     }
 
-    // Mostrar loading si es necesario
-    if (authState.isLoading || userState.isLoading || avatarState.isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.5f)),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = Color.White)
-        }
-    }
-
     Scaffold(
         snackbarHost = {
             SnackbarHost(
@@ -190,6 +188,13 @@ fun AuthScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
+                .clickable(
+                    // Evita el ripple cuando tocas en blanco
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    focusManager.clearFocus()
+                }
         ) {
             val scrollState = rememberScrollState()
 
@@ -230,6 +235,11 @@ fun AuthScreen(
                         onSignInWithGoogle = { authViewModel.signInWithGoogle(context) }
                     )
                 }
+            }
+
+            // Mostrar loading si es necesario
+            if (authState.isLoading || userState.isLoading || avatarState.isLoading) {
+                LoadingOverlay()
             }
         }
     }
