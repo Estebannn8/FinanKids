@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -136,6 +137,15 @@ fun HomeScreen(
 
     var selectedItem by remember { mutableStateOf("inicio") }
     val section = sections[currentSectionIndex]
+
+    val sectionScore = when (section.name) {
+        "Ahorro" -> userState.userData.progresoCategorias["ahorro"] ?: 0
+        "Centro Comercial" -> userState.userData.progresoCategorias["compra"] ?: 0
+        "Banco" -> userState.userData.progresoCategorias["basica"] ?: 0
+        "Inversiones" -> userState.userData.progresoCategorias["inversion"] ?: 0
+        else -> 0
+    }
+
 
     // Log de estado
     LaunchedEffect(userState) {
@@ -451,22 +461,26 @@ fun HomeScreen(
                         )
 
                         // Flecha izquierda
+                        var leftArrowClicked by remember { mutableStateOf(false) }
+                        val interactionSource2 = remember { MutableInteractionSource() }
+                        val leftArrowScale by animateFloatAsState(
+                            targetValue = if (leftArrowClicked) 1.2f else 1f,
+                            animationSpec = tween(durationMillis = 200),
+                            finishedListener = { leftArrowClicked = false }
+                        )
                         Box(
                             modifier = Modifier
                                 .size(40.dp)
                                 .padding(bottom = 10.dp, start = 10.dp)
                                 .align(Alignment.BottomStart)
-                                .clickable {
+                                .clickable (
+                                    interactionSource = interactionSource2,
+                                    indication = null // <-- esto elimina el sombreado
+                                ) {
+                                    leftArrowClicked = true
                                     userViewModel.setCurrentSection((currentSectionIndex - 1 + sections.size) % sections.size)
                                 }
                         ) {
-                            var leftArrowClicked by remember { mutableStateOf(false) }
-                            val leftArrowScale by animateFloatAsState(
-                                targetValue = if (leftArrowClicked) 1.2f else 1f,
-                                animationSpec = tween(durationMillis = 200),
-                                finishedListener = { leftArrowClicked = false }
-                            )
-
                             Image(
                                 painter = painterResource(id = section.leftArrowIcon),
                                 contentDescription = "Flecha izquierda",
@@ -478,22 +492,26 @@ fun HomeScreen(
                         }
 
                         // Flecha derecha
+                        var rightArrowClicked by remember { mutableStateOf(false) }
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val rightArrowScale by animateFloatAsState(
+                            targetValue = if (rightArrowClicked) 1.2f else 1f,
+                            animationSpec = tween(durationMillis = 200),
+                            finishedListener = { rightArrowClicked = false }
+                        )
                         Box(
                             modifier = Modifier
                                 .size(40.dp)
                                 .padding(bottom = 10.dp, end = 10.dp)
                                 .align(Alignment.BottomEnd)
-                                .clickable {
+                                .clickable (
+                                    interactionSource = interactionSource,
+                                    indication = null // <-- esto elimina el sombreado
+                                ) {
+                                    rightArrowClicked = true
                                     userViewModel.setCurrentSection((currentSectionIndex + 1) % sections.size)
                                 }
                         ) {
-                            var rightArrowClicked by remember { mutableStateOf(false) }
-                            val rightArrowScale by animateFloatAsState(
-                                targetValue = if (rightArrowClicked) 1.2f else 1f,
-                                animationSpec = tween(durationMillis = 200),
-                                finishedListener = { rightArrowClicked = false }
-                            )
-
                             Image(
                                 painter = painterResource(id = section.rightArrowIcon),
                                 contentDescription = "Flecha derecha",
@@ -519,7 +537,7 @@ fun HomeScreen(
 
                         // Puntuacion
                         Text(
-                            text = "100",
+                            text = "$sectionScore",
                             color = Color.White,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
