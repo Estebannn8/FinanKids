@@ -383,6 +383,7 @@ fun RegisterForm(
     onSignInWithGoogle: () -> Unit
 ) {
     var showTermsDialog by remember { mutableStateOf(false) }
+    val maxNicknameLength = 13 // Longitud máxima para el nickname
 
     Column(modifier = Modifier.fillMaxWidth()) {
         // Usuario
@@ -392,7 +393,9 @@ fun RegisterForm(
             value = state.username,
             onValueChange = { onEvent(AuthEvent.UsernameChanged(it)) },
             placeholder = "Ingrese nombre de usuario",
-            leadingIcon = painterUser
+            leadingIcon = painterUser,
+            showCharacterCounter = true,
+            maxLength = maxNicknameLength
         )
 
         Spacer(modifier = Modifier.height(29.dp))

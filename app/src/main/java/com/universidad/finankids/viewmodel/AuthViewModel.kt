@@ -47,7 +47,7 @@ class AuthViewModel : ViewModel() {
                 _state.value = _state.value.copy(password = event.password)
             }
             is AuthEvent.UsernameChanged -> {
-                _state.value = _state.value.copy(username = event.username)
+                _state.value = _state.value.copy(username = event.username.take(13))
             }
             is AuthEvent.TermsAcceptedChanged -> {
                 _state.value = _state.value.copy(termsAccepted = event.accepted)
@@ -204,6 +204,15 @@ class AuthViewModel : ViewModel() {
         if (currentEmail.isEmpty() || currentPassword.isEmpty() || currentUsername.isEmpty()) {
             _state.value = _state.value.copy(
                 errorMessage = "Por favor completa todos los campos.",
+                isLoading = false
+            )
+            return
+        }
+
+        // Validación de longitud del nickname
+        if (!isValidUsername(currentUsername)) {
+            _state.value = _state.value.copy(
+                errorMessage = "El nombre de usuario no puede tener más de 13 caracteres.",
                 isLoading = false
             )
             return
@@ -537,6 +546,10 @@ class AuthViewModel : ViewModel() {
         val randomPrefix = prefixes.random()
         val randomNumber = (100..999).random()
         return "$randomPrefix$randomNumber"
+    }
+
+    private fun isValidUsername(username: String): Boolean {
+        return username.length <= 13 && username.isNotBlank()
     }
 
     private fun sendPasswordResetEmail(email: String) {
