@@ -75,7 +75,13 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
 
         composable(AppScreens.ProfileScreen.route) {
-            ProfileScreen(navController)
+            ProfileScreen(
+                navController,
+                /*
+                userViewModel = userViewModel,
+                avataresViewModel = avataresViewModel
+                 */
+            )
         }
 
         composable(AppScreens.TrophyScreen.route) {
