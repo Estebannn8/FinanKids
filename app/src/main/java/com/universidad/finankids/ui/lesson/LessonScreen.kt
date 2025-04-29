@@ -46,6 +46,7 @@ fun LessonScreen() {
         // Header que contiene la flecha para atrás, barra de progreso y vidas
         LessonHeader()
 
+
         // Aquí vendría el contenido de la lección (por ejemplo, actividades específicas)
         Box(
             modifier = Modifier
