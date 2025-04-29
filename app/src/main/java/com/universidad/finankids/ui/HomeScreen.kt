@@ -85,6 +85,7 @@ fun HomeScreen(
             "Ahorro",
             Color(0xFF746474),
             Color(0xFF9D759B),
+            Color(0xDC53164F),
             "morado",
             R.drawable.edificio_ahorro,
             R.drawable.texto_ahorro,
@@ -98,6 +99,7 @@ fun HomeScreen(
             "Centro Comercial",
             Color(0xFF79AFD4),
             Color(0xFFAECDE3),
+            Color(0xDC0270BA),
             "azul",
             R.drawable.edificio_centro_comercial,
             R.drawable.texto_centro_comercial,
@@ -111,6 +113,7 @@ fun HomeScreen(
             "Banco",
             Color(0xFFE4C78A),
             Color(0xFFF1DCB3),
+            Color(0xDCF8B528),
             "amarillo",
             R.drawable.edificio_banco,
             R.drawable.texto_banco,
@@ -124,6 +127,7 @@ fun HomeScreen(
             "Inversiones",
             Color(0xFFB28F76),
             Color(0xFFFFBA88),
+            Color(0xDCED7621),
             "naranja",
             R.drawable.edificio_inversiones,
             R.drawable.texto_inversiones,
@@ -175,12 +179,15 @@ fun HomeScreen(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
+                    .zIndex(3f)
                     .padding(start = 16.dp, end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
                 Box(
-                    modifier = Modifier.size(70.dp),
+                    modifier = Modifier
+                        .size(70.dp)
+                        .zIndex(3f),
                     contentAlignment = Alignment.Center
                 ) {
                     // Avatar
@@ -192,6 +199,7 @@ fun HomeScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(8.dp)
+                                .zIndex(3f)
                                 .offset(x = 0.6.dp, y = 2.4.dp),
                             contentScale = ContentScale.Inside
                         )
@@ -261,7 +269,7 @@ fun HomeScreen(
                             contentScale = ContentScale.Fit
                         )
                         Text(
-                            text = "${userState.userData.nivel}",  // <- Nivel
+                            text = "${userState.nivel}",  // <- Nivel
                             color = Color.White,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
@@ -284,14 +292,38 @@ fun HomeScreen(
                     .fillMaxWidth(0.7f)
                     .height(32.dp)
                     .align(Alignment.BottomStart)
-                    .offset(x = 80.dp, y = (-30).dp) // Ajusta según tu diseño
-                    .zIndex(2f) // Encima del quest
+                    .offset(x = 80.dp, y = (-30).dp)
+                    .zIndex(1f)
             ) {
+                // Fondo de la barra
                 Image(
                     painter = painterResource(id = expBarRes),
                     contentDescription = "Barra de experiencia",
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zIndex(0f),
                     contentScale = ContentScale.FillBounds
+                )
+
+                // Progreso
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(userState.levelProgress)
+                        .height(17.dp)
+                        .zIndex(1f)
+                        .offset(y = (3.73).dp)
+                        .background(section.progressColor)
+                )
+
+                Text(
+                    text = "${userState.expInCurrentLevel} / ${userState.expNeededToNextLevel} XP",
+                    color = Color(0xFF636363),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .zIndex(3f)
+                        .offset(y = (-2.8).dp, x = (-20).dp)
                 )
             }
 
@@ -301,7 +333,7 @@ fun HomeScreen(
                     .fillMaxWidth(0.7f)
                     .align(Alignment.BottomStart)
                     .offset(x = 88.dp, y = (-68).dp) // Justo encima de la barra
-                    .zIndex(3f), // Encima de todo
+                    .zIndex(3f),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -491,6 +523,18 @@ fun HomeScreen(
                             )
                         }
 
+                        // Texto Seccion
+                        Image(
+                            painter = painterResource(id = section.textImage),
+                            contentDescription = "Texto de ${section.name}",
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = section.textBottomPadding)
+                                .size(width = 300.dp, height = section.textHeight),
+                            contentScale = ContentScale.Fit
+                        )
+
+
                         // Flecha derecha
                         var rightArrowClicked by remember { mutableStateOf(false) }
                         val interactionSource = remember { MutableInteractionSource() }
@@ -596,6 +640,7 @@ data class Section(
     val name: String,
     val backgroundColor: Color,
     val menuBackgroundColor: Color,
+    val progressColor: Color,
     val color: String,
     val buildingImage: Int,
     val textImage: Int,

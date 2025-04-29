@@ -121,9 +121,9 @@ fun CustomButtonPreview() {
     ) {
         CustomButton(
             buttonText = "RESTABLECER",
-            gradientLight = Color(0xFF9C749A),
-            gradientDark = Color(0xFF431441),
-            baseColor = Color(0xFF53164F),
+            gradientLight = Color(0xFFF7E27C),
+            gradientDark = Color(0xFFFF9D00),
+            baseColor = Color(0xFFF8B528),
             onClick = {}
         )
     }
