@@ -109,7 +109,7 @@ fun MultipleChoiceActivity() {
             options.forEach { option ->
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth() // Las opciones ocupan todo el ancho
+                        .fillMaxWidth()
                         .height(60.dp)
                         .background(Color.White, RoundedCornerShape(12.dp))
                         .border(1.dp, Color(0xFFBBBBBB), RoundedCornerShape(12.dp))

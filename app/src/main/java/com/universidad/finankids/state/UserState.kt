@@ -1,7 +1,6 @@
 package com.universidad.finankids.state
 
 import com.universidad.finankids.data.model.UserData
-import kotlin.math.pow
 
 data class UserState(
     val userData: UserData = UserData(),
