@@ -53,7 +53,6 @@ fun LessonScreen() {
                 .fillMaxSize()
         ) {
             // Contenido de la lección
-            DragPairsActivity()
         }
 
         // Bottom Section
