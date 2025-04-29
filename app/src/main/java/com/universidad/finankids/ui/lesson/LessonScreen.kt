@@ -52,7 +52,7 @@ fun LessonScreen() {
                 .weight(1f)
                 .fillMaxSize()
         ) {
-            // Contenido de la lección
+            // Contenido de la lección (actividades)
         }
 
         // Bottom Section

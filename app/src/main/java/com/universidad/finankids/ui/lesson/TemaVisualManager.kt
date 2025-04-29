@@ -19,8 +19,8 @@ object TemaVisualManager {
             matchingBackground = R.drawable.matching_background_ahorro,
             dragPairsBackground = R.drawable.drag_pairs_background_ahorro,
             categoryIcon = R.drawable.ic_pesito_ahorrador,
-            arrowIcon = R.drawable.ic_atras_recovery,
-            expBar = R.drawable.ic_exp_bar_morado
+            CloseIcon = R.drawable.ic_close_ahorro,
+            progressBar = R.drawable.ic_exp_bar_morado
         ),
         "Banco" to TemaVisual(
             baseColor = Color(0xFFF8B528),
@@ -34,8 +34,8 @@ object TemaVisualManager {
             matchingBackground = R.drawable.matching_background_banco,
             dragPairsBackground = R.drawable.drag_pairs_background_banco,
             categoryIcon = R.drawable.ic_pesito_original,
-            arrowIcon = R.drawable.ic_amarillo_arrow_left,
-            expBar = R.drawable.ic_exp_bar_amarillo
+            CloseIcon = R.drawable.ic_close_banco,
+            progressBar = R.drawable.ic_exp_bar_amarillo
         ),
         "Inversiones" to TemaVisual(
             baseColor = Color(0xFFED7621),
@@ -49,8 +49,8 @@ object TemaVisualManager {
             matchingBackground = R.drawable.matching_background_inversiones,
             dragPairsBackground = R.drawable.drag_pairs_background_inversiones,
             categoryIcon = R.drawable.ic_pesito_inversionista,
-            arrowIcon = R.drawable.ic_naranja_arrow_left,
-            expBar = R.drawable.ic_exp_bar_naranja
+            CloseIcon = R.drawable.ic_close_inversiones,
+            progressBar = R.drawable.ic_exp_bar_naranja
         ),
         "Centro Comercial" to TemaVisual(
             baseColor = Color(0xFF0270BA),
@@ -64,8 +64,8 @@ object TemaVisualManager {
             matchingBackground = R.drawable.matching_background_centro_comercial,
             dragPairsBackground = R.drawable.drag_pairs_background_centro_comercial,
             categoryIcon = R.drawable.ic_pesito_comprador,
-            arrowIcon = R.drawable.ic_azul_arrow_left,
-            expBar = R.drawable.ic_exp_bar_azul
+            CloseIcon = R.drawable.ic_close_centro_comercial,
+            progressBar = R.drawable.ic_exp_bar_azul
         )
     )
 

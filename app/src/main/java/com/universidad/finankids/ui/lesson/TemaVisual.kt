@@ -14,6 +14,6 @@ data class TemaVisual(
     val matchingBackground: Int,      // (Seleccionar parejas)
     val dragPairsBackground: Int,    // (Pares arrastrando)
     val categoryIcon: Int,
-    val arrowIcon: Int,
-    val expBar: Int
+    val CloseIcon: Int,
+    val progressBar: Int
 )
