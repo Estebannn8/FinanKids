@@ -29,9 +29,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.universidad.finankids.R
+import com.universidad.finankids.data.model.ActivityContent
+import com.universidad.finankids.data.model.ActivityType
 
 @Composable
-fun FillBlankActivity() {
+fun FillBlankActivity(
+    content: ActivityContent,
+    selectedAnswer: String?,
+    onOptionSelected: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,10 +45,9 @@ fun FillBlankActivity() {
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        // Titulo de la actividad
+        // Título de la actividad
         Text(
-            text = "Completa el espacio en blanco",
+            text = content.title,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
@@ -52,22 +57,20 @@ fun FillBlankActivity() {
             color = Color.Black
         )
 
-        // Sección de Pesito + Globo de diálogo
+        // Sección de Pesito + globo de diálogo
         Row(
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Imagen de Pesito
             Image(
-                painter = painterResource(id = R.drawable.ic_pesito_ahorrador), // Dinámico
+                painter = painterResource(id = R.drawable.ic_pesito_ahorrador),
                 contentDescription = "Pesito hablando",
                 modifier = Modifier
                     .size(120.dp)
                     .padding(end = 8.dp)
             )
 
-            // Contenedor tipo globo de diálogo
             Box(
                 modifier = Modifier
                     .background(
@@ -83,7 +86,7 @@ fun FillBlankActivity() {
                     .widthIn(max = 250.dp)
             ) {
                 Text(
-                    text = "El banco guarda tu _____ de manera segura.",
+                    text = content.question ?: "",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
@@ -94,35 +97,45 @@ fun FillBlankActivity() {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Opciones de respuesta
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            FillBlankOptionButton(optionText = "dinero")
-            FillBlankOptionButton(optionText = "ropa")
-            FillBlankOptionButton(optionText = "comida")
-            FillBlankOptionButton(optionText = "mascota")
+            content.options?.forEach { option ->
+                FillBlankOptionButton(
+                    optionText = option,
+                    isSelected = selectedAnswer == option,
+                    onClick = {
+                        onOptionSelected(option)
+                    }
+                )
+            }
         }
     }
 }
 
-
 @Composable
-fun FillBlankOptionButton(optionText: String) {
+fun FillBlankOptionButton(
+    optionText: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val backgroundColor = if (isSelected) Color(0xFF4CAF50) else Color(0xFFE0E0E0)
+    val textColor = if (isSelected) Color.White else Color.Black
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFE0E0E0))
-            .clickable { /* Luego manejar selección */ },
+            .background(backgroundColor)
+            .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = optionText,
             fontSize = 18.sp,
-            color = Color.Black
+            color = textColor
         )
     }
 }
@@ -130,5 +143,18 @@ fun FillBlankOptionButton(optionText: String) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewFillBlankActivity() {
-    FillBlankActivity()
+    val sampleContent = ActivityContent(
+        type = ActivityType.FillBlank,
+        title = "Completa el espacio en blanco",
+        question = "El banco guarda tu _____ de manera segura.",
+        options = listOf("dinero", "ropa", "comida", "mascota"),
+        correctAnswer = "dinero",
+        feedback = "¡Correcto! Los bancos guardan tu dinero de manera segura."
+    )
+
+    FillBlankActivity(
+        content = sampleContent,
+        selectedAnswer = null,
+        onOptionSelected = {}
+    )
 }
