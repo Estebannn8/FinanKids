@@ -24,7 +24,7 @@ class LessonManager(
         set(value) { _lives.intValue = value }
 
     private val _errorCount = mutableIntStateOf(0)
-    private var errorCount: Int
+    var errorCount: Int
         get() = _errorCount.intValue
         set(value) { _errorCount.intValue = value }
 
@@ -179,7 +179,6 @@ class LessonManager(
             currentActivityIndex++
             initializeCurrentActivity()
         } else {
-            calculateRewards()
         }
     }
 

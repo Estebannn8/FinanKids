@@ -152,6 +152,7 @@ fun LessonContentScreen(
                 exp = earnedExp,
                 dinero = earnedDinero,
                 onContinue = {
+                    Log.d("LessonScreen", "Finalizando lección con $earnedExp EXP y $earnedDinero dinero")
                     lessonManager.onLessonComplete(earnedExp, earnedDinero)
                 }
             )
@@ -279,11 +280,12 @@ fun LessonContentScreen(
 
                 BottomSection(
                     onContinue = {
+                        val wasLastActivity = lessonManager.currentActivityIndex == lessonManager.activities.size - 1
                         lessonManager.handleContinue()
-                        if (lessonManager.isLessonLocked) {
-                        } else if (lessonManager.currentActivityIndex >= lessonManager.activities.size) {
-                            earnedExp = lessonManager.baseExp
-                            earnedDinero = lessonManager.baseDinero
+                        if (!lessonManager.isLessonLocked && wasLastActivity && lessonManager.lastAnswerCorrect == true) {
+                            val errorPct = lessonManager.errorCount.toFloat() / (lessonManager.activities.size * 0.5f)
+                            earnedExp = (lessonManager.baseExp * (1 - errorPct.coerceAtMost(0.7f))).toInt()
+                            earnedDinero = (lessonManager.baseDinero * (1 - errorPct.coerceAtMost(0.7f))).toInt()
                             showCompleteScreen = true
                         }
                     }
