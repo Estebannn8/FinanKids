@@ -1,4 +1,6 @@
 [versions]
+accompanistFlowlayout = "0.32.0"
+accompanistReorderable = "1.7.0"
 agp = "8.9.1"
 kotlin = "2.0.21"
 coreKtx = "1.10.1"
@@ -15,6 +17,8 @@ credentialsPlayServicesAuth = "1.5.0"
 googleid = "1.1.1"
 
 [libraries]
+accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
+accompanist-reorderable = { module = "com.google.accompanist:accompanist-reorderable", version.ref = "accompanistReorderable" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

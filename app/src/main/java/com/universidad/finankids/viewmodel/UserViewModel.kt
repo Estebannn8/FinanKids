@@ -92,6 +92,53 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    // UserViewModel.kt
+    fun markLessonAsCompleted(lessonId: String, expEarned: Int, dineroEarned: Int) {
+        viewModelScope.launch {
+            try {
+                val userRef = firestore.collection("usuarios").document(_state.value.userData.uid)
+
+                firestore.runTransaction { transaction ->
+                    val userDoc = transaction.get(userRef)
+                    val currentExp = userDoc.getLong("exp")?.toInt() ?: 0
+                    val currentDinero = userDoc.getLong("dinero")?.toInt() ?: 0
+                    val completedLessons = userDoc.get("leccionesCompletadas") as? Map<String, Any> ?: emptyMap()
+
+                    val updatedCompletedLessons = completedLessons.toMutableMap().apply {
+                        this[lessonId] = true
+                    }
+
+                    val categoryId = _state.value.currentSectionIndex.let { index ->
+                        when(index) {
+                            0 -> "ahorro"
+                            1 -> "compra"
+                            2 -> "basica"
+                            3 -> "inversion"
+                            else -> "ahorro"
+                        }
+                    }
+
+                    val currentProgress = userDoc.get("progresoCategorias") as? Map<String, Int> ?: emptyMap()
+                    val updatedProgress = currentProgress.toMutableMap().apply {
+                        this[categoryId] = (this[categoryId] ?: 0) + expEarned
+                    }
+
+                    transaction.update(userRef,
+                        "leccionesCompletadas", updatedCompletedLessons,
+                        "progresoCategorias", updatedProgress,
+                        "exp", currentExp + expEarned,
+                        "dinero", currentDinero + dineroEarned
+                    )
+
+                }.await()
+
+                loadUserData(_state.value.userData.uid)
+            } catch (e: Exception) {
+                _state.update { it.copy(errorMessage = "Error al guardar progreso: ${e.message}") }
+            }
+        }
+    }
+
     private fun setError(message: String) {
         _state.update {
             it.copy(

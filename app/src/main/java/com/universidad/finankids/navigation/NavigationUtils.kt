@@ -22,3 +22,10 @@ fun navigateToScreen(navController: NavController, item: String) {
         }
     }
 }
+
+// Función para navegar a una lección
+fun navigateToLesson(navController: NavController, category: String) {
+    navController.navigate(AppScreens.LessonScreen.createRoute(category)) {
+        launchSingleTop = true
+    }
+}

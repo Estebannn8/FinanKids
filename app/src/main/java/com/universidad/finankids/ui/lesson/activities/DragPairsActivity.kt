@@ -1,10 +1,11 @@
 package com.universidad.finankids.ui.lesson.activities
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,14 +19,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,16 +41,16 @@ import androidx.compose.ui.unit.sp
 import com.universidad.finankids.R
 import com.universidad.finankids.data.model.ActivityContent
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DragPairsActivity(
     content: ActivityContent,
+    leftItems: List<String>,
     rightItems: List<String>,
-    onSwap: (List<String>) -> Unit,
-    currentDragIndex: Int?,
-    onDragIndexChange: (Int?) -> Unit
+    onSwap: (List<String>) -> Unit
 ) {
-    val pairs = content.orderedPairs ?: emptyList()
-    val leftItems = pairs.sortedBy { it.correctPosition }.map { it.item }
+    var selectedIndex by remember { mutableStateOf<Int?>(null) }
+    val listState = rememberLazyListState()
 
     Column(
         modifier = Modifier
@@ -69,10 +76,10 @@ fun DragPairsActivity(
             Image(
                 painter = painterResource(id = R.drawable.ic_pesito_ahorrador),
                 contentDescription = "Pesito hablando",
-                modifier = Modifier
-                    .size(120.dp)
-                    .padding(end = 16.dp)
+                modifier = Modifier.size(120.dp)
             )
+
+            Spacer(modifier = Modifier.width(16.dp))
 
             Box(
                 modifier = Modifier
@@ -82,7 +89,7 @@ fun DragPairsActivity(
                     .widthIn(max = 250.dp)
             ) {
                 Text(
-                    text = content.question ?: "Arrastra los números a la posición correcta:",
+                    text = content.question ?: "Ordena los elementos de la derecha para que coincidan con los de la izquierda",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -94,62 +101,70 @@ fun DragPairsActivity(
 
         Row(
             modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.Top
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+            // Columna izquierda (items fijos)
             Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                leftItems.forEachIndexed { index, item ->
+                leftItems.forEach { item ->
                     DragPairItem(
-                        text = "${index + 1}. $item",
-                        isDraggable = false,
+                        text = item,
                         isHighlighted = false
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(32.dp))
-
-            Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.CenterHorizontally
+            // Columna derecha (elementos para ordenar)
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
             ) {
-                rightItems.forEachIndexed { index, item ->
-                    val isBeingDragged = currentDragIndex == index
-
-                    DragPairItem(
-                        text = item,
-                        isDraggable = true,
-                        isHighlighted = isBeingDragged,
-                        onDragStart = { onDragIndexChange(index) },
-                        onDragEnd = { onDragIndexChange(null) },
-                        onSwapWith = { targetIndex ->
-                            if (index != targetIndex) {
-                                val newList = rightItems.toMutableList()
-                                newList[index] = rightItems[targetIndex]
-                                newList[targetIndex] = rightItems[index]
-                                onSwap(newList)
+                itemsIndexed(rightItems) { index, item ->
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 4.dp)
+                            .animateItemPlacement()
+                            .clickable {
+                                if (selectedIndex == null) {
+                                    selectedIndex = index
+                                } else {
+                                    if (selectedIndex != index) {
+                                        val newList = rightItems.toMutableList()
+                                        newList.swap(selectedIndex!!, index)
+                                        onSwap(newList)
+                                    }
+                                    selectedIndex = null
+                                }
                             }
-                        }
-                    )
+                    ) {
+                        DragPairItem(
+                            text = item,
+                            isHighlighted = selectedIndex == index
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
+    val temp = this[index1]
+    this[index1] = this[index2]
+    this[index2] = temp
+}
+
 @Composable
 fun DragPairItem(
     text: String,
-    isDraggable: Boolean,
-    isHighlighted: Boolean,
-    onDragStart: (() -> Unit)? = null,
-    onDragEnd: (() -> Unit)? = null,
-    onSwapWith: ((Int) -> Unit)? = null
+    isHighlighted: Boolean
 ) {
     val backgroundColor = if (isHighlighted) Color(0xFFE3F2FD) else Color.White
     val borderColor = if (isHighlighted) Color(0xFF2196F3) else Color(0xFFBBBBBB)
@@ -157,22 +172,10 @@ fun DragPairItem(
     Surface(
         modifier = Modifier
             .width(160.dp)
-            .height(60.dp)
-            .then(
-                if (isDraggable && onDragStart != null && onDragEnd != null && onSwapWith != null) {
-                    Modifier.pointerInput(Unit) {
-                        detectDragGesturesAfterLongPress(
-                            onDragStart = { onDragStart() },
-                            onDragEnd = { onDragEnd() },
-                            onDrag = { change, _ -> change.consume() }
-                        )
-                    }
-                } else Modifier
-            ),
+            .height(60.dp),
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(1.dp, borderColor),
         color = backgroundColor,
-        shadowElevation = 2.dp
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
@@ -185,3 +188,4 @@ fun DragPairItem(
         }
     }
 }
+

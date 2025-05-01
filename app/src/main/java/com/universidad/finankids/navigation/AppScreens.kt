@@ -12,5 +12,9 @@ sealed class  AppScreens(val route: String){
     object TrophyScreen: AppScreens(route = "trophy_screen")
     object ProgressScreen: AppScreens(route = "progress_screen")
     object StoreScreen: AppScreens(route = "store_screen")
+
+    object LessonScreen: AppScreens("lesson_screen/{category}") {
+        fun createRoute(category: String) = "lesson_screen/$category"
+    }
 }
 
