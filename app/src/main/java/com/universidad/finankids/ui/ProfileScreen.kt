@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -23,11 +24,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -47,6 +50,7 @@ import com.universidad.finankids.ui.Components.LoadingOverlay
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
+
 
 @Composable
 fun ProfileScreen(
@@ -85,6 +89,7 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(Color(0xFFDCDEE2)),
         horizontalAlignment = Alignment.CenterHorizontally
+
     ) {
         Spacer(modifier = Modifier.height(32.dp))
         Spacer(modifier = Modifier.height(24.dp))
@@ -119,7 +124,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(170.dp)
-                ){
+                ) {
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
@@ -155,7 +160,7 @@ fun ProfileScreen(
                     }
 
                     // Nivel
-                    Row (
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .size(32.dp)
@@ -163,7 +168,7 @@ fun ProfileScreen(
                             .offset(x = 114.dp, y = (-50).dp)
                             .zIndex(3f),
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         Box(
                             modifier = Modifier
                                 .size(32.dp),
@@ -209,7 +214,7 @@ fun ProfileScreen(
                             .offset(x = 114.dp, y = (-105).dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         AppTypography.ItimStroke(
                             text = "EstebanR12333",   // <- Nickname
                             strokeColor = Color(0xFF666666),
@@ -247,12 +252,286 @@ fun ProfileScreen(
                             modifier = Modifier.size(30.dp)
                         )
                     }
+                }
 
+                // --- INSIGNIAS ---
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = "INSIGNIAS",
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            fontFamily = FontFamily(Font(R.font.baloo_regular)),
+                            fontWeight = FontWeight(700),
+                            color = Color(0xFF666666),
+                            letterSpacing = 4.sp
+                        )
+                    )
 
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(110.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // Imagen de fondo del recuadro
+                        Image(
+                            painter = painterResource(id = R.drawable.rectangulo_insignias),
+                            contentDescription = "Fondo recuadro insignias",
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(110.dp)
+                        )
+
+                        // Fila de insignias encima de la imagen
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp, vertical = 5.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_insignia_nivel9),
+                                contentDescription = "Insignia Nivel 9",
+                                modifier = Modifier.size(70.dp)
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_insignia_nivel8),
+                                contentDescription = "Insignia Nivel 8",
+                                modifier = Modifier.size(70.dp)
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_insignia_nivel4),
+                                contentDescription = "Insignia Nivel 4",
+                                modifier = Modifier.size(70.dp)
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_insignia_nivel3),
+                                contentDescription = "Insignia Nivel 3",
+                                modifier = Modifier.size(70.dp)
+                            )
+                        }
+                    }
                 }
 
 
-                // Aquí iría el contenido real del perfil
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    // Título Estadísticas
+                    Text(
+                        text = "ESTADÍSTICAS",
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            fontFamily = FontFamily(Font(R.font.baloo_regular)),
+                            fontWeight = FontWeight(700),
+                            color = Color(0xFF666666),
+                            letterSpacing = 4.sp
+                        ),
+                        modifier = Modifier.align(Alignment.Start) // Alinea el texto a la izquierda
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp)) // Espaciado entre el título y las estadísticas
+
+                    // Fila de estadísticas
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        listOf(
+                            Triple(R.drawable.ic_xp, "316", "TOTAL XP"),
+                            Triple(R.drawable.ic_racha_normal, "2", "DIAS DE RACHA"),
+                            Triple(R.drawable.ic_coin, "300", "PESITOS")
+                        ).forEach { (icon, value, label) ->
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 4.dp)
+                                    .height(70.dp)
+                            ) {
+                                // Fondo del recuadro
+                                Image(
+                                    painter = painterResource(id = R.drawable.rectangulo_estadisticas),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.FillBounds,
+                                    modifier = Modifier.matchParentSize()
+                                )
+
+                                // Contenido sobre el fondo
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(start = 5.dp, end = 5.dp)
+                                ) {
+                                    // Icono
+                                    Image(
+                                        painter = painterResource(id = icon),
+                                        contentDescription = label,
+                                        modifier = Modifier.size(40.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(5.dp))
+
+                                    // Contenido del valor y la etiqueta
+                                    Column(
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Column(
+                                            horizontalAlignment = Alignment.Start
+                                        ) {
+                                            Text(
+                                                text = value,
+                                                fontFamily = FontFamily(Font(R.font.baloo_regular)),
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 20.sp,
+                                                color = Color(0xFF444444),
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                            Text(
+                                                text = label,
+                                                fontFamily = FontFamily(Font(R.font.baloo_regular)),
+                                                fontSize = 14.sp,
+                                                color = Color(0xFF444444),
+                                                lineHeight = 13.sp
+                                            )
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    val items = listOf(
+                        Triple(
+                            R.drawable.rectangulo_estadistica_amarillo,
+                            R.drawable.ic_pesito_original,
+                            listOf(R.drawable.ic_estrella_amarillo, R.drawable.ic_precision_amarillo)
+                        ),
+                        Triple(
+                            R.drawable.rectangulo_estadistica_morado,
+                            R.drawable.ic_pesito_ahorrador,
+                            listOf(R.drawable.ic_estrella_morado, R.drawable.ic_precision_morado)
+                        ),
+                        Triple(
+                            R.drawable.rectangulo_estadistica_naranja,
+                            R.drawable.ic_pesito_inversionista,
+                            listOf(R.drawable.ic_estrella_naranja, R.drawable.ic_precision_naranja)
+                        ),
+                        Triple(
+                            R.drawable.rectangulo_estadistica_azul,
+                            R.drawable.ic_pesito_comprador,
+                            listOf(R.drawable.ic_estrella_azul, R.drawable.ic_precision_azul)
+                        )
+                    )
+
+                    // Dividir en filas de 2 elementos
+                    items.chunked(2).forEach { rowItems ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(20.dp)
+                        ) {
+                            rowItems.forEach { (bgRes, pesitoIcon, icons) ->
+                                val (estrellaIcon, precisionIcon) = icons
+
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(70.dp)
+                                        .padding(start = 4.dp)
+                                ) {
+                                    // Fondo
+                                    Image(
+                                        painter = painterResource(id = bgRes),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(70.dp)
+                                            .align(Alignment.Center)
+                                            .zIndex(0f), // Fondo debajo
+                                        contentScale = ContentScale.FillBounds
+                                    )
+
+                                    // Pesito sobresalido
+                                    Image(
+                                        painter = painterResource(id = pesitoIcon),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(150.dp)
+                                            .align(Alignment.CenterStart)
+                                            .offset(x = (-30).dp)
+                                            .zIndex(1f)
+                                    )
+
+                                    Column(
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.Center,
+                                    modifier = Modifier
+                                        .align(Alignment.CenterEnd)
+                                        .padding(end = 12.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "1",
+                                            color = Color.White,
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            fontFamily = FontFamily(Font(R.font.baloo_regular))
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Image(
+                                            painter = painterResource(id = estrellaIcon),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "80%",
+                                            color = Color.White,
+                                            fontSize = 16.sp,
+                                            fontFamily = FontFamily(Font(R.font.baloo_regular))
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Image(
+                                            painter = painterResource(id = precisionIcon),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(30.dp)
+                                        )
+                                    }
+                                }
+
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
         }
 
@@ -266,6 +545,8 @@ fun ProfileScreen(
                 navigateToScreen(navController, item)
             }
         )
+
+
 
         Spacer(modifier = Modifier.height(10.dp))
     }
