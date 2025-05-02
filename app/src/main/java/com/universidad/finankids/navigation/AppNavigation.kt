@@ -17,8 +17,10 @@ import com.universidad.finankids.ui.RecoveryScreen
 import com.universidad.finankids.ui.SplashScreen
 import com.universidad.finankids.ui.StoreScreen
 import com.universidad.finankids.ui.TrophyScreen
+import com.universidad.finankids.ui.lesson.LessonScreen
 import com.universidad.finankids.viewmodel.AuthViewModel
 import com.universidad.finankids.viewmodel.AvataresViewModel
+import com.universidad.finankids.viewmodel.LessonsViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
 
 @Composable
@@ -29,6 +31,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     val authViewModel: AuthViewModel = viewModel()
     val userViewModel: UserViewModel = viewModel()
     val avataresViewModel: AvataresViewModel = viewModel()
+    val lessonsViewModel: LessonsViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -95,5 +98,19 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(AppScreens.StoreScreen.route) {
             StoreScreen(navController)
         }
+
+        composable(
+            route = AppScreens.LessonScreen.route,
+            arguments = listOf(navArgument("category") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val category = backStackEntry.arguments?.getString("category") ?: "ahorro"
+                LessonScreen(
+                    category = category,
+                    userViewModel = userViewModel,
+                    lessonsViewModel = lessonsViewModel,
+                    navController = navController
+                )
+            }
+
     }
 }

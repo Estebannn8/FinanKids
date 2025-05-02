@@ -49,6 +49,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.universidad.finankids.R
+import com.universidad.finankids.navigation.navigateToLesson
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.Components.BottomMenu
 import com.universidad.finankids.ui.Components.LoadingOverlay
@@ -608,11 +609,16 @@ fun HomeScreen(
                         contentDescription = "Jugar",
                         modifier = Modifier
                             .scale(playButtonScale)
-                            .pointerInput(Unit) {
-                                detectTapGestures {
-                                    playButtonClicked = true
-                                    // Aquí tu acción al hacer tap
+                            .clickable {
+                                playButtonClicked = true
+                                val categoryId = when(section.name) {
+                                    "Ahorro" -> "ahorro"
+                                    "Centro Comercial" -> "compra"
+                                    "Banco" -> "basica"
+                                    "Inversiones" -> "inversion"
+                                    else -> "ahorro"
                                 }
+                                navigateToLesson(navController, categoryId)
                             },
                         contentScale = ContentScale.Fit
                     )

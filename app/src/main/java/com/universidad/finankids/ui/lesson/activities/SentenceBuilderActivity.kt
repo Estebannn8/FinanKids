@@ -3,7 +3,7 @@ package com.universidad.finankids.ui.lesson.activities
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,33 +12,27 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.universidad.finankids.R
 import com.universidad.finankids.data.model.ActivityContent
-import kotlin.math.roundToInt
 
 @Composable
 fun SentenceBuilderActivity(
@@ -48,10 +42,8 @@ fun SentenceBuilderActivity(
     onWordPlaced: (String) -> Unit,
     onWordRemoved: (Int, String) -> Unit
 ) {
-
-    var draggedWord by remember { mutableStateOf<String?>(null) }
-    var dragOffset by remember { mutableStateOf(Offset.Zero) }
-    val scrollState = rememberLazyListState()
+    val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
 
     Column(
         modifier = Modifier
@@ -60,6 +52,7 @@ fun SentenceBuilderActivity(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Sección del personaje y la pregunta (sin cambios)
         Row(
             verticalAlignment = Alignment.Top,
             modifier = Modifier.fillMaxWidth()
@@ -86,66 +79,116 @@ fun SentenceBuilderActivity(
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Box(
+        // Sección de construcción de la oración
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp)
-                .background(Color.White)
-                .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(8.dp))
-                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .padding(vertical = 8.dp)
         ) {
-            Column(
-                verticalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                placedWords.forEachIndexed { index, word ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp)
-                            .background(if (word != null) Color(0xFFE3F2FD) else Color.Transparent)
-                            .border(
-                                1.dp,
-                                if (word != null) Color(0xFF90CAF9) else Color(0xFFBDBDBD),
-                                RoundedCornerShape(4.dp)
-                            )
-                            .pointerInput(Unit) {
-                                detectDragGestures(
-                                    onDragStart = {
-                                        if (word != null) {
-                                            draggedWord = word
-                                            onWordRemoved(index, word)
-                                        }
-                                    },
-                                    onDrag = { change, dragAmount ->
-                                        change.consume()
-                                        dragOffset += dragAmount
-                                    },
-                                    onDragEnd = {
-                                        draggedWord = null
-                                        dragOffset = Offset.Zero
-                                    }
-                                )
-                            },
-                        contentAlignment = Alignment.Center
+            // Dividir las palabras colocadas en renglones
+            val rows = remember(placedWords, density) {
+                mutableListOf<List<String>>().apply {
+                    val currentRow = mutableListOf<String>()
+                    var currentRowWidth = 0f
+
+                    val maxRowWidth = with(density) {
+                        configuration.screenWidthDp.dp.toPx() - 48.dp.toPx()
+                    }
+
+                    placedWords.filterNotNull().forEach { word ->
+                        val wordWidth = with(density) {
+                            // Estimación mejorada del ancho
+                            (word.length * 10.sp.toPx()) + 16.dp.toPx() // Texto + padding
+                        }
+
+                        if (currentRow.isNotEmpty() && currentRowWidth + wordWidth > maxRowWidth) {
+                            add(currentRow.toList())
+                            currentRow.clear()
+                            currentRowWidth = 0f
+                        }
+
+                        currentRow.add(word)
+                        currentRowWidth += with(density) {
+                            wordWidth + 8.dp.toPx() // Espacio entre palabras
+                        }
+                    }
+
+                    if (currentRow.isNotEmpty()) {
+                        add(currentRow.toList())
+                    }
+                }
+            }
+
+            // Mostrar cada renglón
+            rows.forEachIndexed { rowIndex, words ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .padding(horizontal = 8.dp),
+                    contentAlignment = Alignment.BottomStart
+                ) {
+                    Divider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color(0xFFD3D3D3),
+                        thickness = 1.dp
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (word != null) {
-                            Text(text = word, fontSize = 16.sp, color = Color.Black)
+                        words.forEach { word ->
+                            val absoluteIndex = placedWords.indexOfFirst { it == word }
+                            if (absoluteIndex >= 0) {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(end = 8.dp)
+                                        .clickable { onWordRemoved(absoluteIndex, word) }
+                                        .border(color = Color.Gray, width = 1.dp)
+                                ) {
+                                    Text(
+                                        text = word,
+                                        fontSize = 18.sp,
+                                        color = Color.Black,
+                                        modifier = Modifier
+                                            .background(Color(0xFFFFFFFF), RoundedCornerShape(4.dp))
+                                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
             }
+
+            // Línea vacía adicional
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .padding(horizontal = 8.dp),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                Divider(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color(0xFFD3D3D3),
+                    thickness = 1.dp
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
+        // Sección de palabras disponibles (sin cambios)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp)
-                .background(Color(0xFFE3F2FD).copy(alpha = 0.7f))
+                .height(100.dp)
+                .background(Color(0xFFFFFFFF).copy(alpha = 0.7f))
                 .border(1.dp, Color(0xFFBBBBBB), RoundedCornerShape(8.dp))
                 .padding(8.dp)
         ) {
@@ -158,7 +201,6 @@ fun SentenceBuilderActivity(
                 )
             } else {
                 LazyRow(
-                    state = scrollState,
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -169,43 +211,20 @@ fun SentenceBuilderActivity(
                                 .background(Color.White, RoundedCornerShape(16.dp))
                                 .border(2.dp, Color(0xFFBBBBBB), RoundedCornerShape(16.dp))
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                                .pointerInput(Unit) {
-                                    detectDragGestures(
-                                        onDragStart = {
-                                            draggedWord = word
-                                        },
-                                        onDrag = { change, dragAmount ->
-                                            change.consume()
-                                            dragOffset += dragAmount
-                                        },
-                                        onDragEnd = {
-                                            val emptyIndex = placedWords.indexOfFirst { it == null }
-                                            if (emptyIndex != -1) {
-                                                onWordPlaced(word)
-                                            }
-                                            draggedWord = null
-                                            dragOffset = Offset.Zero
-                                        }
-                                    )
+                                .clickable {
+                                    onWordPlaced(word)
                                 }
                         ) {
-                            Text(text = word, fontSize = 16.sp, color = Color.Black, fontWeight = FontWeight.Medium)
+                            Text(
+                                text = word,
+                                fontSize = 16.sp,
+                                color = Color.Black,
+                                fontWeight = FontWeight.Medium
+                            )
                         }
                     }
                 }
             }
-        }
-    }
-
-    draggedWord?.let { word ->
-        Box(
-            modifier = Modifier
-                .offset(dragOffset.x.roundToInt().dp, dragOffset.y.roundToInt().dp)
-                .background(Color(0xC6FFFFFF), RoundedCornerShape(16.dp))
-                .border(2.dp, Color(0xFFBDBDBD), RoundedCornerShape(16.dp))
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            Text(text = word, fontSize = 16.sp, color = Color.Black, fontWeight = FontWeight.Medium)
         }
     }
 }

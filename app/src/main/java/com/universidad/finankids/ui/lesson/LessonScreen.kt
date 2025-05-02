@@ -1,5 +1,6 @@
 package com.universidad.finankids.ui.lesson
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,8 +17,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,55 +34,133 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
 import com.universidad.finankids.R
-import com.universidad.finankids.data.model.ActivityContent
 import com.universidad.finankids.data.model.ActivityType
-import com.universidad.finankids.data.model.OrderedPair
 import com.universidad.finankids.ui.Components.CustomButton
+import com.universidad.finankids.ui.Components.LoadingOverlay
 import com.universidad.finankids.ui.lesson.activities.DragPairsActivity
 import com.universidad.finankids.ui.lesson.activities.FillBlankActivity
 import com.universidad.finankids.ui.lesson.activities.MatchingActivity
 import com.universidad.finankids.ui.lesson.activities.MultipleChoiceActivity
 import com.universidad.finankids.ui.lesson.activities.SentenceBuilderActivity
 import com.universidad.finankids.ui.lesson.activities.TeachingActivity
+import com.universidad.finankids.viewmodel.LessonsViewModel
+import com.universidad.finankids.viewmodel.UserViewModel
 
 @Composable
 fun LessonScreen(
-    activities: List<ActivityContent>,
-    onExitLesson: () -> Unit,
-    onLessonComplete: () -> Unit
+    category: String,
+    userViewModel: UserViewModel,
+    lessonsViewModel: LessonsViewModel,
+    navController: NavController
+) {
+    val userState by userViewModel.state.collectAsState()
+    val isLoading by lessonsViewModel.isLoading.collectAsState()
+
+    LaunchedEffect(category) {
+        lessonsViewModel.loadLessonsForCategory(category)
+    }
+
+    val nextLesson = if (!isLoading) {
+        lessonsViewModel.getNextUncompletedLesson(
+            userState.userData.leccionesCompletadas ?: emptyMap()
+        ).also {
+            Log.d("LessonDebug", "Próxima lección: ${it?.id}")
+        }
+    } else {
+        null
+    }
+
+    val lessonManager = remember(nextLesson?.id) {
+        nextLesson?.let {
+            LessonManager(
+                activities = it.activities,
+                onExitLesson = { navController.popBackStack() },
+                onLessonComplete = { exp, dinero ->
+                    userViewModel.markLessonAsCompleted(it.id, exp, dinero)
+                    navController.popBackStack()
+                }
+            )
+        }
+    }
+
+    when {
+        isLoading -> {
+            LoadingOverlay()
+        }
+        lessonManager != null -> {
+            LessonContentScreen(lessonManager = lessonManager)
+        }
+        else -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "¡Felicidades!",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF4CAF50)
+                )
+
+                Text(
+                    text = "Has completado todas las lecciones de esta categoría",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    modifier = Modifier.padding(16.dp)
+                )
+
+                CustomButton(
+                    buttonText = "VOLVER",
+                    gradientLight = Color(0xFF9C749A),
+                    gradientDark = Color(0xFF431441),
+                    baseColor = Color(0xFF53164F),
+                    onClick = { navController.popBackStack() }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun LessonContentScreen(
+    lessonManager: LessonManager
 ) {
     var showCompleteScreen by remember { mutableStateOf(false) }
     var earnedExp by remember { mutableStateOf(0) }
     var earnedDinero by remember { mutableStateOf(0) }
+    var showExitConfirmation by remember { mutableStateOf(false) }
 
-    val lessonManager = rememberLessonManager(
-        activities = activities,
-        onExitLesson = onExitLesson,
-        onLessonComplete = { exp, dinero ->
-            earnedExp = exp
-            earnedDinero = dinero
-            showCompleteScreen = true
+
+    LaunchedEffect(showCompleteScreen) {
+        if (showCompleteScreen) {
+            // Aquí puedes agregar algún efecto especial si lo deseas
         }
-    )
+    }
 
     when {
         showCompleteScreen -> {
             LessonCompleteScreen(
                 exp = earnedExp,
                 dinero = earnedDinero,
-                onContinue = onLessonComplete
+                onContinue = {
+                    Log.d("LessonScreen", "Finalizando lección con $earnedExp EXP y $earnedDinero dinero")
+                    lessonManager.onLessonComplete(earnedExp, earnedDinero)
+                }
             )
         }
         lessonManager.isLessonLocked -> {
             LessonLockedScreen(
                 onRestart = { lessonManager.restartLesson() },
-                onExit = onExitLesson
+                onExit = { lessonManager.onExitLesson() }
             )
         }
         else -> {
@@ -89,7 +172,7 @@ fun LessonScreen(
                 LessonHeader(
                     progress = lessonManager.progress,
                     lives = lessonManager.lives,
-                    onBackPressed = onExitLesson
+                    onBackPressed = { showExitConfirmation = true }
                 )
 
                 Box(
@@ -129,9 +212,8 @@ fun LessonScreen(
                         ActivityType.DragPairs -> {
                             DragPairsActivity(
                                 content = lessonManager.currentActivity,
+                                leftItems = lessonManager.leftItems,
                                 rightItems = lessonManager.rightItems,
-                                currentDragIndex = lessonManager.currentDragIndex,
-                                onDragIndexChange = { lessonManager.currentDragIndex = it },
                                 onSwap = { lessonManager.rightItems = it }
                             )
                         }
@@ -161,16 +243,54 @@ fun LessonScreen(
                         isCorrect = lessonManager.lastAnswerCorrect ?: false,
                         feedbackText = lessonManager.feedbackText,
                         onDismiss = {
+                            lessonManager.showFeedback = false
                             if (lessonManager.lastAnswerCorrect == true) {
                                 lessonManager.moveToNextActivity()
+                            } else {
+                                lessonManager.initializeCurrentActivity()
                             }
                         }
                     )
                 }
 
+                if (showExitConfirmation) {
+                    AlertDialog(
+                        onDismissRequest = { showExitConfirmation = false },
+                        title = { Text("¿Seguro que quieres salir?") },
+                        text = { Text("Si sales ahora perderás el progreso de esta lección.") },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                showExitConfirmation = false
+                                lessonManager.onExitLesson()
+                            }) {
+                                Text("Salir")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = {
+                                showExitConfirmation = false
+                            }) {
+                                Text("Continuar")
+                            }
+                        }
+                    )
+                }
+
+
+
                 BottomSection(
-                    onContinue = { lessonManager.handleContinue() }
+                    onContinue = {
+                        val wasLastActivity = lessonManager.currentActivityIndex == lessonManager.activities.size - 1
+                        lessonManager.handleContinue()
+                        if (!lessonManager.isLessonLocked && wasLastActivity && lessonManager.lastAnswerCorrect == true) {
+                            val errorPct = lessonManager.errorCount.toFloat() / (lessonManager.activities.size * 0.5f)
+                            earnedExp = (lessonManager.baseExp * (1 - errorPct.coerceAtMost(0.7f))).toInt()
+                            earnedDinero = (lessonManager.baseDinero * (1 - errorPct.coerceAtMost(0.7f))).toInt()
+                            showCompleteScreen = true
+                        }
+                    }
                 )
+
             }
         }
     }
@@ -368,16 +488,16 @@ fun LessonHeader(
             .padding(16.dp)
             .height(80.dp)
     ) {
-        // Flecha de retroceso
+        // Boton Salir
         Box(
             modifier = Modifier
                 .size(40.dp)
                 .padding(bottom = 10.dp, start = 10.dp)
                 .align(Alignment.CenterStart)
-                .clickable(onClick = onBackPressed)
+                .clickable(onClick = { onBackPressed() })
         ) {
             Image(
-                painter = painterResource(R.drawable.ic_atras_recovery),
+                painter = painterResource(R.drawable.ic_close_ahorro),
                 contentDescription = "Flecha atras",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit
@@ -455,50 +575,4 @@ fun BottomSection(
             onClick = onContinue
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewLessonScreen() {
-    val sampleActivities = listOf(
-        ActivityContent(
-            type = ActivityType.Teaching,
-            title = "Introducción al ahorro",
-            explanation = "El ahorro es guardar parte de tu dinero para usarlo en el futuro..."
-        ),
-        ActivityContent(
-            type = ActivityType.MultipleChoice,
-            title = "Selecciona la opción correcta:",
-            question = "¿Qué es el ahorro?",
-            options = listOf("Gastar todo el dinero", "Guardar dinero para el futuro", "Pedir prestado"),
-            correctAnswer = "Guardar dinero para el futuro",
-            feedback = "¡Correcto! El ahorro es guardar dinero para usarlo después."
-        ),
-        ActivityContent(
-            type = ActivityType.SentenceBuilder,
-            title = "Construye la oración",
-            question = "Ordena las palabras para formar la oración correcta.",
-            sentenceParts = listOf("dinero", "en", "guarda", "banco", "El"),
-            correctOrder = listOf("El", "banco", "guarda", "dinero", "en"),
-            feedback = "¡Correcto! La oración es: 'El banco guarda dinero en'."
-        )
-    )
-
-    LessonScreen(
-        activities = sampleActivities,
-        onExitLesson = {},
-        onLessonComplete = {}
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LessonLockedScreenPreview(){
-    LessonLockedScreen(onRestart = {}, onExit = {})
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LessonCompleteScreenPreview(){
-    LessonCompleteScreen(exp = 100, dinero = 500, onContinue = {})
 }
