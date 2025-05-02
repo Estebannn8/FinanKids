@@ -1,6 +1,5 @@
 package com.universidad.finankids.ui.lesson
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,9 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,10 +33,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.universidad.finankids.R
 import com.universidad.finankids.data.model.ActivityType
+import com.universidad.finankids.events.LessonEvent
+import com.universidad.finankids.state.LessonState
 import com.universidad.finankids.ui.Components.CustomButton
 import com.universidad.finankids.ui.Components.LoadingOverlay
 import com.universidad.finankids.ui.lesson.activities.DragPairsActivity
@@ -50,6 +49,7 @@ import com.universidad.finankids.ui.lesson.activities.MultipleChoiceActivity
 import com.universidad.finankids.ui.lesson.activities.SentenceBuilderActivity
 import com.universidad.finankids.ui.lesson.activities.TeachingActivity
 import com.universidad.finankids.viewmodel.LessonsViewModel
+import com.universidad.finankids.viewmodel.LessonsViewModel.LoadingState
 import com.universidad.finankids.viewmodel.UserViewModel
 
 @Composable
@@ -60,237 +60,303 @@ fun LessonScreen(
     navController: NavController
 ) {
     val userState by userViewModel.state.collectAsState()
-    val isLoading by lessonsViewModel.isLoading.collectAsState()
+    val lessonState by lessonsViewModel.state.collectAsState()
+    val loadingState by lessonsViewModel.loadingState.collectAsState()
 
-    LaunchedEffect(category) {
-        lessonsViewModel.loadLessonsForCategory(category)
-    }
-
-    val nextLesson = if (!isLoading) {
-        lessonsViewModel.getNextUncompletedLesson(
-            userState.userData.leccionesCompletadas ?: emptyMap()
-        ).also {
-            Log.d("LessonDebug", "Próxima lección: ${it?.id}")
-        }
-    } else {
-        null
-    }
-
-    val lessonManager = remember(nextLesson?.id) {
-        nextLesson?.let {
-            LessonManager(
-                activities = it.activities,
-                onExitLesson = { navController.popBackStack() },
-                onLessonComplete = { exp, dinero ->
-                    userViewModel.markLessonAsCompleted(it.id, exp, dinero)
-                    navController.popBackStack()
-                }
+    // Efecto para cargar lecciones
+    LaunchedEffect(category, userState.userData.leccionesCompletadas) {
+        if (userState.userData.leccionesCompletadas != null) {
+            lessonsViewModel.sendEvent(
+                LessonEvent.LoadLessonAndInitialize(
+                    categoryId = category,
+                    completedLessons = userState.userData.leccionesCompletadas
+                )
             )
         }
     }
 
+    LaunchedEffect(lessonsViewModel.state) {
+        lessonsViewModel.state.collect { state ->
+            if (state.currentLesson == null &&
+                !state.isLoading &&
+                lessonsViewModel.loadingState.value == LoadingState.Idle) {
+                navController.popBackStack()
+            }
+        }
+    }
+
     when {
-        isLoading -> {
+        // 1. Estado de carga
+        loadingState is LoadingState.LoadingLessons || lessonState.isLoading -> {
             LoadingOverlay()
         }
-        lessonManager != null -> {
-            LessonContentScreen(lessonManager = lessonManager)
+
+        // 2. Estado de error (usando when con asignación)
+        loadingState.let { it is LoadingState.LessonsLoaded && !it.success } -> {
+            ErrorScreen(
+                message = "Error al cargar las lecciones",
+                onRetry = {
+                    userState.userData.leccionesCompletadas?.let { completed ->
+                        lessonsViewModel.sendEvent(
+                            LessonEvent.LoadLessonAndInitialize(category, completed)
+                        )
+                    }
+                },
+                onBack = { navController.popBackStack() }
+            )
         }
+
+        // 3. Lección cargada y disponible
+        lessonState.currentLesson != null && lessonState.currentActivity != null -> {
+            LessonContentScreen(
+                lessonState = lessonState,
+                onEvent = lessonsViewModel::sendEvent,
+                navController = navController,
+                userViewModel = userViewModel
+            )
+        }
+
+        // 4. Todas las lecciones completadas (usando let para el smart cast)
+        loadingState.let { it is LoadingState.LessonsLoaded } &&
+                lessonState.currentLesson == null &&
+                userState.userData.leccionesCompletadas?.isNotEmpty() == true -> {
+            AllLessonsCompletedScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // 5. Estado inesperado (recargar)
         else -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "¡Felicidades!",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4CAF50)
-                )
-
-                Text(
-                    text = "Has completado todas las lecciones de esta categoría",
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    modifier = Modifier.padding(16.dp)
-                )
-
-                CustomButton(
-                    buttonText = "VOLVER",
-                    gradientLight = Color(0xFF9C749A),
-                    gradientDark = Color(0xFF431441),
-                    baseColor = Color(0xFF53164F),
-                    onClick = { navController.popBackStack() }
-                )
+            LoadingOverlay()
+            LaunchedEffect(Unit) {
+                userState.userData.leccionesCompletadas?.let { completed ->
+                    lessonsViewModel.sendEvent(
+                        LessonEvent.LoadLessonAndInitialize(category, completed)
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
+private fun ErrorScreen(message: String, onRetry: () -> Unit, onBack: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = message,
+            color = Color.Red,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        Column (
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            CustomButton(
+                buttonText = "Reintentar",
+                gradientLight = Color(0xFF9C749A),
+                gradientDark = Color(0xFF431441),
+                baseColor = Color(0xFF53164F),
+                onClick = onRetry
+            )
+            CustomButton(
+                buttonText = "Volver",
+                gradientLight = Color(0xFF9C749A),
+                gradientDark = Color(0xFF431441),
+                baseColor = Color(0xFF53164F),
+                onClick = onBack
+            )
+        }
+    }
+}
+
+@Composable
+private fun AllLessonsCompletedScreen(onBack: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "¡Felicidades!",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF4CAF50)
+        )
+
+        Text(
+            text = "Has completado todas las lecciones de esta categoría",
+            fontSize = 16.sp,
+            color = Color.Black,
+            modifier = Modifier.padding(16.dp)
+        )
+
+        CustomButton(
+            buttonText = "VOLVER",
+            gradientLight = Color(0xFF9C749A),
+            gradientDark = Color(0xFF431441),
+            baseColor = Color(0xFF53164F),
+            onClick = onBack
+        )
+    }
+}
+
+@Composable
 fun LessonContentScreen(
-    lessonManager: LessonManager
+    lessonState: LessonState,
+    onEvent: (LessonEvent) -> Unit,
+    navController: NavController,
+    userViewModel: UserViewModel
 ) {
-    var showCompleteScreen by remember { mutableStateOf(false) }
-    var earnedExp by remember { mutableStateOf(0) }
-    var earnedDinero by remember { mutableStateOf(0) }
-    var showExitConfirmation by remember { mutableStateOf(false) }
-
-
-    LaunchedEffect(showCompleteScreen) {
-        if (showCompleteScreen) {
-            // Aquí puedes agregar algún efecto especial si lo deseas
+    LaunchedEffect(lessonState.currentLesson) {
+        if (lessonState.currentLesson == null) {
+            navController.popBackStack()
         }
     }
 
-    when {
-        showCompleteScreen -> {
-            LessonCompleteScreen(
-                exp = earnedExp,
-                dinero = earnedDinero,
-                onContinue = {
-                    Log.d("LessonScreen", "Finalizando lección con $earnedExp EXP y $earnedDinero dinero")
-                    lessonManager.onLessonComplete(earnedExp, earnedDinero)
-                }
-            )
-        }
-        lessonManager.isLessonLocked -> {
-            LessonLockedScreen(
-                onRestart = { lessonManager.restartLesson() },
-                onExit = { lessonManager.onExitLesson() }
-            )
-        }
-        else -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-            ) {
-                LessonHeader(
-                    progress = lessonManager.progress,
-                    lives = lessonManager.lives,
-                    onBackPressed = { showExitConfirmation = true }
-                )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Fondo de pantalla
+        Image(
+            painter = painterResource(id = R.drawable.matching_background_ahorro),
+            contentDescription = "Background",
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.fillMaxSize()
+        )
 
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize()
-                ) {
-                    when (lessonManager.currentActivity.type) {
-                        ActivityType.Teaching -> {
-                            TeachingActivity(content = lessonManager.currentActivity)
-                        }
-                        ActivityType.MultipleChoice -> {
-                            MultipleChoiceActivity(
-                                content = lessonManager.currentActivity,
-                                selectedAnswer = lessonManager.selectedAnswer,
-                                onOptionSelected = { lessonManager.selectedAnswer = it }
-                            )
-                        }
-                        ActivityType.FillBlank -> {
-                            FillBlankActivity(
-                                content = lessonManager.currentActivity,
-                                selectedAnswer = lessonManager.selectedAnswer,
-                                onOptionSelected = { lessonManager.selectedAnswer = it }
-                            )
-                        }
-                        ActivityType.Matching -> {
-                            MatchingActivity(
-                                content = lessonManager.currentActivity,
-                                matchedPairs = lessonManager.matchedPairs,
-                                onPairMatched = { lessonManager.matchedPairs = lessonManager.matchedPairs + it },
-                                selectedLeft = lessonManager.selectedLeft,
-                                selectedRight = lessonManager.selectedRight,
-                                onSelectLeft = { lessonManager.selectedLeft = it },
-                                onSelectRight = { lessonManager.selectedRight = it }
-                            )
-                        }
-                        ActivityType.DragPairs -> {
-                            DragPairsActivity(
-                                content = lessonManager.currentActivity,
-                                leftItems = lessonManager.leftItems,
-                                rightItems = lessonManager.rightItems,
-                                onSwap = { lessonManager.rightItems = it }
-                            )
-                        }
-                        ActivityType.SentenceBuilder -> {
-                            SentenceBuilderActivity(
-                                content = lessonManager.currentActivity,
-                                placedWords = lessonManager.placedWords,
-                                availableWords = lessonManager.availableWords,
-                                onWordPlaced = {
-                                    val index = lessonManager.placedWords.indexOfFirst { it == null }
-                                    if (index != -1) {
-                                        lessonManager.placedWords = lessonManager.placedWords.toMutableList().apply { set(index, it) }
-                                        lessonManager.availableWords = lessonManager.availableWords - it
-                                    }
-                                },
-                                onWordRemoved = { index, word ->
-                                    lessonManager.placedWords = lessonManager.placedWords.toMutableList().apply { set(index, null) }
-                                    lessonManager.availableWords = lessonManager.availableWords + word
-                                }
-                            )
-                        }
-                    }
-                }
-
-                if (lessonManager.showFeedback) {
-                    FeedbackOverlay(
-                        isCorrect = lessonManager.lastAnswerCorrect ?: false,
-                        feedbackText = lessonManager.feedbackText,
-                        onDismiss = {
-                            lessonManager.showFeedback = false
-                            if (lessonManager.lastAnswerCorrect == true) {
-                                lessonManager.moveToNextActivity()
-                            } else {
-                                lessonManager.initializeCurrentActivity()
-                            }
-                        }
-                    )
-                }
-
-                if (showExitConfirmation) {
-                    AlertDialog(
-                        onDismissRequest = { showExitConfirmation = false },
-                        title = { Text("¿Seguro que quieres salir?") },
-                        text = { Text("Si sales ahora perderás el progreso de esta lección.") },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                showExitConfirmation = false
-                                lessonManager.onExitLesson()
-                            }) {
-                                Text("Salir")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = {
-                                showExitConfirmation = false
-                            }) {
-                                Text("Continuar")
-                            }
-                        }
-                    )
-                }
-
-
-
-                BottomSection(
+        when {
+            lessonState.showCompleteScreen -> {
+                LessonCompleteScreen(
+                    exp = lessonState.earnedExp,
+                    dinero = lessonState.earnedDinero,
                     onContinue = {
-                        val wasLastActivity = lessonManager.currentActivityIndex == lessonManager.activities.size - 1
-                        lessonManager.handleContinue()
-                        if (!lessonManager.isLessonLocked && wasLastActivity && lessonManager.lastAnswerCorrect == true) {
-                            val errorPct = lessonManager.errorCount.toFloat() / (lessonManager.activities.size * 0.5f)
-                            earnedExp = (lessonManager.baseExp * (1 - errorPct.coerceAtMost(0.7f))).toInt()
-                            earnedDinero = (lessonManager.baseDinero * (1 - errorPct.coerceAtMost(0.7f))).toInt()
-                            showCompleteScreen = true
-                        }
+                        onEvent(LessonEvent.CompleteLesson)
+                        userViewModel.markLessonAsCompleted(
+                            lessonState.currentLesson?.id ?: "",
+                            lessonState.earnedExp,
+                            lessonState.earnedDinero
+                        )
+                        navController.popBackStack()
                     }
                 )
+            }
+            lessonState.isLessonLocked -> {
+                LessonLockedScreen(
+                    onRestart = { onEvent(LessonEvent.RestartLesson) },
+                    onExit = { onEvent(LessonEvent.ExitLesson) }
+                )
+            }
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Transparent) // Cambiado a transparente
+                ) {
+                    LessonHeader(
+                        progress = lessonState.progress,
+                        lives = lessonState.lives,
+                        onBackPressed = { onEvent(LessonEvent.ShowExitConfirmation) }
+                    )
 
+                    Box(modifier = Modifier.weight(1f)) {
+                        lessonState.currentActivity?.let { activity ->
+                            when (activity.type) {
+                                ActivityType.Teaching -> {
+                                    TeachingActivity(
+                                        state = lessonState,
+                                        onEvent = onEvent
+                                    )
+                                }
+                                ActivityType.MultipleChoice -> {
+                                    MultipleChoiceActivity(
+                                        state = lessonState,
+                                        onEvent = onEvent
+                                    )
+                                }
+                                ActivityType.FillBlank -> {
+                                    FillBlankActivity(
+                                        state = lessonState,
+                                        onEvent = onEvent
+                                    )
+                                }
+                                ActivityType.Matching -> {
+                                    MatchingActivity(
+                                        state = lessonState,
+                                        onEvent = onEvent
+                                    )
+                                }
+                                ActivityType.DragPairs -> {
+                                    DragPairsActivity(
+                                        state = lessonState,
+                                        onEvent = onEvent
+                                    )
+                                }
+                                ActivityType.SentenceBuilder -> {
+                                    SentenceBuilderActivity(
+                                        state = lessonState,
+                                        onEvent = onEvent
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    if (lessonState.showFeedback) {
+                        FeedbackOverlay(
+                            isCorrect = lessonState.lastAnswerCorrect ?: false,
+                            feedbackText = lessonState.feedbackText,
+                            onDismiss = {
+                                onEvent(LessonEvent.HideFeedback)
+
+                                if (lessonState.lastAnswerCorrect == true) {
+                                    if (lessonState.isLastActivityInLesson) {
+                                        onEvent(LessonEvent.ShowCompleteScreen)
+                                    } else {
+                                        onEvent(LessonEvent.MoveToNextActivity)
+                                    }
+                                } else {
+                                    onEvent(LessonEvent.ResetCurrentActivity)
+                                }
+                            }
+                        )
+                    }
+
+                    if (lessonState.showExitConfirmation) {
+                        AlertDialog(
+                            onDismissRequest = { onEvent(LessonEvent.HideExitConfirmation) },
+                            title = { Text("¿Seguro que quieres salir?") },
+                            text = { Text("Si sales ahora perderás el progreso de esta lección.") },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    onEvent(LessonEvent.HideExitConfirmation)
+                                    onEvent(LessonEvent.ExitLesson)
+                                }) {
+                                    Text("Salir")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = {
+                                    onEvent(LessonEvent.HideExitConfirmation)
+                                }) {
+                                    Text("Continuar")
+                                }
+                            }
+                        )
+                    }
+
+                    BottomSection(
+                        onContinue = { onEvent(LessonEvent.ContinueActivity) }
+                    )
+                }
             }
         }
     }
@@ -302,7 +368,10 @@ fun FeedbackOverlay(
     feedbackText: String,
     onDismiss: () -> Unit
 ) {
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(dismissOnClickOutside = true)
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -311,7 +380,8 @@ fun FeedbackOverlay(
                     color = if (isCorrect) Color(0xFFDCEDC8) else Color(0xFFFFCDD2),
                     shape = RoundedCornerShape(16.dp)
                 )
-                .padding(24.dp),
+                .padding(24.dp)
+                .clickable(onClick = onDismiss),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -530,7 +600,7 @@ fun LessonHeader(
                         topEnd = 8.dp,
                         bottomEnd = 8.dp
                     ))
-                    .background(Color.Magenta)
+                    .background(Color(0xDC53164F))
             )
         }
 

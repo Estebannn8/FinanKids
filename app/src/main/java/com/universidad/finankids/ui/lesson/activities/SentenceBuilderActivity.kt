@@ -32,16 +32,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.universidad.finankids.R
-import com.universidad.finankids.data.model.ActivityContent
+import com.universidad.finankids.events.LessonEvent
+import com.universidad.finankids.state.LessonState
 
 @Composable
 fun SentenceBuilderActivity(
-    content: ActivityContent,
-    placedWords: List<String?>,
-    availableWords: List<String>,
-    onWordPlaced: (String) -> Unit,
-    onWordRemoved: (Int, String) -> Unit
+    state: LessonState,
+    onEvent: (LessonEvent) -> Unit
 ) {
+    val activity = state.currentActivity ?: return
     val density = LocalDensity.current
     val configuration = LocalConfiguration.current
 
@@ -52,7 +51,7 @@ fun SentenceBuilderActivity(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Sección del personaje y la pregunta (sin cambios)
+        // Character and question section
         Row(
             verticalAlignment = Alignment.Top,
             modifier = Modifier.fillMaxWidth()
@@ -70,7 +69,7 @@ fun SentenceBuilderActivity(
                     .widthIn(max = 250.dp)
             ) {
                 Text(
-                    text = content.question ?: "Ordena las palabras para formar la oración correcta.",
+                    text = activity.question ?: "Ordena las palabras para formar la oración correcta.",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
@@ -81,48 +80,97 @@ fun SentenceBuilderActivity(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Sección de construcción de la oración
-        Column(
+        // Sentence construction section
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .background(Color.White.copy(alpha = 0.7f), RoundedCornerShape(8.dp))
+                .border(1.dp, Color(0xFFD3D3D3), RoundedCornerShape(8.dp))
+                .padding(8.dp)
         ) {
-            // Dividir las palabras colocadas en renglones
-            val rows = remember(placedWords, density) {
-                mutableListOf<List<String>>().apply {
-                    val currentRow = mutableListOf<String>()
-                    var currentRowWidth = 0f
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                // Split placed words into rows
+                val rows = remember(state.placedWords, density) {
+                    mutableListOf<List<String>>().apply {
+                        val currentRow = mutableListOf<String>()
+                        var currentRowWidth = 0f
 
-                    val maxRowWidth = with(density) {
-                        configuration.screenWidthDp.dp.toPx() - 48.dp.toPx()
-                    }
-
-                    placedWords.filterNotNull().forEach { word ->
-                        val wordWidth = with(density) {
-                            // Estimación mejorada del ancho
-                            (word.length * 10.sp.toPx()) + 16.dp.toPx() // Texto + padding
+                        val maxRowWidth = with(density) {
+                            configuration.screenWidthDp.dp.toPx() - 48.dp.toPx()
                         }
 
-                        if (currentRow.isNotEmpty() && currentRowWidth + wordWidth > maxRowWidth) {
+                        state.placedWords.filterNotNull().forEach { word ->
+                            val wordWidth = with(density) {
+                                (word.length * 10.sp.toPx()) + 16.dp.toPx()
+                            }
+
+                            if (currentRow.isNotEmpty() && currentRowWidth + wordWidth > maxRowWidth) {
+                                add(currentRow.toList())
+                                currentRow.clear()
+                                currentRowWidth = 0f
+                            }
+
+                            currentRow.add(word)
+                            currentRowWidth += with(density) {
+                                wordWidth + 8.dp.toPx()
+                            }
+                        }
+
+                        if (currentRow.isNotEmpty()) {
                             add(currentRow.toList())
-                            currentRow.clear()
-                            currentRowWidth = 0f
                         }
-
-                        currentRow.add(word)
-                        currentRowWidth += with(density) {
-                            wordWidth + 8.dp.toPx() // Espacio entre palabras
-                        }
-                    }
-
-                    if (currentRow.isNotEmpty()) {
-                        add(currentRow.toList())
                     }
                 }
-            }
 
-            // Mostrar cada renglón
-            rows.forEachIndexed { rowIndex, words ->
+                // Display each row
+                rows.forEachIndexed { rowIndex, words ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp)
+                            .padding(horizontal = 8.dp),
+                        contentAlignment = Alignment.BottomStart
+                    ) {
+                        Divider(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Color(0xFF787878),
+                            thickness = 1.dp
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            words.forEach { word ->
+                                val absoluteIndex = state.placedWords.indexOfFirst { it == word }
+                                if (absoluteIndex >= 0) {
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(end = 8.dp)
+                                            .clickable { onEvent(LessonEvent.RemoveWord(absoluteIndex)) }
+                                            .border(color = Color.Gray, width = 1.dp)
+                                    ) {
+                                        Text(
+                                            text = word,
+                                            fontSize = 18.sp,
+                                            color = Color.Black,
+                                            modifier = Modifier
+                                                .background(Color(0xFFFFFFFF), RoundedCornerShape(4.dp))
+                                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Additional empty line
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -132,87 +180,49 @@ fun SentenceBuilderActivity(
                 ) {
                     Divider(
                         modifier = Modifier.fillMaxWidth(),
-                        color = Color(0xFFD3D3D3),
+                        color = Color(0xFF787878),
                         thickness = 1.dp
                     )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        words.forEach { word ->
-                            val absoluteIndex = placedWords.indexOfFirst { it == word }
-                            if (absoluteIndex >= 0) {
-                                Box(
-                                    modifier = Modifier
-                                        .padding(end = 8.dp)
-                                        .clickable { onWordRemoved(absoluteIndex, word) }
-                                        .border(color = Color.Gray, width = 1.dp)
-                                ) {
-                                    Text(
-                                        text = word,
-                                        fontSize = 18.sp,
-                                        color = Color.Black,
-                                        modifier = Modifier
-                                            .background(Color(0xFFFFFFFF), RoundedCornerShape(4.dp))
-                                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
                 }
-            }
-
-            // Línea vacía adicional
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp)
-                    .padding(horizontal = 8.dp),
-                contentAlignment = Alignment.BottomStart
-            ) {
-                Divider(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = Color(0xFFD3D3D3),
-                    thickness = 1.dp
-                )
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Sección de palabras disponibles (sin cambios)
+        // Available words section
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp)
-                .background(Color(0xFFFFFFFF).copy(alpha = 0.7f))
+                .background(Color(0xFFFFFFFF).copy(alpha = 0.7f), RoundedCornerShape(8.dp))
                 .border(1.dp, Color(0xFFBBBBBB), RoundedCornerShape(8.dp))
                 .padding(8.dp)
         ) {
-            if (availableWords.isEmpty()) {
+            if (state.availableWords.isEmpty()) {
                 Text(
                     text = "¡Todas las palabras colocadas!",
                     modifier = Modifier.align(Alignment.Center),
                     color = Color.Gray,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
                 )
             } else {
                 LazyRow(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().border(1.dp, Color(0xFFBBBBBB), RoundedCornerShape(8.dp)),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    items(availableWords) { word ->
+                    items(state.availableWords) { word ->
                         Box(
                             modifier = Modifier
                                 .background(Color.White, RoundedCornerShape(16.dp))
                                 .border(2.dp, Color(0xFFBBBBBB), RoundedCornerShape(16.dp))
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                 .clickable {
-                                    onWordPlaced(word)
+                                    val index = state.placedWords.indexOfFirst { it == null }
+                                    if (index != -1) {
+                                        onEvent(LessonEvent.PlaceWord(word, index))
+                                    }
                                 }
                         ) {
                             Text(

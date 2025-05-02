@@ -25,46 +25,40 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.universidad.finankids.data.model.ActivityContent
 import com.universidad.finankids.data.model.MatchingPair
-import kotlin.random.Random
+import com.universidad.finankids.events.LessonEvent
+import com.universidad.finankids.state.LessonState
 
 @Composable
 fun MatchingActivity(
-    content: ActivityContent,
-    matchedPairs: Set<MatchingPair>,
-    onPairMatched: (MatchingPair) -> Unit,
-    selectedLeft: String?,
-    selectedRight: String?,
-    onSelectLeft: (String?) -> Unit,
-    onSelectRight: (String?) -> Unit
+    state: LessonState,
+    onEvent: (LessonEvent) -> Unit
 ) {
-    val leftItems = remember { (content.matchingPairs?.map { it.leftItem } ?: emptyList()).shuffled() }
+    val activity = state.currentActivity ?: return
+
+    val leftItems = remember { (activity.matchingPairs?.map { it.leftItem } ?: emptyList()).shuffled() }
     val rightItems = remember {
-        content.shuffledRightItems ?: (content.matchingPairs?.map { it.rightItem } ?: emptyList()).shuffled()
+        activity.shuffledRightItems ?: (activity.matchingPairs?.map { it.rightItem } ?: emptyList()).shuffled()
     }
 
     // Pastel colors for matched pairs
-    val pastelColors = listOf(
-        Color(0xDFB39DDB), // Purple pastel
-        Color(0xDF81C784), // Green pastel
-        Color(0xDF64B5F6), // Blue pastel
-        Color(0xDFFFB74D), // Orange pastel
-        Color(0xDFE57373), // Red pastel
-        Color(0xDF9575CD), // Deep purple pastel
-        Color(0xDF4DB6AC), // Teal pastel
-        Color(0xDFFFD54F)  // Yellow pastel
-    )
+    val pastelColors = remember {
+        listOf(
+            Color(0xDFB39DDB).copy(alpha = 0.7f), Color(0xDF81C784).copy(alpha = 0.7f),
+            Color(0xDF64B5F6).copy(alpha = 0.7f), Color(0xDFFFB74D).copy(alpha = 0.7f),
+            Color(0xDFE57373).copy(alpha = 0.7f), Color(0xDF9575CD).copy(alpha = 0.7f),
+            Color(0xDF4DB6AC).copy(alpha = 0.7f), Color(0xDFFFD54F).copy(alpha = 0.7f)
+        )
+    }
 
     // Map to track colors for each matched pair
     val pairColors = remember { mutableStateOf(mapOf<MatchingPair, Color>()) }
 
-    // Función para verificar si un ítem ya está emparejado
     fun isItemMatched(item: String, isLeft: Boolean): Boolean {
         return if (isLeft) {
-            matchedPairs.any { it.leftItem == item }
+            state.matchedPairs.any { it.leftItem == item }
         } else {
-            matchedPairs.any { it.rightItem == item }
+            state.matchedPairs.any { it.rightItem == item }
         }
     }
 
@@ -74,8 +68,8 @@ fun MatchingActivity(
             .padding(24.dp)
     ) {
         Text(
-            text = content.title,
-            fontSize = 18.sp,
+            text = activity.title,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black,
             modifier = Modifier.padding(bottom = 24.dp)
@@ -86,7 +80,7 @@ fun MatchingActivity(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.Top
         ) {
-            // Left column with header
+            // Columna izquierda
             Column(
                 modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -102,15 +96,16 @@ fun MatchingActivity(
                 leftItems.forEach { item ->
                     MatchingItem(
                         text = item,
-                        isSelected = selectedLeft == item,
+                        isSelected = state.selectedLeft == item,
                         isMatched = isItemMatched(item, true),
-                        pairColor = matchedPairs.firstOrNull { it.leftItem == item }?.let {
+                        pairColor = state.matchedPairs.firstOrNull { it.leftItem == item }?.let {
                             pairColors.value[it]
                         },
                         onClick = {
-                            // Solo permitir selección si el ítem no está emparejado
                             if (!isItemMatched(item, true)) {
-                                onSelectLeft(if (selectedLeft == item) null else item)
+                                onEvent(LessonEvent.SelectLeftItem(
+                                    if (state.selectedLeft == item) null else item
+                                ))
                             }
                         }
                     )
@@ -119,7 +114,7 @@ fun MatchingActivity(
 
             Spacer(modifier = Modifier.width(32.dp))
 
-            // Right column with header
+            // Columna derecha
             Column(
                 modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -135,42 +130,34 @@ fun MatchingActivity(
                 rightItems.forEach { item ->
                     MatchingItem(
                         text = item,
-                        isSelected = selectedRight == item,
+                        isSelected = state.selectedRight == item,
                         isMatched = isItemMatched(item, false),
-                        pairColor = matchedPairs.firstOrNull { it.rightItem == item }?.let {
+                        pairColor = state.matchedPairs.firstOrNull { it.rightItem == item }?.let {
                             pairColors.value[it]
                         },
                         onClick = {
-                            // Solo permitir selección si el ítem no está emparejado
                             if (!isItemMatched(item, false)) {
-                                onSelectRight(if (selectedRight == item) null else item)
+                                val newRight = if (state.selectedRight == item) null else item
+                                onEvent(LessonEvent.SelectRightItem(newRight))
 
-                                val left = selectedLeft
-                                val right = if (selectedRight == item) null else item
+                                if (state.selectedLeft != null && newRight != null) {
+                                    if (!isItemMatched(state.selectedLeft!!, true) &&
+                                        !isItemMatched(newRight, false)) {
 
-                                if (left != null && right != null) {
-                                    // Verificar que ninguno de los ítems ya esté emparejado
-                                    if (!isItemMatched(left, true) && !isItemMatched(right, false)) {
-                                        // Create a new pair regardless of correctness
-                                        val newPair = MatchingPair(left, right)
-                                        onPairMatched(newPair)
+                                        val newPair = MatchingPair(state.selectedLeft!!, newRight)
+                                        onEvent(LessonEvent.MatchPair(newPair))
 
-                                        // Assign a color if this is a new pair
                                         if (newPair !in pairColors.value) {
                                             val availableColors = pastelColors.filter {
                                                 it !in pairColors.value.values
                                             }
-                                            val randomColor = if (availableColors.isNotEmpty()) {
-                                                availableColors.random()
-                                            } else {
-                                                pastelColors[Random.nextInt(pastelColors.size)]
-                                            }
+                                            val randomColor = availableColors.randomOrNull()
+                                                ?: pastelColors.random()
                                             pairColors.value = pairColors.value + (newPair to randomColor)
                                         }
 
-                                        // Clear selections
-                                        onSelectLeft(null)
-                                        onSelectRight(null)
+                                        onEvent(LessonEvent.SelectLeftItem(null))
+                                        onEvent(LessonEvent.SelectRightItem(null))
                                     }
                                 }
                             }
@@ -191,14 +178,14 @@ fun MatchingItem(
     onClick: () -> Unit
 ) {
     val backgroundColor = when {
-        isMatched -> pairColor ?: Color(0xFF4CAF50) // Use assigned color if matched
-        else -> Color.White
+        isMatched -> pairColor ?: Color(0xFF4CAF50)
+        else -> Color.White.copy(alpha = 0.7f)
     }
     val textColor = if (isMatched) Color.White else Color.Black
     val borderColor = when {
-        isSelected -> Color(0xFF1976D2) // Blue border for selected items
-        isMatched -> Color.Black.copy(alpha = 0.5f) // Subtle border for matched items
-        else -> Color(0xFFBBBBBB) // Default light gray border
+        isSelected -> Color(0xFF1976D2)
+        isMatched -> Color.Black.copy(alpha = 0.5f)
+        else -> Color(0xFFBBBBBB)
     }
     val borderWidth = if (isSelected) 2.dp else 1.dp
 
@@ -217,12 +204,10 @@ fun MatchingItem(
                 text = text,
                 fontSize = 16.sp,
                 color = textColor,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
         }
     }
 }
-
-
 

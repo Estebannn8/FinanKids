@@ -40,17 +40,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.universidad.finankids.R
 import com.universidad.finankids.data.model.ActivityContent
+import com.universidad.finankids.events.LessonEvent
+import com.universidad.finankids.state.LessonState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DragPairsActivity(
-    content: ActivityContent,
-    leftItems: List<String>,
-    rightItems: List<String>,
-    onSwap: (List<String>) -> Unit
+    state: LessonState,
+    onEvent: (LessonEvent) -> Unit
 ) {
-    var selectedIndex by remember { mutableStateOf<Int?>(null) }
-    val listState = rememberLazyListState()
+    val activity = state.currentActivity ?: return
+    val leftItems = state.leftItems
+    val rightItems = state.rightItems
 
     Column(
         modifier = Modifier
@@ -58,8 +59,8 @@ fun DragPairsActivity(
             .padding(24.dp)
     ) {
         Text(
-            text = content.title,
-            fontSize = 18.sp,
+            text = activity.title,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black,
             modifier = Modifier.fillMaxWidth(),
@@ -89,7 +90,7 @@ fun DragPairsActivity(
                     .widthIn(max = 250.dp)
             ) {
                 Text(
-                    text = content.question ?: "Ordena los elementos de la derecha para que coincidan con los de la izquierda",
+                    text = activity.question ?: "Ordena los elementos de la derecha para que coincidan con los de la izquierda",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -103,7 +104,7 @@ fun DragPairsActivity(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            // Columna izquierda (items fijos)
+            // Left column (fixed items)
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -119,9 +120,8 @@ fun DragPairsActivity(
                 }
             }
 
-            // Columna derecha (elementos para ordenar)
+            // Right column (sortable items)
             LazyColumn(
-                state = listState,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
@@ -132,21 +132,29 @@ fun DragPairsActivity(
                             .padding(vertical = 4.dp)
                             .animateItemPlacement()
                             .clickable {
-                                if (selectedIndex == null) {
-                                    selectedIndex = index
+                                if (state.selectedRight == null) {
+                                    onEvent(LessonEvent.SelectRightItem(item))
                                 } else {
-                                    if (selectedIndex != index) {
-                                        val newList = rightItems.toMutableList()
-                                        newList.swap(selectedIndex!!, index)
-                                        onSwap(newList)
+                                    if (state.selectedRight != item) {
+                                        // Swap items
+                                        val selectedIndex = rightItems.indexOf(state.selectedRight)
+                                        val currentIndex = rightItems.indexOf(item)
+                                        if (selectedIndex != -1 && currentIndex != -1) {
+                                            val newList = rightItems.toMutableList().apply {
+                                                this[selectedIndex] = this[currentIndex].also {
+                                                    this[currentIndex] = this[selectedIndex]
+                                                }
+                                            }
+                                            onEvent(LessonEvent.UpdateRightItems(newList))
+                                        }
                                     }
-                                    selectedIndex = null
+                                    onEvent(LessonEvent.SelectRightItem(null))
                                 }
                             }
                     ) {
                         DragPairItem(
                             text = item,
-                            isHighlighted = selectedIndex == index
+                            isHighlighted = state.selectedRight == item
                         )
                     }
                 }
@@ -155,18 +163,12 @@ fun DragPairsActivity(
     }
 }
 
-fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
-    val temp = this[index1]
-    this[index1] = this[index2]
-    this[index2] = temp
-}
-
 @Composable
 fun DragPairItem(
     text: String,
     isHighlighted: Boolean
 ) {
-    val backgroundColor = if (isHighlighted) Color(0xFFE3F2FD) else Color.White
+    val backgroundColor = if (isHighlighted) Color(0xFFE3F2FD) else Color.White.copy(alpha = 0.7f)
     val borderColor = if (isHighlighted) Color(0xFF2196F3) else Color(0xFFBBBBBB)
 
     Surface(
@@ -182,10 +184,9 @@ fun DragPairItem(
                 text = text,
                 fontSize = 16.sp,
                 color = Color.Black,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
         }
     }
 }
-

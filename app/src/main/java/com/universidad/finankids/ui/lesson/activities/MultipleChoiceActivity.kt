@@ -4,7 +4,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,19 +24,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.universidad.finankids.R
-import com.universidad.finankids.data.model.ActivityContent
-import com.universidad.finankids.data.model.ActivityType
+import com.universidad.finankids.events.LessonEvent
+import com.universidad.finankids.state.LessonState
 
 @Composable
 fun MultipleChoiceActivity(
-    content: ActivityContent,
-    selectedAnswer: String?,
-    onOptionSelected: (String) -> Unit
+    state: LessonState,
+    onEvent: (LessonEvent) -> Unit
 ) {
+    val activity = state.currentActivity ?: return
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,10 +44,9 @@ fun MultipleChoiceActivity(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        // Título
         Text(
-            text = content.title,
-            fontSize = 20.sp,
+            text = activity.title,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black,
             modifier = Modifier.fillMaxWidth(),
@@ -46,7 +55,6 @@ fun MultipleChoiceActivity(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Imagen de Pesito y pregunta
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
@@ -56,7 +64,7 @@ fun MultipleChoiceActivity(
                 painter = painterResource(id = R.drawable.ic_pesito_ahorrador),
                 contentDescription = "Pesito hablando",
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(130.dp)
                     .padding(end = 16.dp)
             )
 
@@ -75,7 +83,7 @@ fun MultipleChoiceActivity(
                     .widthIn(max = 250.dp)
             ) {
                 Text(
-                    text = content.question ?: "",
+                    text = activity.question ?: "",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -92,12 +100,12 @@ fun MultipleChoiceActivity(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            content.options?.forEach { option ->
+            activity.options?.forEach { option ->
                 MultipleChoiceOption(
                     optionText = option,
-                    isSelected = selectedAnswer == option,
+                    isSelected = state.selectedAnswer == option,
                     onClick = {
-                        onOptionSelected(option)
+                        onEvent(LessonEvent.SelectAnswer(option))
                     }
                 )
             }
@@ -111,8 +119,8 @@ fun MultipleChoiceOption(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor = if (isSelected) Color(0xFF4CAF50) else Color.White
-    val borderColor = if (isSelected) Color(0xFF388E3C) else Color(0xFFBBBBBB)
+    val backgroundColor = if (isSelected) Color(0xDF64B5F6).copy(alpha = 0.7f) else Color.White.copy(alpha = 0.7f)
+    val borderColor = if (isSelected) Color(0xFF64B5F6) else Color(0xFFBBBBBB)
     val textColor = if (isSelected) Color.White else Color.Black
 
     Box(
@@ -129,27 +137,8 @@ fun MultipleChoiceOption(
             text = optionText,
             fontSize = 16.sp,
             color = textColor,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MultipleChoiceActivityPreview() {
-    val sampleContent = ActivityContent(
-        type = ActivityType.MultipleChoice,
-        title = "Seleccione la opción correcta:",
-        question = "¿Qué opción representa un ahorro?",
-        options = listOf("Banco", "Ahorro", "Inversión", "Crédito"),
-        correctAnswer = "Ahorro",
-        feedback = "¡Correcto! El ahorro es guardar dinero para el futuro."
-    )
-
-    MultipleChoiceActivity(
-        content = sampleContent,
-        selectedAnswer = null,
-        onOptionSelected = {}
-    )
 }

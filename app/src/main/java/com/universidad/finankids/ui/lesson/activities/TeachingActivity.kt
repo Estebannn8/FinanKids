@@ -3,7 +3,13 @@ package com.universidad.finankids.ui.lesson.activities
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -15,17 +21,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.universidad.finankids.R
-import com.universidad.finankids.data.model.ActivityContent
-import com.universidad.finankids.data.model.ActivityType
+import com.universidad.finankids.events.LessonEvent
+import com.universidad.finankids.state.LessonState
 
 @Composable
 fun TeachingActivity(
-    content: ActivityContent
+    state: LessonState,
+    onEvent: (LessonEvent) -> Unit
 ) {
+    // Obtenemos la actividad actual del estado
+    val activity = state.currentActivity ?: return
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -36,8 +45,8 @@ fun TeachingActivity(
     ) {
         // Título de la lección
         Text(
-            text = content.title,
-            fontSize = 20.sp,
+            text = activity.title,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black,
             modifier = Modifier.fillMaxWidth(),
@@ -48,7 +57,7 @@ fun TeachingActivity(
         Image(
             painter = painterResource(id = R.drawable.ic_pesito_ahorrador),
             contentDescription = "Pesito enseñando",
-            modifier = Modifier.size(120.dp)
+            modifier = Modifier.size(130.dp)
         )
 
         // Contenedor tipo globo de diálogo con el contenido
@@ -67,28 +76,13 @@ fun TeachingActivity(
                 .padding(16.dp)
         ) {
             Text(
-                text = content.explanation ?: "",
+                text = activity.explanation ?: "",
                 fontSize = 16.sp,
                 lineHeight = 24.sp,
+                fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
         }
+
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TeachingActivityPreview() {
-    val sampleContent = ActivityContent(
-        type = ActivityType.Teaching,
-        title = "Introducción al ahorro",
-        explanation = "El ahorro es guardar parte de tu dinero para usarlo en el futuro. " +
-                "Es importante porque te ayuda a:\n\n" +
-                "• Alcanzar tus metas financieras\n" +
-                "• Estar preparado para imprevistos\n" +
-                "• Generar seguridad económica\n\n" +
-                "Recuerda: ¡Ahorrar un poco cada día puede hacer una gran diferencia!"
-    )
-
-    TeachingActivity(content = sampleContent)
 }
