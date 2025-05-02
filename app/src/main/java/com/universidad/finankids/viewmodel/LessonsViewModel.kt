@@ -1,5 +1,6 @@
 package com.universidad.finankids.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
@@ -26,7 +27,7 @@ class LessonsViewModel : ViewModel() {
     private val _events = Channel<LessonEvent>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
 
-    private var allLessons: List<Lesson> = emptyList()
+    var allLessons: List<Lesson> = emptyList()
 
     // Estado para controlar la carga
     private val _loadingState = MutableStateFlow<LoadingState>(LoadingState.Idle)
@@ -90,10 +91,14 @@ class LessonsViewModel : ViewModel() {
     }
 
     private suspend fun loadLessonsAndInitialize(categoryId: String, completedLessons: Map<String, Any>) {
+        val TAG = "LessonViewModel"
+
+        Log.d(TAG, "Iniciando carga de lecciones para la categoría: $categoryId")
         _loadingState.value = LoadingState.LoadingLessons
         _state.update { it.copy(isLoading = true, error = null) }
 
         try {
+            Log.d(TAG, "Consultando lecciones en Firestore...")
             val snapshot = firestore.collection("categorias/$categoryId/lecciones")
                 .orderBy("order")
                 .get()
@@ -103,7 +108,10 @@ class LessonsViewModel : ViewModel() {
                 doc.toObject(Lesson::class.java)?.copy(id = doc.id)
             }
 
+            Log.d(TAG, "Lecciones obtenidas: ${allLessons.size}")
+
             if (allLessons.isEmpty()) {
+                Log.w(TAG, "No hay lecciones disponibles para la categoría: $categoryId")
                 _loadingState.value = LoadingState.LessonsLoaded(false)
                 _state.update {
                     it.copy(
@@ -116,7 +124,16 @@ class LessonsViewModel : ViewModel() {
 
             val nextLesson = allLessons
                 .sortedBy { it.order }
-                .firstOrNull { !completedLessons.containsKey(it.id) }
+                .firstOrNull { lesson ->
+                    val categoryLessons = completedLessons[categoryId] as? Map<String, Any> ?: emptyMap()
+                    !categoryLessons.containsKey(lesson.id)
+                }
+
+            if (nextLesson == null) {
+                Log.d(TAG, "Todas las lecciones están completadas para la categoría: $categoryId")
+            } else {
+                Log.d(TAG, "Siguiente lección a mostrar: ${nextLesson.title} (ID: ${nextLesson.id})")
+            }
 
             _state.update {
                 it.copy(
@@ -131,9 +148,13 @@ class LessonsViewModel : ViewModel() {
             }
 
             _loadingState.value = LoadingState.LessonsLoaded(true)
-            nextLesson?.let { initializeCurrentActivity() }
+            nextLesson?.let {
+                Log.d(TAG, "Inicializando actividad actual de la lección: ${it.title}")
+                initializeCurrentActivity()
+            }
 
         } catch (e: Exception) {
+            Log.e(TAG, "Error cargando las lecciones: ${e.message}", e)
             _loadingState.value = LoadingState.LessonsLoaded(false)
             _state.update {
                 it.copy(

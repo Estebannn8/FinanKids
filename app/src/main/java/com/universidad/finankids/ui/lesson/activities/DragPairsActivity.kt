@@ -41,9 +41,19 @@ import com.universidad.finankids.state.LessonState
 @Composable
 fun DragPairsActivity(
     state: LessonState,
-    onEvent: (LessonEvent) -> Unit
+    onEvent: (LessonEvent) -> Unit,
+    category: String
 ) {
     val activity = state.currentActivity ?: return
+
+    val imgSource = when (category.toLowerCase()) {
+        "ahorro" -> R.drawable.ic_pesito_ahorrador
+        "compra" -> R.drawable.ic_pesito_comprador
+        "basica" -> R.drawable.ic_pesito_original
+        "inversion" -> R.drawable.ic_pesito_inversionista
+        else -> R.drawable.ic_pesito_ahorrador
+    }
+
     val leftItems = state.leftItems
     val rightItems = state.rightItems
 
@@ -69,7 +79,7 @@ fun DragPairsActivity(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_pesito_ahorrador),
+                painter = painterResource(id = imgSource),
                 contentDescription = "Pesito hablando",
                 modifier = Modifier.size(120.dp)
             )

@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.universidad.finankids.R
 import com.universidad.finankids.data.model.MatchingPair
 import com.universidad.finankids.events.LessonEvent
 import com.universidad.finankids.state.LessonState
@@ -32,9 +33,11 @@ import com.universidad.finankids.state.LessonState
 @Composable
 fun MatchingActivity(
     state: LessonState,
-    onEvent: (LessonEvent) -> Unit
+    onEvent: (LessonEvent) -> Unit,
+    category: String
 ) {
     val activity = state.currentActivity ?: return
+
 
     val leftItems = remember { (activity.matchingPairs?.map { it.leftItem } ?: emptyList()).shuffled() }
     val rightItems = remember {

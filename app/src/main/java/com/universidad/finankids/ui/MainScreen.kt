@@ -38,90 +38,104 @@ import com.universidad.finankids.ui.theme.AppTypography
 fun MainScreen(navController: NavController) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .padding(WindowInsets.statusBars.asPaddingValues()),
-        verticalArrangement = Arrangement.SpaceBetween
     ) {
+        // Imagen de fondo
+        Image(
+            painter = painterResource(id = R.drawable.ic_background_splash),
+            contentDescription = "Fondo de pantalla",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
 
-        // Encabezado
+        // Contenido principal sobre la imagen de fondo
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(screenHeight * 0.14f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .padding(WindowInsets.statusBars.asPaddingValues()),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp)
+
+            // Encabezado
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(screenHeight * 0.14f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AppTypography.BalooStroke(
-                    text = "FINANKIDS",
-                    strokeColor = Color(0xFF52154E),
-                    fillColor = Color(0xFF52154E),
-                    fontSize = 50.sp,
-                    letterSpacing = 2.sp,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 22.sp,
-                    strokeWidth = 5.5f
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    AppTypography.BalooStroke(
+                        text = "FINANKIDS",
+                        strokeColor = Color(0xFF52154E),
+                        fillColor = Color(0xFF52154E),
+                        fontSize = 50.sp,
+                        letterSpacing = 2.sp,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 22.sp,
+                        strokeWidth = 5.5f
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_pesito_logo),
+                        contentDescription = "Logo de Pesito",
+                        modifier = Modifier
+                            .height(50.dp)
+                            .aspectRatio(1.2f)
+                            .offset(y = (-4).dp)
+                    )
+                }
+            }
+
+            // Sección media
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 20.dp, vertical = 15.dp),
+                contentAlignment = Alignment.Center
+            ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_pesito_logo),
-                    contentDescription = "Logo de Pesito",
-                    modifier = Modifier
-                        .height(50.dp)
-                        .aspectRatio(1.2f)
-                        .offset(y = (-4).dp)
+                    painter = painterResource(id = R.drawable.ic_pesitos_inicio),
+                    contentDescription = "Ilustración central",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
+            }
+
+            // Botones
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(screenHeight * 0.29f)
+                    .padding(15.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CustomButton(
+                    buttonText = "REGISTRARSE",
+                    gradientLight = Color(0xFF9C749A),
+                    gradientDark = Color(0xFF431441),
+                    baseColor = Color(0xFF53164F),
+                    onClick = { navController.navigate(AppScreens.AuthScreen.createRoute(startInLogin = false)) }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                CustomButton(
+                    buttonText = "INICIAR SESIÓN",
+                    gradientLight = Color(0xFF9C749A),
+                    gradientDark = Color(0xFF431441),
+                    baseColor = Color(0xFF53164F),
+                    onClick = { navController.navigate(AppScreens.AuthScreen.createRoute(startInLogin = true)) }
                 )
             }
         }
-
-        // Sección media
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f) // Ocupa espacio flexible entre header y footer
-                .padding(horizontal = 20.dp, vertical = 15.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_pesitos_inicio),
-                contentDescription = "Ilustración central",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit
-            )
-        }
-
-        // Botones
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(screenHeight * 0.29f)
-                .padding(15.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CustomButton(
-                buttonText = "REGISTRARSE",
-                gradientLight = Color(0xFF9C749A),
-                gradientDark = Color(0xFF431441),
-                baseColor = Color(0xFF53164F),
-                onClick = { navController.navigate(AppScreens.AuthScreen.createRoute(startInLogin = false)) }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            CustomButton(
-                buttonText = "INICIAR SESIÓN",
-                gradientLight = Color(0xFF9C749A),
-                gradientDark = Color(0xFF431441),
-                baseColor = Color(0xFF53164F),
-                onClick = { navController.navigate(AppScreens.AuthScreen.createRoute(startInLogin = true)) }
-            )
-        }
     }
 }
+
 
 @Preview(
     showBackground = true,

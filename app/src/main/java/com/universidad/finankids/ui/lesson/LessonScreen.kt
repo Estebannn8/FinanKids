@@ -66,14 +66,13 @@ fun LessonScreen(
 
     // Efecto para cargar lecciones
     LaunchedEffect(category, userState.userData.leccionesCompletadas) {
-        if (userState.userData.leccionesCompletadas != null) {
-            lessonsViewModel.sendEvent(
-                LessonEvent.LoadLessonAndInitialize(
-                    categoryId = category,
-                    completedLessons = userState.userData.leccionesCompletadas
-                )
+        val completedLessons = userState.userData.leccionesCompletadas ?: emptyMap()
+        lessonsViewModel.sendEvent(
+            LessonEvent.LoadLessonAndInitialize(
+                categoryId = category,
+                completedLessons = completedLessons
             )
-        }
+        )
     }
 
     LaunchedEffect(lessonsViewModel.state) {
@@ -113,17 +112,37 @@ fun LessonScreen(
                 lessonState = lessonState,
                 onEvent = lessonsViewModel::sendEvent,
                 navController = navController,
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                category = category
             )
         }
 
         // 4. Todas las lecciones completadas (usando let para el smart cast)
         loadingState.let { it is LoadingState.LessonsLoaded } &&
-                lessonState.currentLesson == null &&
-                userState.userData.leccionesCompletadas?.isNotEmpty() == true -> {
-            AllLessonsCompletedScreen(
-                onBack = { navController.popBackStack() }
-            )
+                lessonState.currentLesson == null -> {
+            // Verificar si todas las lecciones de esta categoría están completadas
+            val categoryCompletedLessons = userState.userData.leccionesCompletadas?.get(category) as? Map<*, *>
+            val allLessonsInCategory = lessonsViewModel.allLessons
+            val allCompleted = allLessonsInCategory.isNotEmpty() &&
+                    allLessonsInCategory.all { lesson ->
+                        categoryCompletedLessons?.containsKey(lesson.id) == true
+                    }
+
+            if (allCompleted) {
+                AllLessonsCompletedScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            } else {
+                // Estado inesperado, recargar
+                LaunchedEffect(Unit) {
+                    lessonsViewModel.sendEvent(
+                        LessonEvent.LoadLessonAndInitialize(
+                            category,
+                            userState.userData.leccionesCompletadas ?: emptyMap()
+                        )
+                    )
+                }
+            }
         }
 
         // 5. Estado inesperado (recargar)
@@ -215,8 +234,17 @@ fun LessonContentScreen(
     lessonState: LessonState,
     onEvent: (LessonEvent) -> Unit,
     navController: NavController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    category: String
 ) {
+    val backgroundResource = when (category.toLowerCase()) {
+        "ahorro" -> R.drawable.sentence_builder_background_ahorro
+        "compra" -> R.drawable.matching_background_centro_comercial
+        "basica" -> R.drawable.sentence_builder_background_banco
+        "inversion" -> R.drawable.teaching_background_inversiones
+        else -> R.drawable.teaching_background_ahorro // Un fondo por defecto por si acaso
+    }
+
     LaunchedEffect(lessonState.currentLesson) {
         if (lessonState.currentLesson == null) {
             navController.popBackStack()
@@ -228,7 +256,7 @@ fun LessonContentScreen(
     ) {
         // Fondo de pantalla
         Image(
-            painter = painterResource(id = R.drawable.matching_background_ahorro),
+            painter = painterResource(id = backgroundResource),
             contentDescription = "Background",
             contentScale = ContentScale.FillBounds,
             modifier = Modifier.fillMaxSize()
@@ -275,37 +303,43 @@ fun LessonContentScreen(
                                 ActivityType.Teaching -> {
                                     TeachingActivity(
                                         state = lessonState,
-                                        onEvent = onEvent
+                                        onEvent = onEvent,
+                                        category = category
                                     )
                                 }
                                 ActivityType.MultipleChoice -> {
                                     MultipleChoiceActivity(
                                         state = lessonState,
-                                        onEvent = onEvent
+                                        onEvent = onEvent,
+                                        category = category
                                     )
                                 }
                                 ActivityType.FillBlank -> {
                                     FillBlankActivity(
                                         state = lessonState,
-                                        onEvent = onEvent
+                                        onEvent = onEvent,
+                                        category = category
                                     )
                                 }
                                 ActivityType.Matching -> {
                                     MatchingActivity(
                                         state = lessonState,
-                                        onEvent = onEvent
+                                        onEvent = onEvent,
+                                        category = category
                                     )
                                 }
                                 ActivityType.DragPairs -> {
                                     DragPairsActivity(
                                         state = lessonState,
-                                        onEvent = onEvent
+                                        onEvent = onEvent,
+                                        category = category
                                     )
                                 }
                                 ActivityType.SentenceBuilder -> {
                                     SentenceBuilderActivity(
                                         state = lessonState,
-                                        onEvent = onEvent
+                                        onEvent = onEvent,
+                                        category = category
                                     )
                                 }
                             }

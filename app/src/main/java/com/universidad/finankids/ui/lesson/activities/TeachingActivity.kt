@@ -30,10 +30,19 @@ import com.universidad.finankids.state.LessonState
 @Composable
 fun TeachingActivity(
     state: LessonState,
-    onEvent: (LessonEvent) -> Unit
+    onEvent: (LessonEvent) -> Unit,
+    category: String
 ) {
     // Obtenemos la actividad actual del estado
     val activity = state.currentActivity ?: return
+
+    val imgSource = when (category.toLowerCase()) {
+        "ahorro" -> R.drawable.ic_pesito_ahorrador
+        "compra" -> R.drawable.ic_pesito_comprador
+        "basica" -> R.drawable.ic_pesito_original
+        "inversion" -> R.drawable.ic_pesito_inversionista
+        else -> R.drawable.ic_pesito_ahorrador
+    }
 
     Column(
         modifier = Modifier
@@ -55,7 +64,7 @@ fun TeachingActivity(
 
         // Imagen de Pesito
         Image(
-            painter = painterResource(id = R.drawable.ic_pesito_ahorrador),
+            painter = painterResource(id = imgSource),
             contentDescription = "Pesito enseñando",
             modifier = Modifier.size(130.dp)
         )

@@ -33,9 +33,18 @@ import com.universidad.finankids.state.LessonState
 @Composable
 fun MultipleChoiceActivity(
     state: LessonState,
-    onEvent: (LessonEvent) -> Unit
+    onEvent: (LessonEvent) -> Unit,
+    category: String
 ) {
     val activity = state.currentActivity ?: return
+
+    val imgSource = when (category.toLowerCase()) {
+        "ahorro" -> R.drawable.ic_pesito_ahorrador
+        "compra" -> R.drawable.ic_pesito_comprador
+        "basica" -> R.drawable.ic_pesito_original
+        "inversion" -> R.drawable.ic_pesito_inversionista
+        else -> R.drawable.ic_pesito_ahorrador
+    }
 
     Column(
         modifier = Modifier
@@ -61,7 +70,7 @@ fun MultipleChoiceActivity(
             modifier = Modifier.fillMaxWidth()
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_pesito_ahorrador),
+                painter = painterResource(id = imgSource),
                 contentDescription = "Pesito hablando",
                 modifier = Modifier
                     .size(130.dp)
@@ -126,7 +135,7 @@ fun MultipleChoiceOption(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .height(70.dp)
             .background(backgroundColor, RoundedCornerShape(12.dp))
             .border(1.dp, borderColor, RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
