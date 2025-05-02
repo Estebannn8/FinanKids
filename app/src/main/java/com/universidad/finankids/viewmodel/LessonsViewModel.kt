@@ -361,6 +361,7 @@ class LessonsViewModel : ViewModel() {
             _state.emit(LessonState())
         }
     }
+
     private fun selectAnswer(answer: String) {
         _state.update { it.copy(selectedAnswer = answer) }
     }

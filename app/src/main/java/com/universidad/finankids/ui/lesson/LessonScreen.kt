@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import com.universidad.finankids.R
 import com.universidad.finankids.data.model.ActivityType
 import com.universidad.finankids.events.LessonEvent
+import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.state.LessonState
 import com.universidad.finankids.ui.Components.CustomButton
 import com.universidad.finankids.ui.Components.LoadingOverlay
@@ -246,6 +247,7 @@ fun LessonContentScreen(
                             lessonState.earnedDinero
                         )
                         navController.popBackStack()
+                        navController.navigate(AppScreens.HomeScreen.route)
                     }
                 )
             }

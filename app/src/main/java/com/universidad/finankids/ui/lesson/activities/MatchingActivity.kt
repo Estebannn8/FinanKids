@@ -86,12 +86,6 @@ fun MatchingActivity(
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Selecciona aquí",
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1976D2),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
 
                 leftItems.forEach { item ->
                     MatchingItem(
@@ -120,12 +114,6 @@ fun MatchingActivity(
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Empareja con",
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1976D2),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
 
                 rightItems.forEach { item ->
                     MatchingItem(

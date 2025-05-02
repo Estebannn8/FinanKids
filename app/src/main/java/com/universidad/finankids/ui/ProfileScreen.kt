@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -24,18 +23,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,13 +53,9 @@ import com.universidad.finankids.viewmodel.UserViewModel
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    /*
     userViewModel: UserViewModel,
     avataresViewModel: AvataresViewModel
-     */
 ) {
-
-    /*
 
     // Estados observables
     val userState by userViewModel.state.collectAsState()
@@ -78,7 +72,6 @@ fun ProfileScreen(
         LoadingOverlay()
     }
 
-     */
 
     var selectedItem by remember { mutableStateOf("perfil") }
 
@@ -132,26 +125,55 @@ fun ProfileScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start
                     ) {
+                        // Reemplaza este bloque de código (el Box que contiene el avatar y marco):
                         Box(
                             modifier = Modifier
                                 .size(100.dp),
                             contentAlignment = Alignment.Center
                         ) {
-
                             // --- Avatar ---
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_avatar_placeholder),  //PlaceHolder
-                                contentDescription = "Avatar predeterminado",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(8.dp)
-                                    .offset(x = 0.6.dp, y = 2.4.dp),
-                                contentScale = ContentScale.Inside
-                            )
+                            if (avatarState.isLoading || avatarState.currentAvatar == null) {
+                                // Mostrar placeholder mientras carga
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_avatar_placeholder),
+                                    contentDescription = "Avatar cargando",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp)
+                                        .offset(x = 0.6.dp, y = 2.4.dp),
+                                    contentScale = ContentScale.Inside
+                                )
+                            } else {
+                                // Mostrar avatar cuando esté cargado
+                                avatarState.currentAvatar?.let { avatar ->
+                                    if (avatar.imageUrl.isNotEmpty()) {
+                                        Image(
+                                            painter = rememberAsyncImagePainter(avatar.imageUrl),
+                                            contentDescription = "Avatar del usuario",
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(8.dp)
+                                                .offset(x = 0.6.dp, y = 2.4.dp),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    } else {
+                                        // Mostrar placeholder si no hay imagen
+                                        Image(
+                                            painter = painterResource(id = R.drawable.ic_avatar_placeholder),
+                                            contentDescription = "Avatar predeterminado",
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(8.dp)
+                                                .offset(x = 0.6.dp, y = 2.4.dp),
+                                            contentScale = ContentScale.Inside
+                                        )
+                                    }
+                                }
+                            }
 
                             // --- Marco ---
                             Image(
-                                painter = painterResource(id = R.drawable.ic_frame_naranja),  // PlaceHolder
+                                painter = painterResource(id = R.drawable.ic_frame_naranja),  // Puedes hacerlo dinámico como en Home si lo necesitas
                                 contentDescription = "Marco del avatar",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Fit
@@ -181,7 +203,7 @@ fun ProfileScreen(
                                 contentScale = ContentScale.Fit
                             )
                             Text(
-                                text = "1",  // <- Nivel
+                                text = "${userState.nivel}",  // <- Nivel
                                 color = Color.White,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold
@@ -216,7 +238,7 @@ fun ProfileScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         AppTypography.ItimStroke(
-                            text = "EstebanR12333",   // <- Nickname
+                            text = userState.userData.nickname,   // <- Nickname
                             strokeColor = Color(0xFF666666),
                             fillColor = Color(0xFF666666),
                             fontSize = 21.sp,
@@ -323,6 +345,7 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+                // --- Estadisticas ---
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -337,10 +360,10 @@ fun ProfileScreen(
                             color = Color(0xFF666666),
                             letterSpacing = 4.sp
                         ),
-                        modifier = Modifier.align(Alignment.Start) // Alinea el texto a la izquierda
+                        modifier = Modifier.align(Alignment.Start)
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp)) // Espaciado entre el título y las estadísticas
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     // Fila de estadísticas
                     Row(
@@ -349,9 +372,9 @@ fun ProfileScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         listOf(
-                            Triple(R.drawable.ic_xp, "316", "TOTAL XP"),
-                            Triple(R.drawable.ic_racha_normal, "2", "DIAS DE RACHA"),
-                            Triple(R.drawable.ic_coin, "300", "PESITOS")
+                            Triple(R.drawable.ic_xp, "${userState.userData.exp}", "TOTAL XP"),
+                            Triple(R.drawable.ic_racha_normal, "1", "DIAS DE RACHA"),
+                            Triple(R.drawable.ic_coin, "${userState.userData.dinero}", "PESITOS")
                         ).forEach { (icon, value, label) ->
                             Box(
                                 modifier = Modifier
@@ -380,7 +403,7 @@ fun ProfileScreen(
                                         contentDescription = label,
                                         modifier = Modifier.size(40.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(5.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
 
                                     // Contenido del valor y la etiqueta
                                     Column(
@@ -393,14 +416,14 @@ fun ProfileScreen(
                                                 text = value,
                                                 fontFamily = FontFamily(Font(R.font.baloo_regular)),
                                                 fontWeight = FontWeight.Bold,
-                                                fontSize = 20.sp,
+                                                fontSize = 18.sp,
                                                 color = Color(0xFF444444),
                                                 overflow = TextOverflow.Ellipsis
                                             )
                                             Text(
                                                 text = label,
                                                 fontFamily = FontFamily(Font(R.font.baloo_regular)),
-                                                fontSize = 14.sp,
+                                                fontSize = 13.sp,
                                                 color = Color(0xFF444444),
                                                 lineHeight = 13.sp
                                             )
@@ -546,12 +569,12 @@ fun ProfileScreen(
             }
         )
 
-
-
         Spacer(modifier = Modifier.height(10.dp))
     }
 }
 
+
+/*
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ProfileScreenPreview() {
@@ -560,3 +583,4 @@ fun ProfileScreenPreview() {
         ProfileScreen(navController = navController)
     }
 }
+ */

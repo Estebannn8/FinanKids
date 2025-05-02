@@ -80,10 +80,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(AppScreens.ProfileScreen.route) {
             ProfileScreen(
                 navController,
-                /*
                 userViewModel = userViewModel,
                 avataresViewModel = avataresViewModel
-                 */
             )
         }
 

@@ -95,56 +95,52 @@ class UserViewModel : ViewModel() {
     fun markLessonAsCompleted(lessonId: String, expEarned: Int, dineroEarned: Int) {
         viewModelScope.launch {
             try {
-                Log.d("UserVM", "Intentando marcar lección $lessonId como completada con $expEarned EXP y $dineroEarned dinero")
+                // 1. Obtener la categoría actual basada en el índice de sección
+                val categoryId = when (_state.value.currentSectionIndex) {
+                    0 -> "ahorro"
+                    1 -> "compra"
+                    2 -> "basica"
+                    3 -> "inversion"
+                    else -> "ahorro" // Default
+                }
+
+                Log.d("UserVM", "Guardando lección $lessonId en categoría $categoryId")
 
                 val userRef = firestore.collection("usuarios").document(_state.value.userData.uid)
 
+                // 2. Transacción para actualizar datos
                 firestore.runTransaction { transaction ->
                     val userDoc = transaction.get(userRef)
                     val currentExp = userDoc.getLong("exp")?.toInt() ?: 0
                     val currentDinero = userDoc.getLong("dinero")?.toInt() ?: 0
+
+                    // Estructura anidada: leccionesCompletadas/{categoriaID}/{leccionID}
                     val completedLessons = userDoc.get("leccionesCompletadas") as? Map<String, Any> ?: emptyMap()
+                    val categoryLessons = completedLessons[categoryId] as? Map<String, Any> ?: emptyMap()
 
-                    Log.d("UserVM", "EXP actual: $currentExp, Dinero actual: $currentDinero")
-                    Log.d("UserVM", "Lecciones completadas actuales: ${completedLessons.keys}")
-
-                    val updatedCompletedLessons = completedLessons.toMutableMap().apply {
+                    // Actualizar lecciones completadas para la categoría
+                    val updatedCategoryLessons = categoryLessons.toMutableMap().apply {
                         this[lessonId] = true
                     }
 
-                    val categoryId = _state.value.currentSectionIndex.let { index ->
-                        when (index) {
-                            0 -> "ahorro"
-                            1 -> "compra"
-                            2 -> "basica"
-                            3 -> "inversion"
-                            else -> "ahorro"
-                        }
-                    }
-
-                    val currentProgressRaw = userDoc.get("progresoCategorias") as? Map<String, Any> ?: emptyMap()
-                    val currentProgress = currentProgressRaw.mapValues { (key, value) ->
-                        (value as? Long)?.toInt() ?: 0
-                    }
-
-                    Log.d("UserVM", "Progreso actual de categorías (convertido): $currentProgress")
-
+                    // Actualizar progreso de categoría
+                    val currentProgress = userDoc.get("progresoCategorias") as? Map<String, Any> ?: emptyMap()
                     val updatedProgress = currentProgress.toMutableMap().apply {
-                        this[categoryId] = (this[categoryId] ?: 0) + 1
+                        this[categoryId] = (this[categoryId] as? Long ?: 0) + 1
                     }
 
-                    Log.d("UserVM", "Nuevo progreso en $categoryId: ${updatedProgress[categoryId]}")
-
+                    // Guardar todo
                     transaction.update(userRef,
-                        "leccionesCompletadas", updatedCompletedLessons,
-                        "progresoCategorias", updatedProgress,
                         "exp", currentExp + expEarned,
-                        "dinero", currentDinero + dineroEarned
+                        "dinero", currentDinero + dineroEarned,
+                        "progresoCategorias", updatedProgress,
+                        "leccionesCompletadas.$categoryId", updatedCategoryLessons // Notación de puntos
                     )
                 }.await()
 
-                Log.d("UserVM", "Lección $lessonId completada y progreso actualizado correctamente.")
-                loadUserData(_state.value.userData.uid)
+                Log.d("UserVM", "Lección $lessonId completada en categoría $categoryId")
+                loadUserData(_state.value.userData.uid) // Refrescar datos
+
             } catch (e: Exception) {
                 Log.e("UserVM", "Error al guardar progreso: ${e.message}", e)
                 _state.update { it.copy(errorMessage = "Error al guardar progreso: ${e.message}") }
