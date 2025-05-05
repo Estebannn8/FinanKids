@@ -27,7 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.universidad.finankids.R
 import com.universidad.finankids.events.LessonEvent
 import com.universidad.finankids.state.LessonState
 import com.universidad.finankids.ui.lesson.TemaVisual
