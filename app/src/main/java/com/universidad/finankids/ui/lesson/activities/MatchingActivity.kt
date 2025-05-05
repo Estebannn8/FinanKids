@@ -29,12 +29,13 @@ import com.universidad.finankids.R
 import com.universidad.finankids.data.model.MatchingPair
 import com.universidad.finankids.events.LessonEvent
 import com.universidad.finankids.state.LessonState
+import com.universidad.finankids.ui.lesson.TemaVisual
 
 @Composable
 fun MatchingActivity(
     state: LessonState,
     onEvent: (LessonEvent) -> Unit,
-    category: String
+    temaVisual: TemaVisual
 ) {
     val activity = state.currentActivity ?: return
 

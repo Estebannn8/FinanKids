@@ -15,5 +15,7 @@ data class TemaVisual(
     val dragPairsBackground: Int,    // (Pares arrastrando)
     val categoryIcon: Int,
     val CloseIcon: Int,
-    val progressBar: Int
+    val progressBar: Int,
+    val pesitoFeliz: Int,
+    val pesitoTriste: Int
 )

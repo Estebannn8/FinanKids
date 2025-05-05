@@ -205,7 +205,17 @@ class LessonsViewModel : ViewModel() {
 
         when (currentActivity.type) {
             ActivityType.Teaching -> {
-                moveToNextActivity()
+                if (isLastActivity) {
+                    calculateRewards()
+                    _state.update {
+                        it.copy(
+                            showCompleteScreen = true,
+                            isLastActivityInLesson = true
+                        )
+                    }
+                } else {
+                    moveToNextActivity()
+                }
             }
             else -> {
                 if (validateCurrentActivity()) {
@@ -214,12 +224,9 @@ class LessonsViewModel : ViewModel() {
                             showFeedback = true,
                             lastAnswerCorrect = true,
                             feedbackText = currentActivity.feedback ?: "¡Correcto!",
-                            // Agregamos esta bandera para saber que es la última actividad
                             isLastActivityInLesson = isLastActivity
                         )
                     }
-
-                    // Eliminamos el cálculo de recompensas aquí
                 } else {
                     val newLives = _state.value.lives - 1
                     val newErrorCount = _state.value.errorCount + 1
@@ -306,11 +313,10 @@ class LessonsViewModel : ViewModel() {
             }
             initializeCurrentActivity()
         } else {
+            calculateRewards()
             _state.update {
                 it.copy(
-                    showFeedback = true,
-                    lastAnswerCorrect = true,
-                    feedbackText = _state.value.currentActivity?.feedback ?: "¡Correcto!"
+                    showCompleteScreen = true
                 )
             }
         }

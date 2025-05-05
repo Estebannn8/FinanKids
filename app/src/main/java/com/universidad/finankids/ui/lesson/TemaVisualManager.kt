@@ -7,7 +7,7 @@ object TemaVisualManager {
 
     // Definir los temas para cada categoría
     private val temasPorCategoria = mapOf(
-        "Ahorro" to TemaVisual(
+        "ahorro" to TemaVisual(
             baseColor = Color(0xFF53164F),
             gradientLight = Color(0xFF9C749A),
             gradientDark = Color(0xFF431441),
@@ -20,9 +20,11 @@ object TemaVisualManager {
             dragPairsBackground = R.drawable.drag_pairs_background_ahorro,
             categoryIcon = R.drawable.ic_pesito_ahorrador,
             CloseIcon = R.drawable.ic_close_ahorro,
-            progressBar = R.drawable.ic_exp_bar_morado
+            progressBar = R.drawable.ic_exp_bar_morado,
+            pesitoFeliz = R.drawable.ic_pesito_ahorrador_feliz,
+            pesitoTriste = R.drawable.ic_pesito_ahorrador_triste
         ),
-        "Banco" to TemaVisual(
+        "basica" to TemaVisual(
             baseColor = Color(0xFFF8B528),
             gradientLight = Color(0xFFF7E27C),
             gradientDark = Color(0xFFFF9D00),
@@ -35,9 +37,11 @@ object TemaVisualManager {
             dragPairsBackground = R.drawable.drag_pairs_background_banco,
             categoryIcon = R.drawable.ic_pesito_original,
             CloseIcon = R.drawable.ic_close_banco,
-            progressBar = R.drawable.ic_exp_bar_amarillo
+            progressBar = R.drawable.ic_exp_bar_amarillo,
+            pesitoFeliz = R.drawable.ic_pesito_original_feliz,
+            pesitoTriste = R.drawable.ic_pesito_original_triste
         ),
-        "Inversiones" to TemaVisual(
+        "inversion" to TemaVisual(
             baseColor = Color(0xFFED7621),
             gradientLight = Color(0xFFFFB987),
             gradientDark = Color(0xFFDD5500),
@@ -50,9 +54,11 @@ object TemaVisualManager {
             dragPairsBackground = R.drawable.drag_pairs_background_inversiones,
             categoryIcon = R.drawable.ic_pesito_inversionista,
             CloseIcon = R.drawable.ic_close_inversiones,
-            progressBar = R.drawable.ic_exp_bar_naranja
+            progressBar = R.drawable.ic_exp_bar_naranja,
+            pesitoFeliz = R.drawable.ic_pesito_inversionista_feliz,
+            pesitoTriste = R.drawable.ic_pesito_inversionista_triste
         ),
-        "Centro Comercial" to TemaVisual(
+        "compra" to TemaVisual(
             baseColor = Color(0xFF0270BA),
             gradientLight = Color(0xFF479FDB),
             gradientDark = Color(0xFF003A61),
@@ -65,7 +71,9 @@ object TemaVisualManager {
             dragPairsBackground = R.drawable.drag_pairs_background_centro_comercial,
             categoryIcon = R.drawable.ic_pesito_comprador,
             CloseIcon = R.drawable.ic_close_centro_comercial,
-            progressBar = R.drawable.ic_exp_bar_azul
+            progressBar = R.drawable.ic_exp_bar_azul,
+            pesitoFeliz = R.drawable.ic_pesito_comprador_feliz,
+            pesitoTriste = R.drawable.ic_pesito_comprador_triste
         )
     )
 

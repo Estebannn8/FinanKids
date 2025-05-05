@@ -30,22 +30,15 @@ import androidx.compose.ui.unit.sp
 import com.universidad.finankids.R
 import com.universidad.finankids.events.LessonEvent
 import com.universidad.finankids.state.LessonState
+import com.universidad.finankids.ui.lesson.TemaVisual
 
 @Composable
 fun FillBlankActivity(
     state: LessonState,
     onEvent: (LessonEvent) -> Unit,
-    category: String
+    temaVisual: TemaVisual
 ) {
     val activity = state.currentActivity ?: return
-
-    val imgSource = when (category.toLowerCase()) {
-        "ahorro" -> R.drawable.ic_pesito_ahorrador
-        "compra" -> R.drawable.ic_pesito_comprador
-        "basica" -> R.drawable.ic_pesito_original
-        "inversion" -> R.drawable.ic_pesito_inversionista
-        else -> R.drawable.ic_pesito_ahorrador
-    }
 
     Column(
         modifier = Modifier
@@ -73,7 +66,7 @@ fun FillBlankActivity(
             modifier = Modifier.fillMaxWidth()
         ) {
             Image(
-                painter = painterResource(id = imgSource),
+                painter = painterResource(temaVisual.categoryIcon),
                 contentDescription = "Pesito hablando",
                 modifier = Modifier
                     .size(130.dp)

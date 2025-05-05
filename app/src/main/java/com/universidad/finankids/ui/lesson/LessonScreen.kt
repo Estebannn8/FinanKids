@@ -1,5 +1,6 @@
 package com.universidad.finankids.ui.lesson
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,8 +34,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.universidad.finankids.R
@@ -42,7 +42,12 @@ import com.universidad.finankids.events.LessonEvent
 import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.state.LessonState
 import com.universidad.finankids.ui.Components.CustomButton
+import com.universidad.finankids.ui.Components.lesson.FeedbackOverlay
 import com.universidad.finankids.ui.Components.LoadingOverlay
+import com.universidad.finankids.ui.Components.lesson.AllLessonsCompletedScreen
+import com.universidad.finankids.ui.Components.lesson.ErrorScreen
+import com.universidad.finankids.ui.Components.lesson.LessonCompleteScreen
+import com.universidad.finankids.ui.Components.lesson.LessonLockedScreen
 import com.universidad.finankids.ui.lesson.activities.DragPairsActivity
 import com.universidad.finankids.ui.lesson.activities.FillBlankActivity
 import com.universidad.finankids.ui.lesson.activities.MatchingActivity
@@ -160,76 +165,6 @@ fun LessonScreen(
 }
 
 @Composable
-private fun ErrorScreen(message: String, onRetry: () -> Unit, onBack: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = message,
-            color = Color.Red,
-            fontSize = 18.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        Column (
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            CustomButton(
-                buttonText = "Reintentar",
-                gradientLight = Color(0xFF9C749A),
-                gradientDark = Color(0xFF431441),
-                baseColor = Color(0xFF53164F),
-                onClick = onRetry
-            )
-            CustomButton(
-                buttonText = "Volver",
-                gradientLight = Color(0xFF9C749A),
-                gradientDark = Color(0xFF431441),
-                baseColor = Color(0xFF53164F),
-                onClick = onBack
-            )
-        }
-    }
-}
-
-@Composable
-private fun AllLessonsCompletedScreen(onBack: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "¡Felicidades!",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF4CAF50)
-        )
-
-        Text(
-            text = "Has completado todas las lecciones de esta categoría",
-            fontSize = 16.sp,
-            color = Color.Black,
-            modifier = Modifier.padding(16.dp)
-        )
-
-        CustomButton(
-            buttonText = "VOLVER",
-            gradientLight = Color(0xFF9C749A),
-            gradientDark = Color(0xFF431441),
-            baseColor = Color(0xFF53164F),
-            onClick = onBack
-        )
-    }
-}
-
-@Composable
 fun LessonContentScreen(
     lessonState: LessonState,
     onEvent: (LessonEvent) -> Unit,
@@ -237,12 +172,13 @@ fun LessonContentScreen(
     userViewModel: UserViewModel,
     category: String
 ) {
-    val backgroundResource = when (category.toLowerCase()) {
-        "ahorro" -> R.drawable.sentence_builder_background_ahorro
-        "compra" -> R.drawable.matching_background_centro_comercial
-        "basica" -> R.drawable.sentence_builder_background_banco
-        "inversion" -> R.drawable.teaching_background_inversiones
-        else -> R.drawable.teaching_background_ahorro // Un fondo por defecto por si acaso
+
+    // Obtener el tema visual para la categoría actual
+    val temaVisual = remember(category) {
+        val tema = TemaVisualManager.obtenerTemaPorCategoria(category) ?: TemaVisualManager.obtenerTemaPorCategoria("Ahorro")!!
+        Log.d("TemaVisual", "Categoría seleccionada: $category")
+        Log.d("TemaVisual", "Tema aplicado: ${tema.baseColor}, Icono: ${tema.categoryIcon}")
+        tema
     }
 
     LaunchedEffect(lessonState.currentLesson) {
@@ -254,6 +190,22 @@ fun LessonContentScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+        // Fondo de pantalla según el tipo de actividad
+        val backgroundResource = remember(lessonState.currentActivity?.type) {
+            val resource = when (lessonState.currentActivity?.type) {
+                ActivityType.Teaching -> temaVisual.teachingBackground
+                ActivityType.MultipleChoice -> temaVisual.multipleChoiceBackground
+                ActivityType.FillBlank -> temaVisual.fillBlankBackground
+                ActivityType.Matching -> temaVisual.matchingBackground
+                ActivityType.DragPairs -> temaVisual.dragPairsBackground
+                ActivityType.SentenceBuilder -> temaVisual.sentenceBuilderBackground
+                else -> temaVisual.teachingBackground
+            }
+            Log.d("TemaVisual", "Tipo de actividad: ${lessonState.currentActivity?.type}, Fondo: $resource")
+            resource
+        }
+
+
         // Fondo de pantalla
         Image(
             painter = painterResource(id = backgroundResource),
@@ -276,13 +228,15 @@ fun LessonContentScreen(
                         )
                         navController.popBackStack()
                         navController.navigate(AppScreens.HomeScreen.route)
-                    }
+                    },
+                    temaVisual = temaVisual
                 )
             }
             lessonState.isLessonLocked -> {
                 LessonLockedScreen(
                     onRestart = { onEvent(LessonEvent.RestartLesson) },
-                    onExit = { onEvent(LessonEvent.ExitLesson) }
+                    onExit = { onEvent(LessonEvent.ExitLesson) },
+                    temaVisual = temaVisual
                 )
             }
             else -> {
@@ -294,7 +248,8 @@ fun LessonContentScreen(
                     LessonHeader(
                         progress = lessonState.progress,
                         lives = lessonState.lives,
-                        onBackPressed = { onEvent(LessonEvent.ShowExitConfirmation) }
+                        onBackPressed = { onEvent(LessonEvent.ShowExitConfirmation) },
+                        temaVisual = temaVisual
                     )
 
                     Box(modifier = Modifier.weight(1f)) {
@@ -304,42 +259,42 @@ fun LessonContentScreen(
                                     TeachingActivity(
                                         state = lessonState,
                                         onEvent = onEvent,
-                                        category = category
+                                        temaVisual = temaVisual
                                     )
                                 }
                                 ActivityType.MultipleChoice -> {
                                     MultipleChoiceActivity(
                                         state = lessonState,
                                         onEvent = onEvent,
-                                        category = category
+                                        temaVisual = temaVisual
                                     )
                                 }
                                 ActivityType.FillBlank -> {
                                     FillBlankActivity(
                                         state = lessonState,
                                         onEvent = onEvent,
-                                        category = category
+                                        temaVisual = temaVisual
                                     )
                                 }
                                 ActivityType.Matching -> {
                                     MatchingActivity(
                                         state = lessonState,
                                         onEvent = onEvent,
-                                        category = category
+                                        temaVisual = temaVisual
                                     )
                                 }
                                 ActivityType.DragPairs -> {
                                     DragPairsActivity(
                                         state = lessonState,
                                         onEvent = onEvent,
-                                        category = category
+                                        temaVisual = temaVisual
                                     )
                                 }
                                 ActivityType.SentenceBuilder -> {
                                     SentenceBuilderActivity(
                                         state = lessonState,
                                         onEvent = onEvent,
-                                        category = category
+                                        temaVisual = temaVisual
                                     )
                                 }
                             }
@@ -390,7 +345,8 @@ fun LessonContentScreen(
                     }
 
                     BottomSection(
-                        onContinue = { onEvent(LessonEvent.ContinueActivity) }
+                        onContinue = { onEvent(LessonEvent.ContinueActivity) },
+                        temaVisual = temaVisual
                     )
                 }
             }
@@ -399,194 +355,11 @@ fun LessonContentScreen(
 }
 
 @Composable
-fun FeedbackOverlay(
-    isCorrect: Boolean,
-    feedbackText: String,
-    onDismiss: () -> Unit
-) {
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(dismissOnClickOutside = true)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(32.dp)
-                .background(
-                    color = if (isCorrect) Color(0xFFDCEDC8) else Color(0xFFFFCDD2),
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .padding(24.dp)
-                .clickable(onClick = onDismiss),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = feedbackText,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-        }
-    }
-}
-
-@Composable
-fun LessonLockedScreen(
-    onRestart: () -> Unit,
-    onExit: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_pesito_ahorrador_triste),
-            contentDescription = "Pesito triste",
-            modifier = Modifier.size(120.dp)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "¡Has perdido todas tus vidas!",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFFE53935),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        Text(
-            text = "No te rindas, ¡inténtalo de nuevo!",
-            fontSize = 16.sp,
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-
-        // Botones apilados verticalmente
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            CustomButton(
-                modifier = Modifier.fillMaxWidth(),
-                buttonText = "REINTENTAR LECCIÓN",
-                gradientLight = Color(0xFF9C749A),
-                gradientDark = Color(0xFF431441),
-                baseColor = Color(0xFF53164F),
-                onClick = onRestart
-            )
-
-            CustomButton(
-                modifier = Modifier.fillMaxWidth(),
-                buttonText = "SALIR",
-                gradientLight = Color(0xFFCCCCCC),
-                gradientDark = Color(0xFF999999),
-                baseColor = Color(0xFFAAAAAA),
-                onClick = onExit
-            )
-        }
-    }
-}
-
-@Composable
-fun LessonCompleteScreen(
-    exp: Int,
-    dinero: Int,
-    onContinue: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_pesito__ahorrador_feliz),
-            contentDescription = "Pesito feliz",
-            modifier = Modifier.size(120.dp)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "¡Lección Completada!",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF4CAF50),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        // Recompensas
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp)
-                .background(Color(0xFFE8F5E9), RoundedCornerShape(8.dp))
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = "Recompensas obtenidas:",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black
-            )
-
-            Row(
-                modifier = Modifier.padding(top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_experience),
-                    contentDescription = "Experiencia",
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    text = "$exp EXP",
-                    fontSize = 16.sp,
-                    color = Color.Black
-                )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Image(
-                    painter = painterResource(id = R.drawable.ic_coin),
-                    contentDescription = "Dinero",
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    text = "$$dinero",
-                    fontSize = 16.sp,
-                    color = Color.Black
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        CustomButton(
-            modifier = Modifier.fillMaxWidth(),
-            buttonText = "CONTINUAR",
-            gradientLight = Color(0xFF9C749A),
-            gradientDark = Color(0xFF431441),
-            baseColor = Color(0xFF53164F),
-            onClick = onContinue
-        )
-    }
-}
-
-@Composable
 fun LessonHeader(
     progress: Float,
     lives: Int,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    temaVisual: TemaVisual
 ) {
     Box(
         modifier = Modifier
@@ -603,7 +376,7 @@ fun LessonHeader(
                 .clickable(onClick = { onBackPressed() })
         ) {
             Image(
-                painter = painterResource(R.drawable.ic_close_ahorro),
+                painter = painterResource(temaVisual.CloseIcon),
                 contentDescription = "Flecha atras",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit
@@ -618,7 +391,7 @@ fun LessonHeader(
                 .align(Alignment.Center)
         ) {
             Image(
-                painter = painterResource(R.drawable.ic_exp_bar_morado),
+                painter = painterResource(temaVisual.progressBar),
                 contentDescription = "Barra de progreso",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds
@@ -636,11 +409,11 @@ fun LessonHeader(
                         topEnd = 8.dp,
                         bottomEnd = 8.dp
                     ))
-                    .background(Color(0xDC53164F))
+                    .background(temaVisual.progressColor)
             )
         }
 
-        // Vidas (simplificado a icono + texto)
+        // Vidas
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -664,7 +437,8 @@ fun LessonHeader(
 
 @Composable
 fun BottomSection(
-    onContinue: () -> Unit
+    onContinue: () -> Unit,
+    temaVisual: TemaVisual
 ) {
     Box(
         modifier = Modifier
@@ -675,9 +449,9 @@ fun BottomSection(
         CustomButton(
             modifier = Modifier.align(Alignment.Center),
             buttonText = "CONTINUAR",
-            gradientLight = Color(0xFF9C749A),
-            gradientDark = Color(0xFF431441),
-            baseColor = Color(0xFF53164F),
+            gradientLight = temaVisual.gradientLight,
+            gradientDark = temaVisual.gradientDark,
+            baseColor = temaVisual.baseColor,
             onClick = onContinue
         )
     }
