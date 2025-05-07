@@ -1,4 +1,4 @@
-package com.universidad.finankids.ui
+package com.universidad.finankids.ui.auth
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -40,6 +40,7 @@ import com.universidad.finankids.viewmodel.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.universidad.finankids.ui.Components.CustomButton
 import com.universidad.finankids.ui.Components.CustomTextField
+import kotlinx.coroutines.delay
 
 @Composable
 fun RecoveryScreen(navController: NavController) {
@@ -54,7 +55,7 @@ fun RecoveryScreen(navController: NavController) {
         if (state.isRecoverySuccess) {
             // Podrías navegar a otra pantalla o mostrar un mensaje
             // Por ahora solo limpiamos el estado después de 3 segundos
-            kotlinx.coroutines.delay(3000)
+            delay(3000)
             authViewModel.clearRecoveryState()
         }
     }
