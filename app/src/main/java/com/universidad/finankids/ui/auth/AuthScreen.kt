@@ -123,7 +123,7 @@ fun AuthScreen(
         }
     }
 
-    // Navegar al Home cuando todo esté cargado
+    // Navegar al Home
     LaunchedEffect(userState.userData.uid, userState.isLoading, avatarState.isLoading) {
         if (!hasNavigated.value &&
             userState.userData.uid.isNotEmpty() &&

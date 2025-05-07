@@ -13,7 +13,7 @@ import com.universidad.finankids.ui.HomeScreen
 import com.universidad.finankids.ui.MainScreen
 import com.universidad.finankids.ui.ProfileScreen
 import com.universidad.finankids.ui.ProgressScreen
-import com.universidad.finankids.ui.RecoveryScreen
+import com.universidad.finankids.ui.auth.RecoveryScreen
 import com.universidad.finankids.ui.SplashScreen
 import com.universidad.finankids.ui.StoreScreen
 import com.universidad.finankids.ui.TrophyScreen

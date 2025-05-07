@@ -70,7 +70,7 @@ fun SplashScreen(
         }
     }
 
-    // Navegar cuando todo esté cargado
+    // Navegar
     LaunchedEffect(userState.isLoading, avatarState.isLoading) {
         if (
             !userState.isLoading &&
