@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -207,7 +208,7 @@ fun LessonContentScreen(
             painter = painterResource(id = backgroundResource),
             contentDescription = "Background",
             contentScale = ContentScale.FillBounds,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().alpha(0.7f)
         )
 
         when {
