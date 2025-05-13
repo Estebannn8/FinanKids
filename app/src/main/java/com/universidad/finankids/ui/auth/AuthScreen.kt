@@ -23,7 +23,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -62,9 +61,9 @@ import com.universidad.finankids.events.AvatarEvent
 import com.universidad.finankids.events.UserEvent
 import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.state.AuthState
-import com.universidad.finankids.ui.Components.CustomButton
-import com.universidad.finankids.ui.Components.CustomTextField
-import com.universidad.finankids.ui.Components.LoadingOverlay
+import com.universidad.finankids.ui.components.CustomButton
+import com.universidad.finankids.ui.components.CustomTextField
+import com.universidad.finankids.ui.components.LoadingOverlay
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AuthViewModel
 import com.universidad.finankids.viewmodel.AvataresViewModel

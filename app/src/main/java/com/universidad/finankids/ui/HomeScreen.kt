@@ -51,8 +51,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.universidad.finankids.R
 import com.universidad.finankids.navigation.navigateToLesson
 import com.universidad.finankids.navigation.navigateToScreen
-import com.universidad.finankids.ui.Components.BottomMenu
-import com.universidad.finankids.ui.Components.LoadingOverlay
+import com.universidad.finankids.ui.components.BottomMenu
+import com.universidad.finankids.ui.components.LoadingOverlay
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.UserViewModel

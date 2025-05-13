@@ -1,4 +1,4 @@
-package com.universidad.finankids.ui.Components.lesson
+package com.universidad.finankids.ui.components.lesson
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

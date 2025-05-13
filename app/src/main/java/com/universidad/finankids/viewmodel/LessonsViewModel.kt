@@ -350,9 +350,9 @@ class LessonsViewModel : ViewModel() {
         val penaltyFactor = (state.errorCount.toFloat() / maxAllowedErrors).coerceIn(0f, 0.7f)
 
         // Factor de recompensa (0.3 a 1.0)
-        val rewardFactor = 1 - penaltyFactor
+        var rewardFactor = 1 - penaltyFactor
 
-        // Calcular recompensas asegurando valores enteros
+        // Calcular recompensas base (sin bonus)
         val exp = (baseExp * rewardFactor).toInt().coerceAtLeast((baseExp * 0.3f).toInt())
         val dinero = (baseDinero * rewardFactor).toInt().coerceAtLeast((baseDinero * 0.3f).toInt())
 
@@ -360,7 +360,8 @@ class LessonsViewModel : ViewModel() {
             it.copy(
                 earnedExp = exp,
                 earnedDinero = dinero,
-                showCompleteScreen = true
+                showCompleteScreen = true,
+                perfectLesson = state.errorCount == 0  // Indicar si la lección fue perfecta
             )
         }
     }

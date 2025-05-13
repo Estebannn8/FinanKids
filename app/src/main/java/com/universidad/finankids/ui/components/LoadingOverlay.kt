@@ -1,4 +1,4 @@
-package com.universidad.finankids.ui.Components
+package com.universidad.finankids.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

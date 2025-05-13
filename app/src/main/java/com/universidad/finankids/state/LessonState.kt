@@ -30,5 +30,6 @@ data class LessonState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val noMoreLessons: Boolean = false,
-    val isLastActivityInLesson: Boolean = false
+    val isLastActivityInLesson: Boolean = false,
+    val perfectLesson: Boolean = false
 )

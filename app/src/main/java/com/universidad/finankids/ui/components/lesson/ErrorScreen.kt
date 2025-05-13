@@ -1,4 +1,4 @@
-package com.universidad.finankids.ui.Components.lesson
+package com.universidad.finankids.ui.components.lesson
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.universidad.finankids.ui.Components.CustomButton
+import com.universidad.finankids.ui.components.CustomButton
 
 @Composable
 fun ErrorScreen(message: String, onRetry: () -> Unit, onBack: () -> Unit) {

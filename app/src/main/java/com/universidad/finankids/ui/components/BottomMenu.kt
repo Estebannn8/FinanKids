@@ -1,4 +1,4 @@
-package com.universidad.finankids.ui.Components
+package com.universidad.finankids.ui.components
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image

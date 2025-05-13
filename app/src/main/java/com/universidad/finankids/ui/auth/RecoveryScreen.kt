@@ -38,8 +38,8 @@ import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.universidad.finankids.ui.Components.CustomButton
-import com.universidad.finankids.ui.Components.CustomTextField
+import com.universidad.finankids.ui.components.CustomButton
+import com.universidad.finankids.ui.components.CustomTextField
 import kotlinx.coroutines.delay
 
 @Composable

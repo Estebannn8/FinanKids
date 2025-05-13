@@ -38,13 +38,13 @@ import com.universidad.finankids.data.model.ActivityType
 import com.universidad.finankids.events.LessonEvent
 import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.state.LessonState
-import com.universidad.finankids.ui.Components.CustomButton
-import com.universidad.finankids.ui.Components.LoadingOverlay
-import com.universidad.finankids.ui.Components.lesson.AllLessonsCompletedScreen
-import com.universidad.finankids.ui.Components.lesson.ErrorScreen
-import com.universidad.finankids.ui.Components.lesson.FeedbackOverlay
-import com.universidad.finankids.ui.Components.lesson.LessonCompleteScreen
-import com.universidad.finankids.ui.Components.lesson.LessonLockedScreen
+import com.universidad.finankids.ui.components.CustomButton
+import com.universidad.finankids.ui.components.LoadingOverlay
+import com.universidad.finankids.ui.components.lesson.AllLessonsCompletedScreen
+import com.universidad.finankids.ui.components.lesson.ErrorScreen
+import com.universidad.finankids.ui.components.lesson.FeedbackOverlay
+import com.universidad.finankids.ui.components.lesson.LessonCompleteScreen
+import com.universidad.finankids.ui.components.lesson.LessonLockedScreen
 import com.universidad.finankids.ui.lesson.activities.DragPairsActivity
 import com.universidad.finankids.ui.lesson.activities.FillBlankActivity
 import com.universidad.finankids.ui.lesson.activities.MatchingActivity
@@ -218,15 +218,20 @@ fun LessonContentScreen(
                     dinero = lessonState.earnedDinero,
                     onContinue = {
                         onEvent(LessonEvent.CompleteLesson)
+                        // Usar los valores finales (con bonus si aplica) para actualizar el usuario
+                        val finalExp = if (lessonState.perfectLesson) (lessonState.earnedExp * 1.2f).toInt() else lessonState.earnedExp
+                        val finalDinero = if (lessonState.perfectLesson) (lessonState.earnedDinero * 1.2f).toInt() else lessonState.earnedDinero
+
                         userViewModel.markLessonAsCompleted(
                             lessonState.currentLesson?.id ?: "",
-                            lessonState.earnedExp,
-                            lessonState.earnedDinero
+                            finalExp,
+                            finalDinero
                         )
                         navController.popBackStack()
                         navController.navigate(AppScreens.HomeScreen.route)
                     },
-                    temaVisual = temaVisual
+                    temaVisual = temaVisual,
+                    perfectLesson = lessonState.perfectLesson
                 )
             }
             lessonState.isLessonLocked -> {

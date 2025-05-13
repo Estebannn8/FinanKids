@@ -1,4 +1,4 @@
-package com.universidad.finankids.ui.Components.lesson
+package com.universidad.finankids.ui.components.lesson
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.universidad.finankids.ui.Components.CustomButton
+import com.universidad.finankids.ui.components.CustomButton
 import com.universidad.finankids.ui.lesson.TemaVisual
 
 @Composable
