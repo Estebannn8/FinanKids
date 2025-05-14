@@ -107,7 +107,11 @@ fun FillBlankActivity(
                     optionText = option,
                     isSelected = state.selectedAnswer == option,
                     onClick = {
-                        onEvent(LessonEvent.SelectAnswer(option))
+                        val current = state.selectedAnswer
+                        onEvent(
+                            if (current == option) LessonEvent.SelectAnswer(null)
+                            else LessonEvent.SelectAnswer(option)
+                        )
                     }
                 )
             }

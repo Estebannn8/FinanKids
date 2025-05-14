@@ -38,6 +38,11 @@ fun CustomButton(
     onClick: () -> Unit,
     enabled: Boolean = true
 ) {
+
+    val actualGradientLight = if (enabled) gradientLight else Color(0xFFDADADA)
+    val actualGradientDark = if (enabled) gradientDark else Color(0xFFBDBDBD)
+    val actualBaseColor = if (enabled) baseColor else Color(0xFF9E9E9E)
+
     Button(
         onClick = onClick,
         enabled = enabled,
@@ -56,7 +61,7 @@ fun CustomButton(
                     .fillMaxSize()
                     .background(
                         brush = Brush.linearGradient(
-                            colors = listOf(gradientLight, gradientDark),
+                            colors = listOf(actualGradientLight, actualGradientDark),
                             start = Offset.Zero,
                             end = Offset(0f, Float.POSITIVE_INFINITY)
                         ),
@@ -64,7 +69,7 @@ fun CustomButton(
                     )
                     .border(
                         width = 3.dp,
-                        color = baseColor,
+                        color = actualBaseColor,
                         shape = RoundedCornerShape(40.88.dp)
                     )
             )
@@ -77,7 +82,7 @@ fun CustomButton(
                     .align(Alignment.TopCenter)
                     .offset(y = 6.dp) // desplazado para dejar más visible el gradiente arriba
                     .background(
-                        color = baseColor,
+                        color = actualBaseColor,
                         shape = RoundedCornerShape(40.88.dp)
                     ),
                 contentAlignment = Alignment.Center // centra el texto vertical y horizontalmente
@@ -105,9 +110,6 @@ fun CustomButton(
         }
     }
 }
-
-
-
 
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 100)

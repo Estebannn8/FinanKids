@@ -11,7 +11,7 @@ sealed class LessonEvent {
     object MoveToNextActivity : LessonEvent()
     object RestartLesson : LessonEvent()
     object ExitLesson : LessonEvent()
-    data class SelectAnswer(val answer: String) : LessonEvent()
+    data class SelectAnswer(val answer: String?) : LessonEvent()
     data class MatchPair(val pair: MatchingPair) : LessonEvent()
     data class SelectLeftItem(val item: String?) : LessonEvent()
     data class SelectRightItem(val item: String?) : LessonEvent()

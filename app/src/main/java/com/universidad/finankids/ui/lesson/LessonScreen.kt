@@ -348,8 +348,13 @@ fun LessonContentScreen(
 
                     BottomSection(
                         onContinue = { onEvent(LessonEvent.ContinueActivity) },
-                        temaVisual = temaVisual
+                        temaVisual = temaVisual,
+                        enabled = when (lessonState.currentActivity?.type) {
+                            ActivityType.MultipleChoice, ActivityType.FillBlank -> lessonState.selectedAnswer != null
+                            else -> true
+                        }
                     )
+
                 }
             }
         }
@@ -422,8 +427,16 @@ fun LessonHeader(
                 .align(Alignment.CenterEnd)
                 .offset(y = (-3).dp)
         ) {
+            val heartIconRes = when (lives) {
+                5 -> R.drawable.ic_full_heart
+                4 -> R.drawable.ic_heart_4l
+                3 -> R.drawable.ic_heart_3l
+                2 -> R.drawable.ic_heart_2l
+                else -> R.drawable.ic_heart_1l
+            }
+
             Image(
-                painter = painterResource(id = R.drawable.ic_full_heart),
+                painter = painterResource(id = heartIconRes),
                 contentDescription = "Vidas",
                 modifier = Modifier.size(22.dp)
             )
@@ -437,10 +450,12 @@ fun LessonHeader(
     }
 }
 
+
 @Composable
 fun BottomSection(
     onContinue: () -> Unit,
-    temaVisual: TemaVisual
+    temaVisual: TemaVisual,
+    enabled: Boolean = true
 ) {
     Box(
         modifier = Modifier
@@ -454,7 +469,8 @@ fun BottomSection(
             gradientLight = temaVisual.gradientLight,
             gradientDark = temaVisual.gradientDark,
             baseColor = temaVisual.baseColor,
-            onClick = onContinue
+            onClick = onContinue,
+            enabled = enabled
         )
     }
 }

@@ -1,21 +1,18 @@
 package com.universidad.finankids.ui.components.lesson
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,7 +46,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.universidad.finankids.R
 import com.universidad.finankids.ui.components.CustomButton
@@ -66,7 +62,6 @@ fun LessonCompleteScreen(
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.celebration))
 
-    // Estados visuales
     var showTitle by remember { mutableStateOf(false) }
     var showText by remember { mutableStateOf(false) }
     var showBaseRewards by remember { mutableStateOf(false) }
@@ -74,9 +69,22 @@ fun LessonCompleteScreen(
     var showBonusValues by remember { mutableStateOf(false) }
     var showFinalRewards by remember { mutableStateOf(false) }
     var showButton by remember { mutableStateOf(false) }
+    var showConfetti by remember { mutableStateOf(false) }
 
-    var displayedExp by remember { mutableStateOf(0) }
-    var displayedDinero by remember { mutableStateOf(0) }
+    var displayedExpTarget by remember { mutableStateOf(0) }
+    var displayedDineroTarget by remember { mutableStateOf(0) }
+
+    val animatedExp by animateIntAsState(
+        targetValue = displayedExpTarget,
+        animationSpec = tween(durationMillis = 900),
+        label = "expAnimation"
+    )
+
+    val animatedDinero by animateIntAsState(
+        targetValue = displayedDineroTarget,
+        animationSpec = tween(durationMillis = 900),
+        label = "dineroAnimation"
+    )
 
     val finalExp = if (perfectLesson) (exp * 1.2f).toInt() else exp
     val finalDinero = if (perfectLesson) (dinero * 1.2f).toInt() else dinero
@@ -84,28 +92,19 @@ fun LessonCompleteScreen(
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
-    // Confetis limitados a 3 y distribuidos por toda la pantalla
     val confettiCount = 3
     val confettiData = remember {
         List(confettiCount) { index ->
-            // Distribución estratégica: izquierda, centro y derecha
-            val offsetX = when(index) {
-                0 -> screenWidth * 0.2f  // Izquierda
-                1 -> screenWidth * 0.5f  // Centro
-                else -> screenWidth * 0.8f  // Derecha
+            val offsetX = when (index) {
+                0 -> screenWidth * 0.2f
+                1 -> screenWidth * 0.5f
+                else -> screenWidth * 0.8f
             }
-
-            // Alturas alternadas
-            val offsetY = if (index % 2 == 0) {
-                screenHeight * 0.3f  // Parte superior
-            } else {
-                screenHeight * 0.7f  // Parte inferior
-            }
-
+            val offsetY = if (index % 2 == 0) screenHeight * 0.3f else screenHeight * 0.7f
             ConfettiPlacement(
                 offsetX = offsetX,
                 offsetY = offsetY,
-                baseSize = (150..250).random().dp
+                baseSize = (100..180).random().dp // Reducido
             )
         }
     }
@@ -117,7 +116,7 @@ fun LessonCompleteScreen(
             targetValue = 1.4f,
             animationSpec = infiniteRepeatable(
                 animation = tween(
-                    durationMillis = 3000 + index * 1000, // Más variación
+                    durationMillis = 3000 + index * 1000,
                     easing = LinearEasing
                 ),
                 repeatMode = RepeatMode.Reverse
@@ -126,34 +125,32 @@ fun LessonCompleteScreen(
         )
     }
 
-    // 🎬 Secuencia de aparición
+    // 🎬 Secuencia optimizada
     LaunchedEffect(Unit) {
         showTitle = true
         delay(700)
         showText = true
         delay(400)
+
+        showConfetti = true // Primero confeti
+        delay(1200)
+        showConfetti = false // Apagamos luego
+
         showBaseRewards = true
+        displayedExpTarget = exp
+        displayedDineroTarget = dinero
+        delay(1000)
 
-        val steps = 30
-        val delayPerStep = 30L
-        repeat(steps) { step ->
-            val progress = (step + 1).toFloat() / steps
-            displayedExp = (exp * progress).toInt()
-            displayedDinero = (dinero * progress).toInt()
-            delay(delayPerStep)
-        }
-        displayedExp = exp
-        displayedDinero = dinero
-
-        delay(500)
         showBonusText = true
         delay(500)
+
         if (perfectLesson) {
             showBonusValues = true
             delay(800)
-            displayedExp = finalExp
-            displayedDinero = finalDinero
+            displayedExpTarget = finalExp
+            displayedDineroTarget = finalDinero
         }
+
         delay(400)
         showFinalRewards = true
         delay(300)
@@ -168,19 +165,23 @@ fun LessonCompleteScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-        // 🎊 Confeti distribuido por toda la pantalla (3 elementos)
-        confettiData.forEachIndexed { index, confetti ->
-            LottieAnimation(
-                composition = composition,
-                iterations = LottieConstants.IterateForever,
-                modifier = Modifier
-                    .size(confetti.baseSize * scaleFactors[index].value)
-                    .offset(x = confetti.offsetX - confetti.baseSize / 2, y = confetti.offsetY - confetti.baseSize / 2)
-                    .zIndex(10f)
-            )
+        // 🎊 Confeti sólo si se activa
+        if (showConfetti) {
+            confettiData.forEachIndexed { index, confetti ->
+                LottieAnimation(
+                    composition = composition,
+                    iterations = 1, // Solo una vez
+                    modifier = Modifier
+                        .size(confetti.baseSize * scaleFactors[index].value)
+                        .offset(
+                            x = confetti.offsetX - confetti.baseSize / 2,
+                            y = confetti.offsetY - confetti.baseSize / 2
+                        )
+                        .zIndex(10f)
+                )
+            }
         }
 
-        // 🏆 Contenido principal
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -220,7 +221,10 @@ fun LessonCompleteScreen(
             }
 
             Column(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp).offset(y = (-60).dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+                    .offset(y = (-60).dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AnimatedVisibility(
@@ -241,19 +245,21 @@ fun LessonCompleteScreen(
                     enter = fadeIn() + slideInHorizontally(initialOffsetX = { -100 })
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RewardItem(
                             iconRes = R.drawable.ic_experience,
-                            value = displayedExp,
+                            value = animatedExp,
                             showBonus = showBonusValues && perfectLesson,
                             bonusText = "+20%"
                         )
                         RewardItem(
                             iconRes = R.drawable.ic_coin,
-                            value = displayedDinero,
+                            value = animatedDinero,
                             showBonus = showBonusValues && perfectLesson,
                             bonusText = "+20%"
                         )
@@ -269,7 +275,10 @@ fun LessonCompleteScreen(
                         stiffness = Spring.StiffnessMedium
                     )
                 ) + fadeIn(),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp).offset(y = (-40).dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
+                    .offset(y = (-40).dp)
             ) {
                 CustomButton(
                     buttonText = "OK",
@@ -297,20 +306,13 @@ private fun RewardItem(
                 contentDescription = null,
                 modifier = Modifier.size(40.dp)
             )
-            AnimatedContent(
-                targetState = value,
-                transitionSpec = {
-                    (slideInVertically() + fadeIn()).togetherWith(fadeOut())
-                }
-            ) {
-                Text(
-                    text = "$it",
-                    fontSize = 20.sp,
-                    fontFamily = FontFamily(Font(R.font.luckiest_guy_regular)),
-                    color = Color.White,
-                    modifier = Modifier.padding(start = 4.dp)
-                )
-            }
+            Text(
+                text = "$value",
+                fontSize = 20.sp,
+                fontFamily = FontFamily(Font(R.font.luckiest_guy_regular)),
+                color = Color.White,
+                modifier = Modifier.padding(start = 4.dp)
+            )
             AnimatedVisibility(
                 visible = showBonus,
                 enter = scaleIn() + fadeIn()

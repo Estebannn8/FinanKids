@@ -216,6 +216,7 @@ class LessonsViewModel : ViewModel() {
                 } else {
                     moveToNextActivity()
                 }
+                return  // ✅ Salir inmediatamente
             }
             else -> {
                 if (validateCurrentActivity()) {
@@ -390,7 +391,7 @@ class LessonsViewModel : ViewModel() {
         }
     }
 
-    private fun selectAnswer(answer: String) {
+    private fun selectAnswer(answer: String?) {
         _state.update { it.copy(selectedAnswer = answer) }
     }
 
