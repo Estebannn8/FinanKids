@@ -66,6 +66,7 @@ class LessonsViewModel : ViewModel() {
             LessonEvent.ExitLesson -> exitLesson()
             is LessonEvent.SelectAnswer -> selectAnswer(event.answer)
             is LessonEvent.MatchPair -> addMatchedPair(event.pair)
+            is LessonEvent.UnmatchPair -> removeMatchedPair(event.pair)
             is LessonEvent.SelectLeftItem -> {
                 _state.update { it.copy(selectedLeft = event.item) }
             }
@@ -397,6 +398,12 @@ class LessonsViewModel : ViewModel() {
 
     private fun addMatchedPair(pair: MatchingPair) {
         _state.update { it.copy(matchedPairs = it.matchedPairs + pair) }
+    }
+
+    private fun removeMatchedPair(pair: MatchingPair) {
+        _state.update {
+            it.copy(matchedPairs = it.matchedPairs - pair)
+        }
     }
 
     private fun updateRightItems(items: List<String>) {

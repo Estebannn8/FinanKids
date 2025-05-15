@@ -351,6 +351,10 @@ fun LessonContentScreen(
                         temaVisual = temaVisual,
                         enabled = when (lessonState.currentActivity?.type) {
                             ActivityType.MultipleChoice, ActivityType.FillBlank -> lessonState.selectedAnswer != null
+                            ActivityType.Matching -> {
+                                val totalPairs = lessonState.currentActivity?.matchingPairs?.size ?: 0
+                                lessonState.matchedPairs.size == totalPairs
+                            }
                             else -> true
                         }
                     )

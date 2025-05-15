@@ -13,6 +13,7 @@ sealed class LessonEvent {
     object ExitLesson : LessonEvent()
     data class SelectAnswer(val answer: String?) : LessonEvent()
     data class MatchPair(val pair: MatchingPair) : LessonEvent()
+    data class UnmatchPair(val pair: MatchingPair) : LessonEvent()
     data class SelectLeftItem(val item: String?) : LessonEvent()
     data class SelectRightItem(val item: String?) : LessonEvent()
     data class UpdateRightItems(val items: List<String>) : LessonEvent()
