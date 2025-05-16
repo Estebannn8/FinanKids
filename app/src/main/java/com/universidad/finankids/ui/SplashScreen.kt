@@ -93,7 +93,7 @@ fun Splash(){
     Box(
         modifier = Modifier
             .fillMaxSize(), // Color de fondo
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.TopCenter
     ) {
 
         Image(
@@ -108,30 +108,17 @@ fun Splash(){
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 25.dp),
-            verticalArrangement = Arrangement.Bottom,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                AppTypography.BalooStroke(
-                    text = "FINANKIDS",
-                    strokeColor = Color(0xFF52154E),
-                    fillColor = Color(0xFF52154E),
-                    fontSize = 50.sp,
-                    letterSpacing = 2.sp,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 22.sp,
-                    strokeWidth = 5.5f
-                )
                 Image(
-                    painter = painterResource(id = R.drawable.ic_pesito_logo),
-                    contentDescription = "Logo de Pesito",
-                    modifier = Modifier
-                        .height(50.dp)
-                        .aspectRatio(1.2f)
-                        .offset(y = (-4).dp)
+                    painter = painterResource(id = R.drawable.ic_logo),
+                    contentDescription = "Logo",
+                    modifier = Modifier.offset(y = (50).dp)
                 )
             }
         }

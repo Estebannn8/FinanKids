@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,6 +50,17 @@ fun MainScreen(navController: NavController) {
             contentScale = ContentScale.Crop
         )
 
+        // Logo
+        Image(
+            painter = painterResource(id = R.drawable.ic_logo),
+            contentDescription = "Logo",
+            modifier = Modifier
+                .size(240.dp)
+                .align(Alignment.TopCenter)
+                .offset(y = 30.dp, x = 10.dp),
+            contentScale = ContentScale.Fit
+        )
+
         // Contenido principal sobre la imagen de fondo
         Column(
             modifier = Modifier
@@ -57,45 +69,13 @@ fun MainScreen(navController: NavController) {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
 
-            // Encabezado
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(screenHeight * 0.14f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    AppTypography.BalooStroke(
-                        text = "FINANKIDS",
-                        strokeColor = Color(0xFF52154E),
-                        fillColor = Color(0xFF52154E),
-                        fontSize = 50.sp,
-                        letterSpacing = 2.sp,
-                        textAlign = TextAlign.Center,
-                        lineHeight = 22.sp,
-                        strokeWidth = 5.5f
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_pesito_logo),
-                        contentDescription = "Logo de Pesito",
-                        modifier = Modifier
-                            .height(50.dp)
-                            .aspectRatio(1.2f)
-                            .offset(y = (-4).dp)
-                    )
-                }
-            }
-
             // Sección media
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(horizontal = 20.dp, vertical = 15.dp),
+                    .padding(horizontal = 20.dp, vertical = 15.dp)
+                    .offset(y = (160).dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
