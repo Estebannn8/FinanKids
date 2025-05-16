@@ -1,0 +1,100 @@
+{
+  "leccion_001": {
+    "title": "¡Hola, soy Pesito! 👋💰",
+    "order": 1,
+    "baseExp": 200,
+    "baseDinero": 100,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Qué es el dinero? 💸🤔",
+        "explanation": "¡Hola, soy Pesito! 🐷💬 El dinero es como una herramienta mágica ✨ que nos ayuda a conseguir cosas que necesitamos o queremos, como juguetes 🧸 o comida 🍎. ¡Vamos a aprender juntos! 🎉"
+      },
+      {
+        "type": "Matching",
+        "title": "¿Se compra con dinero? 💸✅❌",
+        "question": "Empareja cada cosa con 'Se compra con dinero' o 'No se compra con dinero': 🧠",
+        "matchingPairs": [
+          { "leftItem": "Un juguete 🧸", "rightItem": "Se compra con dinero ✅" },
+          { "leftItem": "Un abrazo 🤗", "rightItem": "No se compra con dinero ❌" },
+          { "leftItem": "Una manzana 🍎", "rightItem": "Se compra con dinero ✅" },
+          { "leftItem": "La amistad 👫", "rightItem": "No se compra con dinero ❌" }
+        ],
+        "shuffledRightItems": [
+          "Se compra con dinero ✅",
+          "No se compra con dinero ❌",
+          "Se compra con dinero ✅",
+          "No se compra con dinero ❌"
+        ]
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase ✍️📘",
+        "question": "El dinero sirve para ______ cosas. 🛍️",
+        "options": ["romper", "comprar", "tirar", "esconder"],
+        "correctAnswer": "comprar"
+      }
+    ]
+  },
+  "leccion_002": {
+    "title": "Monedas y billetes 🪙💵",
+    "order": 2,
+    "baseExp": 250,
+    "baseDinero": 150,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Pesito te enseña 📚🐷",
+        "explanation": "Las monedas son redondas y pequeñas 🪙, y los billetes son rectangulares y grandes 💵. Cada uno tiene un valor diferente 💲. ¡Aprende a reconocerlos! 👀"
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Cuál vale más? 🔍💲",
+        "question": "¿Qué vale más, una moneda de $1 🪙 o un billete de $10 💵?",
+        "options": ["Moneda de $1", "Billete de $10", "Las dos valen igual", "Ninguna"],
+        "correctAnswer": "Billete de $10"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase 🧩📝",
+        "question": "Arma esta frase sobre el dinero: 🧠",
+        "sentenceParts": ["es", "importante", "El", "dinero"],
+        "correctOrder": ["El", "dinero", "es", "importante"]
+      }
+    ]
+  },
+  "leccion_003": {
+    "title": "Gastar con cuidado 🛍️🤓",
+    "order": 3,
+    "baseExp": 180,
+    "baseDinero": 120,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Pesito te aconseja 🐷💬",
+        "explanation": "Es importante pensar antes de gastar 🤔. ¿Lo necesito? ✅ ¿Lo quiero? 🤩 Así evitamos gastar todo el dinero de una vez 💸."
+      },
+      {
+        "type": "DragPairs",
+        "title": "Ordena los pasos 🪄📋",
+        "question": "Pon en orden lo que debes hacer antes de gastar: 🧠💡",
+        "orderedPairs": [
+          { "item": "Pensar si lo necesito 🤔", "correctPosition": 1 },
+          { "item": "Comparar precios 🛒", "correctPosition": 2 },
+          { "item": "Decidir comprar 🛍️", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la idea 💭📝",
+        "question": "Antes de gastar, debes ______. 🧠",
+        "options": ["correr", "pensar", "gritar", "dormir"],
+        "correctAnswer": "pensar"
+      }
+    ]
+  }
+}

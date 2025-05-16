@@ -1,0 +1,108 @@
+{
+  "leccion_001": {
+    "title": "Pesito Comprador 🛍️🐷",
+    "order": 1,
+    "baseExp": 200,
+    "baseDinero": 100,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Comprar con cuidado 🛒🤔",
+        "explanation": "¡Hola! Soy Pesito Comprador 🐷💬. Comprar es divertido 🎉, pero debemos hacerlo con cuidado 🧠. ¡Compara precios 💵 y piensa antes de gastar! 💡"
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Qué hacer antes de comprar? 🧐✅",
+        "question": "¿Qué debes hacer antes de comprar algo? 💭",
+        "options": [
+          "Pensar si lo necesitas",
+          "Gastar todo",
+          "No mirar el precio",
+          "Comprar sin pensar"
+        ],
+        "correctAnswer": "Pensar si lo necesitas"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Arma la frase 🧩📝",
+        "question": "Ordena las palabras sobre comprar: 💬🛒",
+        "sentenceParts": ["precios", "Comparar", "importante", "es"],
+        "correctOrder": ["Comparar", "precios", "es", "importante"]
+      }
+    ]
+  },
+  "leccion_002": {
+    "title": "Ofertas y precios 🏷️💲",
+    "order": 2,
+    "baseExp": 250,
+    "baseDinero": 150,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Pesito te enseña 📚🐷",
+        "explanation": "A veces hay ofertas 🏷️ que nos permiten ahorrar 💰. Pero cuidado ⚠️, no siempre son necesarias. ¡Aprende a distinguir! 🧐"
+      },
+      {
+        "type": "Matching",
+        "title": "Une los conceptos 🔄🧠",
+        "question": "Empareja cada término con su significado: 🧩",
+        "matchingPairs": [
+          { "leftItem": "Oferta 🏷️", "rightItem": "Precio más bajo 💸" },
+          { "leftItem": "Necesidad ✅", "rightItem": "Algo importante 📌" },
+          { "leftItem": "Deseo 💭", "rightItem": "Algo que quieres 🤩" }
+        ],
+        "shuffledRightItems": [
+          "Precio más bajo 💸",
+          "Algo importante 📌",
+          "Algo que quieres 🤩"
+        ]
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase ✍️📘",
+        "question": "Una ______ es cuando algo cuesta menos. 📉",
+        "options": ["oferta", "pelota", "casa", "fruta"],
+        "correctAnswer": "oferta"
+      }
+    ]
+  },
+  "leccion_003": {
+    "title": "Lista de compras 📝🛒",
+    "order": 3,
+    "baseExp": 180,
+    "baseDinero": 120,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Pesito y su lista 🐷📝",
+        "explanation": "Hacer una lista de compras 🛒 ayuda a no gastar en cosas innecesarias 🚫. ¡Anota lo que necesitas ✅ y síguelo! 📋"
+      },
+      {
+        "type": "DragPairs",
+        "title": "Ordena los pasos 📋🧠",
+        "question": "Pon en orden cómo hacer una compra inteligente: 🧠🛍️",
+        "orderedPairs": [
+          { "item": "Hacer una lista 📝", "correctPosition": 1 },
+          { "item": "Comparar precios 💰", "correctPosition": 2 },
+          { "item": "Comprar solo lo necesario ✅", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Qué lleva una lista? 🛒✅",
+        "question": "¿Qué debe incluir una lista de compras? 💭",
+        "options": [
+          "Solo lo necesario",
+          "Todo lo que ves",
+          "Cosas caras",
+          "Nada"
+        ],
+        "correctAnswer": "Solo lo necesario"
+      }
+    ]
+  }
+}

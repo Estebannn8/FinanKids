@@ -1,0 +1,104 @@
+{
+  "leccion_001": {
+    "title": "Pesito Inversionista 💹🐷",
+    "order": 1,
+    "baseExp": 200,
+    "baseDinero": 100,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Qué es invertir? 🌱💰",
+        "explanation": "¡Hola! Soy Pesito Inversionista 🐷📈. Invertir es usar tu dinero para hacerlo crecer, como plantar una semilla 🌱 que se convierte en un árbol 🌳. ¡Vamos a aprender! 🎓"
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Para qué invertir? ❓💡",
+        "question": "¿Cuál es el objetivo de invertir? 🧐",
+        "options": [
+          "Hacer crecer el dinero",
+          "Gastarlo todo",
+          "Perderlo",
+          "Esconderlo"
+        ],
+        "correctAnswer": "Hacer crecer el dinero"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Construye la frase 🧩✍️",
+        "question": "Ordena las palabras sobre invertir: 📈💬",
+        "sentenceParts": ["el", "Invertir", "crecer", "hace", "dinero"],
+        "correctOrder": ["Invertir", "hace", "crecer", "el", "dinero"]
+      }
+    ]
+  },
+  "leccion_002": {
+    "title": "Tipos de inversión 🏦📚",
+    "order": 2,
+    "baseExp": 250,
+    "baseDinero": 150,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Pesito explica 🤓🐷",
+        "explanation": "Hay muchas formas de invertir 💡: en una cuenta de banco 🏦, en un negocio 🍋 o incluso en tu educación 📚. ¡Cada una tiene sus beneficios! ✅"
+      },
+      {
+        "type": "Matching",
+        "title": "Une las ideas 🔗🧠",
+        "question": "Empareja cada inversión con su ejemplo: 🧩",
+        "matchingPairs": [
+          { "leftItem": "Cuenta de banco 🏦", "rightItem": "Ahorro con intereses 💰" },
+          { "leftItem": "Negocio 🏪", "rightItem": "Vender limonada 🍋" },
+          { "leftItem": "Educación 📚", "rightItem": "Aprender algo nuevo 🧠" }
+        ],
+        "shuffledRightItems": ["Ahorro con intereses 💰", "Vender limonada 🍋", "Aprender algo nuevo 🧠"]
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase ✍️📘",
+        "question": "Invertir en educación te ayuda a ______. 📚",
+        "options": ["crecer", "dormir", "correr", "gritar"],
+        "correctAnswer": "crecer"
+      }
+    ]
+  },
+  "leccion_003": {
+    "title": "Paciencia y crecimiento 🕰️🌳",
+    "order": 3,
+    "baseExp": 180,
+    "baseDinero": 120,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Pesito te aconseja 🐷💬",
+        "explanation": "Invertir requiere paciencia 🕰️. ¡El dinero no crece de la noche a la mañana! 🌜➡️🌞 Pero con tiempo y cuidado, verás los resultados 📈🍀."
+      },
+      {
+        "type": "DragPairs",
+        "title": "Ordena los pasos 🔢🧩",
+        "question": "Pon en orden cómo invertir correctamente: 📊",
+        "orderedPairs": [
+          { "item": "Elegir una opción ✅", "correctPosition": 1 },
+          { "item": "Invertir con cuidado 💡", "correctPosition": 2 },
+          { "item": "Esperar con paciencia 🕰️", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Qué necesitas para invertir? 🤔📈",
+        "question": "¿Qué cualidad es importante al invertir? 🧠",
+        "options": [
+          "Paciencia",
+          "Prisa",
+          "Desinterés",
+          "Miedo"
+        ],
+        "correctAnswer": "Paciencia"
+      }
+    ]
+  }
+}

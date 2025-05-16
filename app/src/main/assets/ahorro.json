@@ -1,0 +1,94 @@
+{
+  "leccion_001": {
+    "title": "Pesito Ahorrador 🐷💰",
+    "order": 1,
+    "baseExp": 200,
+    "baseDinero": 100,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Qué es ahorrar? 🤔💵",
+        "explanation": "¡Hola! Soy Pesito Ahorrador 🐷💬. Ahorrar es guardar dinero poco a poco 💰 para usarlo después en algo importante 🎯. ¡Es como llenar una alcancía mágica! ✨🏦"
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Para qué ahorramos? 🎯💸",
+        "question": "¿Cuál es una buena razón para ahorrar? 🧠",
+        "options": ["Para comprar algo importante", "Para tirar el dinero", "Para perderlo", "Para regalarlo todo"],
+        "correctAnswer": "Para comprar algo importante"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Construye la frase 🧩📝",
+        "question": "Ordena las palabras sobre ahorrar: 💬💡",
+        "sentenceParts": ["el", "Ahorrar", "para", "es", "futuro"],
+        "correctOrder": ["Ahorrar", "es", "para", "el", "futuro"]
+      }
+    ]
+  },
+  "leccion_002": {
+    "title": "La alcancía mágica 🏦✨",
+    "order": 2,
+    "baseExp": 250,
+    "baseDinero": 150,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Pesito y su alcancía 🐷🔐",
+        "explanation": "Una alcancía es un lugar seguro para guardar tu dinero 🪙. Puede ser de cerámica, plástico o incluso una caja 📦. ¡Lo importante es no sacar el dinero sin pensar! 🤯"
+      },
+      {
+        "type": "Matching",
+        "title": "Une los conceptos 🔄🧠",
+        "question": "Empareja cada idea con su significado: 🧩",
+        "matchingPairs": [
+          { "leftItem": "Alcancía 🏦", "rightItem": "Lugar para guardar dinero 💰" },
+          { "leftItem": "Ahorrar 💵", "rightItem": "Guardar para después 🕒" },
+          { "leftItem": "Meta 🎯", "rightItem": "Objetivo a alcanzar 🏁" }
+        ],
+        "shuffledRightItems": ["Lugar para guardar dinero 💰", "Guardar para después 🕒", "Objetivo a alcanzar 🏁"]
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase ✍️📘",
+        "question": "Una ______ guarda el dinero seguro. 🛡️",
+        "options": ["pelota", "alcancía", "galleta", "puerta"],
+        "correctAnswer": "alcancía"
+      }
+    ]
+  },
+  "leccion_003": {
+    "title": "Metas de ahorro 🎯📈",
+    "order": 3,
+    "baseExp": 180,
+    "baseDinero": 120,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Pesito te guía 🐷🗺️",
+        "explanation": "Es bueno tener metas de ahorro 🎯, como comprar un juguete 🧸 o un libro 📚. Así sabes cuánto necesitas guardar 💰 y no gastas en otras cosas 🚫."
+      },
+      {
+        "type": "DragPairs",
+        "title": "Pasos para ahorrar 📋💡",
+        "question": "Ordena los pasos para alcanzar una meta: 🧠🪄",
+        "orderedPairs": [
+          { "item": "Elegir una meta 🎯", "correctPosition": 1 },
+          { "item": "Guardar dinero 💵", "correctPosition": 2 },
+          { "item": "Comprar lo deseado 🛍️", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Cuál es una buena meta? 🤔✅",
+        "question": "¿Qué es una buena meta de ahorro? 💭💰",
+        "options": ["Comprar un juguete", "Tirar el dinero", "Gastar todo", "No ahorrar"],
+        "correctAnswer": "Comprar un juguete"
+      }
+    ]
+  }
+}
