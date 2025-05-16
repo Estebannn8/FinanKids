@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -306,7 +307,6 @@ fun LessonContentScreen(
                     if (lessonState.showFeedback) {
                         FeedbackOverlay(
                             isCorrect = lessonState.lastAnswerCorrect ?: false,
-                            feedbackText = lessonState.feedbackText,
                             onDismiss = {
                                 onEvent(LessonEvent.HideFeedback)
 
@@ -319,7 +319,8 @@ fun LessonContentScreen(
                                 } else {
                                     onEvent(LessonEvent.ResetCurrentActivity)
                                 }
-                            }
+                            },
+                            temaVisual = temaVisual
                         )
                     }
 
@@ -378,13 +379,20 @@ fun LessonHeader(
             .padding(16.dp)
             .height(80.dp)
     ) {
+
+        val playButtonInteractionSource = remember { MutableInteractionSource() }
+
         // Boton Salir
         Box(
             modifier = Modifier
                 .size(40.dp)
                 .padding(bottom = 10.dp, start = 10.dp)
                 .align(Alignment.CenterStart)
-                .clickable(onClick = { onBackPressed() })
+                .clickable(
+                    onClick = { onBackPressed() },
+                    interactionSource = playButtonInteractionSource,
+                    indication = null
+                )
         ) {
             Image(
                 painter = painterResource(temaVisual.CloseIcon),

@@ -1,13 +1,8 @@
 package com.universidad.finankids.ui.components.lesson
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -34,13 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -69,7 +62,6 @@ fun LessonCompleteScreen(
     var showBonusValues by remember { mutableStateOf(false) }
     var showFinalRewards by remember { mutableStateOf(false) }
     var showButton by remember { mutableStateOf(false) }
-    var showConfetti by remember { mutableStateOf(false) }
 
     var displayedExpTarget by remember { mutableStateOf(0) }
     var displayedDineroTarget by remember { mutableStateOf(0) }
@@ -89,56 +81,15 @@ fun LessonCompleteScreen(
     val finalExp = if (perfectLesson) (exp * 1.2f).toInt() else exp
     val finalDinero = if (perfectLesson) (dinero * 1.2f).toInt() else dinero
 
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-
-    val confettiCount = 3
-    val confettiData = remember {
-        List(confettiCount) { index ->
-            val offsetX = when (index) {
-                0 -> screenWidth * 0.2f
-                1 -> screenWidth * 0.5f
-                else -> screenWidth * 0.8f
-            }
-            val offsetY = if (index % 2 == 0) screenHeight * 0.3f else screenHeight * 0.7f
-            ConfettiPlacement(
-                offsetX = offsetX,
-                offsetY = offsetY,
-                baseSize = (100..180).random().dp // Reducido
-            )
-        }
-    }
-
-    val transition = rememberInfiniteTransition(label = "confetti-scaling")
-    val scaleFactors = List(confettiCount) { index ->
-        transition.animateFloat(
-            initialValue = 0.7f,
-            targetValue = 1.4f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(
-                    durationMillis = 3000 + index * 1000,
-                    easing = LinearEasing
-                ),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "scale$index"
-        )
-    }
-
     // 🎬 Secuencia optimizada
     LaunchedEffect(Unit) {
         showTitle = true
         delay(700)
         showText = true
         delay(400)
-
-        showConfetti = true // Primero confeti
-        delay(1200)
-        showConfetti = false // Apagamos luego
-
-        showBaseRewards = true
         displayedExpTarget = exp
         displayedDineroTarget = dinero
+        showBaseRewards = true
         delay(1000)
 
         showBonusText = true
@@ -158,6 +109,7 @@ fun LessonCompleteScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        // Fondo
         Image(
             painter = painterResource(R.drawable.background_complete),
             contentDescription = "Background",
@@ -165,23 +117,17 @@ fun LessonCompleteScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-        // 🎊 Confeti sólo si se activa
-        if (showConfetti) {
-            confettiData.forEachIndexed { index, confetti ->
-                LottieAnimation(
-                    composition = composition,
-                    iterations = 1, // Solo una vez
-                    modifier = Modifier
-                        .size(confetti.baseSize * scaleFactors[index].value)
-                        .offset(
-                            x = confetti.offsetX - confetti.baseSize / 2,
-                            y = confetti.offsetY - confetti.baseSize / 2
-                        )
-                        .zIndex(10f)
-                )
-            }
-        }
+        // 🎊 Confeti
+        LottieAnimation(
+            composition = composition,
+            iterations = 1,
+            speed = 0.6f,
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(100f)
+        )
 
+        // Contenido
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -235,7 +181,7 @@ fun LessonCompleteScreen(
                         text = "\u00a1Bonus por cero errores!",
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.luckiest_guy_regular)),
-                        color = Color(0xFFFFC107),
+                        color = Color(0xFF52154E),
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
@@ -292,6 +238,7 @@ fun LessonCompleteScreen(
     }
 }
 
+
 @Composable
 private fun RewardItem(
     iconRes: Int,
@@ -322,7 +269,7 @@ private fun RewardItem(
                     fontSize = 20.sp,
                     fontFamily = FontFamily(Font(R.font.luckiest_guy_regular)),
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFFFC107),
+                    color = Color(0xFF52154E),
                     modifier = Modifier.padding(start = 4.dp)
                 )
             }
@@ -330,11 +277,6 @@ private fun RewardItem(
     }
 }
 
-data class ConfettiPlacement(
-    val offsetX: Dp,
-    val offsetY: Dp,
-    val baseSize: Dp
-)
 
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)

@@ -225,7 +225,6 @@ class LessonsViewModel : ViewModel() {
                         it.copy(
                             showFeedback = true,
                             lastAnswerCorrect = true,
-                            feedbackText = currentActivity.feedback ?: "¡Correcto!",
                             isLastActivityInLesson = isLastActivity
                         )
                     }
@@ -247,7 +246,6 @@ class LessonsViewModel : ViewModel() {
                             it.copy(
                                 showFeedback = true,
                                 lastAnswerCorrect = false,
-                                feedbackText = "¡Incorrecto! Inténtalo de nuevo",
                                 lives = newLives,
                                 errorCount = newErrorCount
                             )

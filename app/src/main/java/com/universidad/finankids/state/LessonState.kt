@@ -14,7 +14,6 @@ data class LessonState(
     val isLessonLocked: Boolean = false,
     val showFeedback: Boolean = false,
     val lastAnswerCorrect: Boolean? = null,
-    val feedbackText: String = "",
     val selectedAnswer: String? = null,
     val matchedPairs: Set<MatchingPair> = emptySet(),
     val selectedLeft: String? = null,

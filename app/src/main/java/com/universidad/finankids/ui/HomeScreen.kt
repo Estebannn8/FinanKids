@@ -604,12 +604,17 @@ fun HomeScreen(
                         finishedListener = { playButtonClicked = false }
                     )
 
+                    val playButtonInteractionSource = remember { MutableInteractionSource() }
+
                     Image(
                         painter = painterResource(id = section.playButtonIcon),
                         contentDescription = "Jugar",
                         modifier = Modifier
                             .scale(playButtonScale)
-                            .clickable {
+                            .clickable(
+                                interactionSource = playButtonInteractionSource,
+                                indication = null
+                            ) {
                                 playButtonClicked = true
                                 val categoryId = when(section.name) {
                                     "Ahorro" -> "ahorro"

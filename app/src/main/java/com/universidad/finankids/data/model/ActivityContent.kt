@@ -7,7 +7,6 @@ data class ActivityContent @JvmOverloads constructor(
     val question: String? = null,
     val options: List<String>? = null,
     val correctAnswer: String? = null,
-    val feedback: String? = null,
     val matchingPairs: List<MatchingPair>? = null,
     val orderedPairs: List<OrderedPair>? = null,
     val sentenceParts: List<String>? = null,
