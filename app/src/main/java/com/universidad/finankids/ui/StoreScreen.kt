@@ -125,6 +125,7 @@ fun StoreScreen(navController: NavController) {
                     .background(Color(0xFF023B62), RoundedCornerShape(20.dp))
             ) {
                 val scroll = rememberScrollState()
+                val itemCount = 5 // 🔹 aquí cambias cuántos avatares quieres mostrar
 
                 Column(
                     modifier = Modifier
@@ -133,19 +134,27 @@ fun StoreScreen(navController: NavController) {
                         .padding(top = 40.dp, bottom = 40.dp, start = 16.dp, end = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(30.dp)
                 ) {
-                    repeat(2) {
+                    val rows = (itemCount + 2) / 3 // 🔹 calcula las filas necesarias
+
+                    repeat(rows) { rowIndex ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            repeat(3) {
-                                AvatarItem(
-                                    modifier = Modifier.weight(1f)
-                                )
+                            repeat(3) { columnIndex ->
+                                val index = rowIndex * 3 + columnIndex
+                                if (index < itemCount) {
+                                    AvatarItem(
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                } else {
+                                    Spacer(modifier = Modifier.weight(1f)) // mantiene la cuadrícula
+                                }
                             }
                         }
                     }
                 }
+
 
                 // Título "AVATARES" sobrepuesto
                 Image(
