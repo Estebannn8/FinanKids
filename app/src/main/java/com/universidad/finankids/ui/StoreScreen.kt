@@ -125,7 +125,7 @@ fun StoreScreen(navController: NavController) {
                     .background(Color(0xFF023B62), RoundedCornerShape(20.dp))
             ) {
                 val scroll = rememberScrollState()
-                val itemCount = 5 // 🔹 aquí cambias cuántos avatares quieres mostrar
+                val itemCount = 5
 
                 Column(
                     modifier = Modifier
@@ -134,7 +134,7 @@ fun StoreScreen(navController: NavController) {
                         .padding(top = 40.dp, bottom = 40.dp, start = 16.dp, end = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(30.dp)
                 ) {
-                    val rows = (itemCount + 2) / 3 // 🔹 calcula las filas necesarias
+                    val rows = (itemCount + 2) / 3
 
                     repeat(rows) { rowIndex ->
                         Row(
