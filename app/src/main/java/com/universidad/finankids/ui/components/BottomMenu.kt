@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.universidad.finankids.R
 
@@ -35,29 +36,29 @@ fun BottomMenu(
     val iconMap = mapOf(
         "morado_perfil" to R.drawable.ic_morado_perfil,
         "morado_trofeo" to R.drawable.ic_morado_trofeo,
-        "morado_inicio" to R.drawable.ic_morado_inicio,
-        "morado_progreso" to R.drawable.ic_morado_progreso,
+        "morado_inicio" to R.drawable.ic_ciudad_menu,
+        "morado_progreso" to R.drawable.ic_morado_inicio,
         "morado_tienda" to R.drawable.ic_morado_tienda,
 
         "azul_perfil" to R.drawable.ic_azul_perfil,
         "azul_trofeo" to R.drawable.ic_azul_trofeo,
-        "azul_inicio" to R.drawable.ic_azul_inicio,
-        "azul_progreso" to R.drawable.ic_azul_progreso,
+        "azul_inicio" to R.drawable.ic_ciudad_menu,
+        "azul_progreso" to R.drawable.ic_azul_inicio,
         "azul_tienda" to R.drawable.ic_azul_tienda,
 
         "amarillo_perfil" to R.drawable.ic_amarillo_perfil,
         "amarillo_trofeo" to R.drawable.ic_amarillo_trofeo,
-        "amarillo_inicio" to R.drawable.ic_amarillo_inicio,
-        "amarillo_progreso" to R.drawable.ic_amarillo_progreso,
+        "amarillo_inicio" to R.drawable.ic_ciudad_menu,
+        "amarillo_progreso" to R.drawable.ic_amarillo_inicio,
         "amarillo_tienda" to R.drawable.ic_amarillo_tienda,
 
         "naranja_perfil" to R.drawable.ic_naranja_perfil,
         "naranja_trofeo" to R.drawable.ic_naranja_trofeo,
-        "naranja_inicio" to R.drawable.ic_naranja_inicio,
-        "naranja_progreso" to R.drawable.ic_naranja_progreso,
+        "naranja_inicio" to R.drawable.ic_ciudad_menu,
+        "naranja_progreso" to R.drawable.ic_naranja_inicio,
         "naranja_tienda" to R.drawable.ic_naranja_tienda,
 
-        "gris_inicio" to R.drawable.ic_gris_inicio
+        "gris_inicio" to R.drawable.ic_ciudad_menu
     )
 
     Box(
@@ -97,7 +98,6 @@ fun BottomMenu(
 
                 Box(
                     modifier = Modifier
-                        .weight(1f)
                         .height(56.dp)
                 ) {
                     IconButton(
