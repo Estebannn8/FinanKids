@@ -33,6 +33,8 @@ import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.components.BottomMenu
+import com.universidad.finankids.ui.Reward
+
 
 @Composable
 fun ProgressScreen(navController: NavController) {
