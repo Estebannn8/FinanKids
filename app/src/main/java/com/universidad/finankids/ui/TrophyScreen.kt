@@ -46,21 +46,17 @@ fun TrophyScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 30.dp, bottom = 32.dp),
-
             textAlign = TextAlign.Center
         )
 
-
-        Spacer(modifier = Modifier.weight(1f))
-
+        Spacer(modifier = Modifier.height(16.dp))
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(520.dp)
+                .height(600.dp)
                 .padding(horizontal = 16.dp)
         ) {
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -76,7 +72,17 @@ fun TrophyScreen(navController: NavController) {
                         .padding(start = 16.dp, end = 16.dp, bottom = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Spacer(modifier = Modifier.height(120.dp)) // espacio para muñeco
+                    // Imagen en la parte superior
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_pesito_logros),
+                        contentDescription = "Muñeco Logros",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 8.dp, bottom = 8.dp)
+                    )
+
 
                     repeat(6) {
                         Row(
@@ -128,7 +134,6 @@ fun TrophyScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
-
 
 @Composable
 fun AchievementsContainer(
