@@ -1,7 +1,11 @@
 package com.universidad.finankids.ui
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -32,14 +37,17 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.universidad.finankids.R
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.components.BottomMenu
+import com.universidad.finankids.ui.components.ChangeAvatarOverlay
 import com.universidad.finankids.ui.components.LoadingOverlay
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AvataresViewModel
@@ -68,10 +76,12 @@ fun ProfileScreen(
         LoadingOverlay()
     }
 
-
     var selectedItem by remember { mutableStateOf("perfil") }
-
     val sectionMenuColor = Color(0xFFC9CED6)
+
+    // Estado para mostrar overlay y desde qué pestaña abre
+    var showOverlay by remember { mutableStateOf(false) }
+    var startWithAvatars by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -121,10 +131,28 @@ fun ProfileScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        // Reemplaza este bloque de código (el Box que contiene el avatar y marco):
+
+                        // Avatar + marco clickable para abrir overlay
+                        var avatarBoxClicked by remember { mutableStateOf(false) }
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val avatarBoxScale by animateFloatAsState(
+                            targetValue = if (avatarBoxClicked) 1.1f else 1f, // 🔹 Zoom sutil
+                            animationSpec = tween(durationMillis = 200),
+                            finishedListener = { avatarBoxClicked = false }
+                        )
+
                         Box(
                             modifier = Modifier
-                                .size(100.dp),
+                                .size(100.dp)
+                                .scale(avatarBoxScale)
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = null // 🔹 sin sombreado
+                                ) {
+                                    avatarBoxClicked = true
+                                    startWithAvatars = true
+                                    showOverlay = true
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             // --- Avatar ---
@@ -168,12 +196,31 @@ fun ProfileScreen(
                             }
 
                             // --- Marco ---
+                            var frameClicked by remember { mutableStateOf(false) }
+                            val interactionSource = remember { MutableInteractionSource() }
+                            val frameScale by animateFloatAsState(
+                                targetValue = if (frameClicked) 1.1f else 1f, // 🔹 Zoom suave
+                                animationSpec = tween(durationMillis = 200),
+                                finishedListener = { frameClicked = false }
+                            )
+
                             Image(
                                 painter = painterResource(id = R.drawable.ic_frame_naranja),
                                 contentDescription = "Marco del avatar",
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .scale(frameScale)
+                                    .clickable(
+                                        interactionSource = interactionSource,
+                                        indication = null
+                                    ) {
+                                        frameClicked = true
+                                        startWithAvatars = true
+                                        showOverlay = true
+                                    },
                                 contentScale = ContentScale.Fit
                             )
+
                         }
                     }
 
@@ -566,17 +613,18 @@ fun ProfileScreen(
         )
 
         Spacer(modifier = Modifier.height(10.dp))
+
+        // Mostrar Overlay
+        if (showOverlay) {
+            Dialog(onDismissRequest = { showOverlay = false }) {
+                ChangeAvatarOverlay(
+                    startWithAvatars = startWithAvatars,
+                    onDismiss = { showOverlay = false }
+                )
+            }
+        }
+
     }
 }
 
 
-/*
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ProfileScreenPreview() {
-    val navController = rememberNavController()
-    CompositionLocalProvider(LocalContext provides LocalContext.current) {
-        ProfileScreen(navController = navController)
-    }
-}
- */

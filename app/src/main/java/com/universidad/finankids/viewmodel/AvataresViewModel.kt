@@ -70,7 +70,7 @@ class AvataresViewModel : ViewModel() {
             val avatar = doc.toObject(Avatar::class.java)?.copy(id = doc.id)
             _state.update {
                 it.copy(
-                    currentAvatar = avatar, // <-- Aquí va el avatar actual del usuario
+                    currentAvatar = avatar,
                     isLoading = false
                 )
             }
