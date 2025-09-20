@@ -7,7 +7,7 @@ fun navigateToScreen(navController: NavController, item: String) {
         "inicio" -> AppScreens.HomeScreen.route
         "perfil" -> AppScreens.ProfileScreen.route
         "trofeo" -> AppScreens.TrophyScreen.route
-        "progreso" -> AppScreens.ProgressScreen.route
+        "banco" -> AppScreens.BankScreen.route
         "tienda" -> AppScreens.StoreScreen.route
         else -> return
     }

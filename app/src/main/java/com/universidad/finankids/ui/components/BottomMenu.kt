@@ -31,31 +31,31 @@ fun BottomMenu(
     selectedItem: String,
     onItemSelected: (String) -> Unit
 ) {
-    val navIconNames = listOf("perfil", "trofeo", "inicio", "progreso", "tienda")
+    val navIconNames = listOf("perfil", "trofeo", "inicio", "banco", "tienda")
 
     val iconMap = mapOf(
         "morado_perfil" to R.drawable.ic_morado_perfil,
         "morado_trofeo" to R.drawable.ic_morado_trofeo,
         "morado_inicio" to R.drawable.ic_ciudad_menu,
-        "morado_progreso" to R.drawable.ic_morado_inicio,
+        "morado_banco" to R.drawable.ic_morado_inicio,
         "morado_tienda" to R.drawable.ic_morado_tienda,
 
         "azul_perfil" to R.drawable.ic_azul_perfil,
         "azul_trofeo" to R.drawable.ic_azul_trofeo,
         "azul_inicio" to R.drawable.ic_ciudad_menu,
-        "azul_progreso" to R.drawable.ic_azul_inicio,
+        "azul_banco" to R.drawable.ic_azul_inicio,
         "azul_tienda" to R.drawable.ic_azul_tienda,
 
         "amarillo_perfil" to R.drawable.ic_amarillo_perfil,
         "amarillo_trofeo" to R.drawable.ic_amarillo_trofeo,
         "amarillo_inicio" to R.drawable.ic_ciudad_menu,
-        "amarillo_progreso" to R.drawable.ic_amarillo_inicio,
+        "amarillo_banco" to R.drawable.ic_amarillo_inicio,
         "amarillo_tienda" to R.drawable.ic_amarillo_tienda,
 
         "naranja_perfil" to R.drawable.ic_naranja_perfil,
         "naranja_trofeo" to R.drawable.ic_naranja_trofeo,
         "naranja_inicio" to R.drawable.ic_ciudad_menu,
-        "naranja_progreso" to R.drawable.ic_naranja_inicio,
+        "naranja_banco" to R.drawable.ic_naranja_inicio,
         "naranja_tienda" to R.drawable.ic_naranja_tienda,
 
         "gris_inicio" to R.drawable.ic_ciudad_menu
@@ -125,7 +125,7 @@ fun getStaticColorForIcon(iconName: String): String {
         "perfil" -> "morado"
         "trofeo" -> "amarillo"
         "inicio" -> "gris"
-        "progreso" -> "naranja"
+        "banco" -> "naranja"
         "tienda" -> "azul"
         else -> "morado"
     }

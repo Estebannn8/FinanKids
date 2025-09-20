@@ -12,7 +12,7 @@ import com.universidad.finankids.ui.auth.AuthScreen
 import com.universidad.finankids.ui.HomeScreen
 import com.universidad.finankids.ui.MainScreen
 import com.universidad.finankids.ui.ProfileScreen
-import com.universidad.finankids.ui.ProgressScreen
+import com.universidad.finankids.ui.BankScreen
 import com.universidad.finankids.ui.auth.RecoveryScreen
 import com.universidad.finankids.ui.SplashScreen
 import com.universidad.finankids.ui.StoreScreen
@@ -89,8 +89,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             TrophyScreen(navController)
         }
 
-        composable(AppScreens.ProgressScreen.route) {
-            ProgressScreen(navController)
+        composable(AppScreens.BankScreen.route) {
+            BankScreen(navController)
         }
 
         composable(AppScreens.StoreScreen.route) {

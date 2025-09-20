@@ -10,7 +10,7 @@ sealed class  AppScreens(val route: String){
     object HomeScreen: AppScreens(route = "home_screen")
     object ProfileScreen: AppScreens(route = "profile_screen")
     object TrophyScreen: AppScreens(route = "trophy_screen")
-    object ProgressScreen: AppScreens(route = "progress_screen")
+    object BankScreen: AppScreens(route = "bank_screen")
     object StoreScreen: AppScreens(route = "store_screen")
 
     object LessonScreen: AppScreens("lesson_screen/{category}") {
