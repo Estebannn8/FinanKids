@@ -45,6 +45,8 @@ class UserViewModel : ViewModel() {
     private fun handleEvent(event: UserEvent) {
         when (event) {
             is UserEvent.LoadUser -> loadUserData(event.uid)
+            is UserEvent.ChangeAvatar -> changeAvatar(event.avatarId)
+            is UserEvent.ChangeMarco -> changeMarco(event.marcoId)
             UserEvent.Logout -> logout()
             is UserEvent.LoadingSuccess -> updateUserData(event.userData)
             is UserEvent.LoadingFailed -> setError(event.error)
@@ -79,6 +81,44 @@ class UserViewModel : ViewModel() {
                         errorMessage = "Error al cargar datos: ${e.message}"
                     )
                 }
+            }
+        }
+    }
+
+    private fun changeAvatar(avatarId: String) {
+        viewModelScope.launch {
+            try {
+                val uid = _state.value.userData.uid
+                val userRef = firestore.collection("usuarios").document(uid)
+
+                userRef.update("avatarActual", avatarId).await()
+
+                _state.update { state ->
+                    state.copy(
+                        userData = state.userData.copy(avatarActual = avatarId)
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(errorMessage = "Error al cambiar avatar: ${e.message}") }
+            }
+        }
+    }
+
+    private fun changeMarco(marcoId: String) {
+        viewModelScope.launch {
+            try {
+                val uid = _state.value.userData.uid
+                val userRef = firestore.collection("usuarios").document(uid)
+
+                userRef.update("marcoActual", marcoId).await()
+
+                _state.update { state ->
+                    state.copy(
+                        userData = state.userData.copy(marcoActual = marcoId)
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(errorMessage = "Error al cambiar marco: ${e.message}") }
             }
         }
     }

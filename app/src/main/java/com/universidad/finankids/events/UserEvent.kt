@@ -12,4 +12,7 @@ sealed class UserEvent {
     data class LoadingFailed(val error: String) : UserEvent()
 
     object ClearError : UserEvent()
+
+    data class ChangeAvatar(val avatarId: String) : UserEvent()
+    data class ChangeMarco(val marcoId: String) : UserEvent()
 }

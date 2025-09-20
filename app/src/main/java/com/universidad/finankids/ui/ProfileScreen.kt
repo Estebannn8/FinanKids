@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +45,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.google.firebase.auth.FirebaseAuth
 import com.universidad.finankids.R
+import com.universidad.finankids.events.AvatarEvent
+import com.universidad.finankids.events.UserEvent
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.components.BottomMenu
 import com.universidad.finankids.ui.components.ChangeAvatarOverlay
@@ -60,10 +64,25 @@ fun ProfileScreen(
     userViewModel: UserViewModel,
     avataresViewModel: AvataresViewModel
 ) {
-
     // Estados observables
     val userState by userViewModel.state.collectAsState()
     val avatarState by avataresViewModel.state.collectAsState()
+
+    // Lanzar carga de datos al entrar a la pantalla
+    LaunchedEffect(Unit) {
+        val uid = userViewModel.state.value.userData.uid
+        if (uid.isEmpty()) {
+            // si aún no tenemos uid en el estado, lo pedimos desde AuthViewModel
+            val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+            if (currentUid != null) {
+                userViewModel.sendEvent(UserEvent.LoadUser(currentUid))
+            }
+        } else {
+            userViewModel.sendEvent(UserEvent.LoadUser(uid))
+        }
+
+        avataresViewModel.sendEvent(AvatarEvent.LoadAllAvatars)
+    }
 
     // Verificar si los datos están cargados
     val isDataLoaded = remember(userState, avatarState) {
@@ -79,9 +98,21 @@ fun ProfileScreen(
     var selectedItem by remember { mutableStateOf("perfil") }
     val sectionMenuColor = Color(0xFFC9CED6)
 
-    // Estado para mostrar overlay y desde qué pestaña abre
+    // Overlay
     var showOverlay by remember { mutableStateOf(false) }
     var startWithAvatars by remember { mutableStateOf(true) }
+
+    // Marcos locales (para mostrar el actual)
+    val frames = listOf(
+        "amarillo" to R.drawable.ic_frame_amarillo,
+        "azul" to R.drawable.ic_frame_azul,
+        "morado" to R.drawable.ic_frame_morado,
+        "naranja" to R.drawable.ic_frame_naranja,
+        "azulrey" to R.drawable.ic_frame_azulrey,
+        "gris" to R.drawable.ic_frame_placeholder,
+        "rosado" to R.drawable.ic_frame_rosado,
+        "cafe" to R.drawable.ic_frame_cafe
+    )
 
     Column(
         modifier = Modifier
@@ -147,7 +178,7 @@ fun ProfileScreen(
                                 .scale(avatarBoxScale)
                                 .clickable(
                                     interactionSource = interactionSource,
-                                    indication = null // 🔹 sin sombreado
+                                    indication = null
                                 ) {
                                     avatarBoxClicked = true
                                     startWithAvatars = true
@@ -156,70 +187,40 @@ fun ProfileScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             // --- Avatar ---
-                            if (avatarState.isLoading || avatarState.currentAvatar == null) {
-                                // Mostrar placeholder mientras carga
+                            // --- Avatar actual dinámico ---
+                            val currentAvatar = avatarState.avatarList.find { it.id == userState.userData.avatarActual }
+
+                            if (currentAvatar?.imageUrl?.isNotEmpty() == true) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.ic_avatar_placeholder),
-                                    contentDescription = "Avatar cargando",
+                                    painter = rememberAsyncImagePainter(currentAvatar.imageUrl),
+                                    contentDescription = "Avatar del usuario",
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(8.dp)
-                                        .offset(x = 0.6.dp, y = 2.4.dp),
-                                    contentScale = ContentScale.Inside
+                                        .padding(8.dp),
+                                    contentScale = ContentScale.Crop
                                 )
                             } else {
-                                // Mostrar avatar cuando esté cargado
-                                avatarState.currentAvatar?.let { avatar ->
-                                    if (avatar.imageUrl.isNotEmpty()) {
-                                        Image(
-                                            painter = rememberAsyncImagePainter(avatar.imageUrl),
-                                            contentDescription = "Avatar del usuario",
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(8.dp)
-                                                .offset(x = 0.6.dp, y = 2.4.dp),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    } else {
-                                        // Mostrar placeholder si no hay imagen
-                                        Image(
-                                            painter = painterResource(id = R.drawable.ic_avatar_placeholder),
-                                            contentDescription = "Avatar predeterminado",
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(8.dp)
-                                                .offset(x = 0.6.dp, y = 2.4.dp),
-                                            contentScale = ContentScale.Inside
-                                        )
-                                    }
-                                }
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_avatar_placeholder),
+                                    contentDescription = "Avatar predeterminado",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp),
+                                    contentScale = ContentScale.Inside
+                                )
                             }
 
-                            // --- Marco ---
-                            var frameClicked by remember { mutableStateOf(false) }
-                            val interactionSource = remember { MutableInteractionSource() }
-                            val frameScale by animateFloatAsState(
-                                targetValue = if (frameClicked) 1.1f else 1f, // 🔹 Zoom suave
-                                animationSpec = tween(durationMillis = 200),
-                                finishedListener = { frameClicked = false }
-                            )
 
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_frame_naranja),
-                                contentDescription = "Marco del avatar",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .scale(frameScale)
-                                    .clickable(
-                                        interactionSource = interactionSource,
-                                        indication = null
-                                    ) {
-                                        frameClicked = true
-                                        startWithAvatars = true
-                                        showOverlay = true
-                                    },
-                                contentScale = ContentScale.Fit
-                            )
+                            // --- Marco actual dinámico ---
+                            val currentFrame = frames.find { it.first == userState.userData.marcoActual }
+                            currentFrame?.let { (_, drawable) ->
+                                Image(
+                                    painter = painterResource(id = drawable),
+                                    contentDescription = "Marco del avatar",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
 
                         }
                     }
@@ -614,10 +615,11 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Mostrar Overlay
         if (showOverlay) {
             Dialog(onDismissRequest = { showOverlay = false }) {
                 ChangeAvatarOverlay(
+                    userViewModel = userViewModel,
+                    avataresViewModel = avataresViewModel,
                     startWithAvatars = startWithAvatars,
                     onDismiss = { showOverlay = false }
                 )

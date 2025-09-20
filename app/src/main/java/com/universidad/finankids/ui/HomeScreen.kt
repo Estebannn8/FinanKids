@@ -192,44 +192,28 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     // Avatar
-                    if (avatarState.isLoading || avatarState.currentAvatar == null) {
-                        // Mostrar placeholder mientras carga
+                    val currentAvatar = avatarState.avatarList.find { it.id == userState.userData.avatarActual }
+
+                    if (currentAvatar?.imageUrl?.isNotEmpty() == true) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_avatar_placeholder),
-                            contentDescription = "Avatar cargando",
+                            painter = rememberAsyncImagePainter(currentAvatar.imageUrl),
+                            contentDescription = "Avatar del usuario",
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(8.dp)
-                                .zIndex(3f)
+                                .offset(x = 0.6.dp, y = 2.4.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_avatar_placeholder),
+                            contentDescription = "Avatar predeterminado",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp)
                                 .offset(x = 0.6.dp, y = 2.4.dp),
                             contentScale = ContentScale.Inside
                         )
-                    } else {
-                        // Mostrar avatar cuando esté cargado
-                        avatarState.currentAvatar?.let { avatar ->
-                            if (avatar.imageUrl.isNotEmpty()) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(avatar.imageUrl),
-                                    contentDescription = "Avatar del usuario",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(8.dp)
-                                        .offset(x = 0.6.dp, y = 2.4.dp),
-                                    contentScale = ContentScale.Crop
-                                )
-                            } else {
-                                // Mostrar placeholder si no hay imagen
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_avatar_placeholder),
-                                    contentDescription = "Avatar predeterminado",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(8.dp)
-                                        .offset(x = 0.6.dp, y = 2.4.dp),
-                                    contentScale = ContentScale.Inside
-                                )
-                            }
-                        }
                     }
 
                     // Marco

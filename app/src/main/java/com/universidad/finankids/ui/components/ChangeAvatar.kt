@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,6 +24,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,41 +39,50 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import coil.compose.rememberAsyncImagePainter
 import com.universidad.finankids.R
+import com.universidad.finankids.data.model.Avatar
+import com.universidad.finankids.events.UserEvent
+import com.universidad.finankids.viewmodel.AvataresViewModel
+import com.universidad.finankids.viewmodel.UserViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChangeAvatarOverlay(
+    userViewModel: UserViewModel,
+    avataresViewModel: AvataresViewModel,
     startWithAvatars: Boolean = true,
     onDismiss: () -> Unit
 ) {
-    // 🔹 Estado: pestaña activa (true = avatares, false = marcos)
+    val userState by userViewModel.state.collectAsState()
+    val avatarState by avataresViewModel.state.collectAsState()
+
     var isAvatarsTab by remember { mutableStateOf(startWithAvatars) }
 
-    // 🔹 Estado simulado de selección
-    var selectedAvatar by remember { mutableStateOf(0) }
-    var selectedFrame by remember { mutableStateOf(0) }
+    // 🔹 Estado actual desde Firestore
+    var selectedAvatar by remember { mutableStateOf(userState.userData.avatarActual) }
+    var selectedFrame by remember { mutableStateOf(userState.userData.marcoActual) }
 
-    // 🔹 Lista de avatares (mock, 12 placeholders por ahora)
-    val avatars = List(12) { R.drawable.ic_avatar_placeholder }
+    // 🔹 Avatares desbloqueados del usuario
+    val unlockedAvatars = avatarState.avatarList.filter {
+        userState.userData.avataresDesbloqueados.contains(it.id)
+    }
 
-    // 🔹 Lista de marcos (8 fijos, predeterminados)
+    // 🔹 Marcos locales (ID = clave, drawable = recurso)
     val frames = listOf(
-        R.drawable.ic_frame_amarillo,
-        R.drawable.ic_frame_azul,
-        R.drawable.ic_frame_morado,
-        R.drawable.ic_frame_naranja,
-        R.drawable.ic_frame_azulrey,
-        R.drawable.ic_frame_placeholder, // gris
-        R.drawable.ic_frame_rosado,
-        R.drawable.ic_frame_cafe
+        "amarillo" to R.drawable.ic_frame_amarillo,
+        "azul" to R.drawable.ic_frame_azul,
+        "morado" to R.drawable.ic_frame_morado,
+        "naranja" to R.drawable.ic_frame_naranja,
+        "azulrey" to R.drawable.ic_frame_azulrey,
+        "gris" to R.drawable.ic_frame_placeholder,
+        "rosado" to R.drawable.ic_frame_rosado,
+        "cafe" to R.drawable.ic_frame_cafe
     )
 
-    // 🔹 Ancho de pantalla para tamaños proporcionales
+    // Ancho de pantalla para tamaños proporcionales
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val buttonSizeActive = screenWidth * 0.42f   // 32% del ancho
     val buttonSizeInactive = screenWidth * 0.32f // 25% del ancho
@@ -98,25 +107,43 @@ fun ChangeAvatarOverlay(
                 .padding(top = 60.dp, bottom = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 🔹 Avatar + Marco actual (dinámico)
+            // 🔹 Avatar + Marco actual
             Box(
                 modifier = Modifier.size(90.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = avatars[selectedAvatar]),
-                    contentDescription = "Avatar del usuario",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    contentScale = ContentScale.Crop
-                )
-                Image(
-                    painter = painterResource(id = frames[selectedFrame]),
-                    contentDescription = "Marco del avatar",
-                    modifier = Modifier.matchParentSize(),
-                    contentScale = ContentScale.Fit
-                )
+                // Avatar actual
+                val currentAvatar = unlockedAvatars.find { it.id == selectedAvatar }
+                if (currentAvatar?.imageUrl?.isNotEmpty() == true) {
+                    Image(
+                        painter = rememberAsyncImagePainter(currentAvatar.imageUrl),
+                        contentDescription = "Avatar del usuario",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_avatar_placeholder),
+                        contentDescription = "Avatar predeterminado",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                // Marco actual
+                val currentFrame = frames.find { it.first == selectedFrame }
+                currentFrame?.let { (_, drawable) ->
+                    Image(
+                        painter = painterResource(id = drawable),
+                        contentDescription = "Marco actual",
+                        modifier = Modifier.matchParentSize(),
+                        contentScale = ContentScale.Fit
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -135,15 +162,21 @@ fun ChangeAvatarOverlay(
             // 🔹 Contenido dinámico
             if (isAvatarsTab) {
                 AvataresGrid(
-                    avatars = avatars,
+                    avatars = unlockedAvatars,
                     selectedAvatar = selectedAvatar,
-                    onAvatarSelected = { selectedAvatar = it }
+                    onAvatarSelected = { avatarId ->
+                        selectedAvatar = avatarId
+                        userViewModel.sendEvent(UserEvent.ChangeAvatar(avatarId))
+                    }
                 )
             } else {
                 MarcosGrid(
                     frames = frames,
                     selectedFrame = selectedFrame,
-                    onFrameSelected = { selectedFrame = it }
+                    onFrameSelected = { marcoId ->
+                        selectedFrame = marcoId
+                        userViewModel.sendEvent(UserEvent.ChangeMarco(marcoId))
+                    }
                 )
             }
         }
@@ -203,18 +236,15 @@ fun ChangeAvatarOverlay(
                     isAvatarsTab = false
                 }
         )
-
-
     }
 }
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AvataresGrid(
-    avatars: List<Int>,
-    selectedAvatar: Int,
-    onAvatarSelected: (Int) -> Unit
+    avatars: List<Avatar>,
+    selectedAvatar: String,
+    onAvatarSelected: (String) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -224,26 +254,34 @@ fun AvataresGrid(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(avatars.size) { index ->
-            val avatarRes = avatars[index]
-
+            val avatar = avatars[index]
             Box(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(4.dp)
                     .border(
-                        width = if (index == selectedAvatar) 4.dp else 0.dp,
-                        color = if (index == selectedAvatar) Color(0xFF53164F) else Color.Transparent,
+                        width = if (avatar.id == selectedAvatar) 4.dp else 0.dp,
+                        color = if (avatar.id == selectedAvatar) Color(0xFF53164F) else Color.Transparent,
                         shape = RoundedCornerShape(8.dp)
                     )
-                    .clickable { onAvatarSelected(index) },
+                    .clickable { onAvatarSelected(avatar.id) },
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = avatarRes),
-                    contentDescription = "Avatar $index",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+                if (avatar.imageUrl.isNotEmpty()) {
+                    Image(
+                        painter = rememberAsyncImagePainter(avatar.imageUrl),
+                        contentDescription = "Avatar ${avatar.id}",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_avatar_placeholder),
+                        contentDescription = "Avatar placeholder",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
         }
     }
@@ -252,9 +290,9 @@ fun AvataresGrid(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MarcosGrid(
-    frames: List<Int>,
-    selectedFrame: Int,
-    onFrameSelected: (Int) -> Unit
+    frames: List<Pair<String, Int>>,
+    selectedFrame: String,
+    onFrameSelected: (String) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -264,76 +302,27 @@ fun MarcosGrid(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(frames.size) { index ->
-            val frameRes = frames[index]
-
-            // 🔹 Contenedor externo: borde de selección
+            val (marcoId, frameRes) = frames[index]
             Box(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(4.dp)
-                    .clickable { onFrameSelected(index) }
+                    .clickable { onFrameSelected(marcoId) }
                     .then(
-                        if (index == selectedFrame) {
-                            Modifier
-                                .border(
-                                    width = 3.dp,
-                                    color = Color(0xFF53164F)
-                                )
+                        if (marcoId == selectedFrame) {
+                            Modifier.border(width = 3.dp, color = Color(0xFF53164F))
                         } else Modifier
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                // 🔹 Contenido interno: imagen del marco
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(6.dp), // espacio para que el borde quede afuera
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = frameRes),
-                        contentDescription = "Marco $index",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Fit
-                    )
-                }
+                Image(
+                    painter = painterResource(id = frameRes),
+                    contentDescription = "Marco $marcoId",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
             }
         }
     }
 }
 
-@Preview(showBackground = true, widthDp = 400, heightDp = 800)
-@Composable
-private fun ChangeAvatarOverlayDialogPreviewAvatares() {
-    Dialog(onDismissRequest = {}) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.3f)),
-            contentAlignment = Alignment.Center
-        ) {
-            ChangeAvatarOverlay(
-                startWithAvatars = true,
-                onDismiss = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, widthDp = 400, heightDp = 800)
-@Composable
-private fun ChangeAvatarOverlayDialogPreviewMarcos() {
-    Dialog(onDismissRequest = {}) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.3f)),
-            contentAlignment = Alignment.Center
-        ) {
-            ChangeAvatarOverlay(
-                startWithAvatars = false,
-                onDismiss = {}
-            )
-        }
-    }
-}
