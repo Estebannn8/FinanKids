@@ -123,8 +123,7 @@ fun ProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(56.dp))
 
         Box(
             modifier = Modifier

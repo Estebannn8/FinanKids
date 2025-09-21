@@ -16,7 +16,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,20 +40,29 @@ fun StoreScreen(navController: NavController) {
             .fillMaxSize()
             .background(Color(0xFF7AAFD4)) // fondo azul claro
     ) {
+        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.height(35.dp))
+            Spacer(modifier = Modifier.height(56.dp))
 
-            // Título
+            //Title
             Text(
                 text = "PESIMARKET",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    lineHeight = 18.99.sp,
+                    fontFamily = FontFamily(Font(R.font.baloo_regular)),
+                    fontWeight = FontWeight(400),
+                    color = Color(0xFFFFFFFF),
+                    textAlign = TextAlign.Right,
+                    letterSpacing = 3.07.sp,
+                )
             )
 
             // Fila con recuadro e imagen

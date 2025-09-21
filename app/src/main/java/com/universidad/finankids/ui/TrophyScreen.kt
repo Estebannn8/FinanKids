@@ -15,6 +15,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,20 +39,23 @@ fun TrophyScreen(navController: NavController) {
             .background(Color(0xFFF1CF86)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(56.dp))
 
+        //Title
         Text(
-            text = "Mis Logros",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 30.dp, bottom = 32.dp),
-            textAlign = TextAlign.Center
+            text = "MIS LOGROS",
+            style = TextStyle(
+                fontSize = 20.sp,
+                lineHeight = 18.99.sp,
+                fontFamily = FontFamily(Font(R.font.baloo_regular)),
+                fontWeight = FontWeight(400),
+                color = Color(0xFF000000),
+                textAlign = TextAlign.Right,
+                letterSpacing = 3.07.sp,
+            )
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(36.dp))
 
         Box(
             modifier = Modifier
