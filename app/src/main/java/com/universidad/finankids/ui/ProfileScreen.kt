@@ -38,7 +38,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -52,11 +51,11 @@ import com.universidad.finankids.events.UserEvent
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.components.BottomMenu
 import com.universidad.finankids.ui.components.ChangeAvatarOverlay
+import com.universidad.finankids.ui.components.EditNameOverlay
 import com.universidad.finankids.ui.components.LoadingOverlay
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
-
 
 @Composable
 fun ProfileScreen(
@@ -101,6 +100,9 @@ fun ProfileScreen(
     // Overlay
     var showOverlay by remember { mutableStateOf(false) }
     var startWithAvatars by remember { mutableStateOf(true) }
+
+    var showEditName by remember { mutableStateOf(false) }
+    var newName by remember { mutableStateOf(userState.userData.nickname) }
 
     // Marcos locales (para mostrar el actual)
     val frames = listOf(
@@ -303,10 +305,26 @@ fun ProfileScreen(
                     ) {
 
                         // --- Editar ---
+                        var editClicked by remember { mutableStateOf(false) }
+                        val editScale by animateFloatAsState(
+                            targetValue = if (editClicked) 1.1f else 1f,
+                            animationSpec = tween(durationMillis = 200),
+                            finishedListener = { editClicked = false }
+                        )
+
                         Image(
                             painter = painterResource(id = R.drawable.ic_editar),
-                            contentDescription = "Moneda",
-                            modifier = Modifier.size(30.dp)
+                            contentDescription = "Editar",
+                            modifier = Modifier
+                                .size(30.dp)
+                                .scale(editScale)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    editClicked = true
+                                    showEditName = true
+                                }
                         )
 
                         Spacer(modifier = Modifier.width(4.dp))
@@ -314,7 +332,7 @@ fun ProfileScreen(
                         // --- Ajustes ---
                         Image(
                             painter = painterResource(id = R.drawable.ic_ajustes),
-                            contentDescription = "Moneda",
+                            contentDescription = "Ajustes",
                             modifier = Modifier.size(30.dp)
                         )
                     }
@@ -623,6 +641,34 @@ fun ProfileScreen(
                     startWithAvatars = startWithAvatars,
                     onDismiss = { showOverlay = false }
                 )
+            }
+        }
+
+        var triedToSave by remember { mutableStateOf(false) }
+
+        if (showEditName) {
+            Dialog(onDismissRequest = { showEditName = false }) {
+                EditNameOverlay(
+                    text = newName,
+                    onValueChange = {
+                        newName = it
+                        userViewModel.clearError()
+                    },
+                    onDismiss = { showEditName = false },
+                    onSave = {
+                        triedToSave = true
+                        userViewModel.sendEvent(UserEvent.ChangeNickname(newName))
+                    },
+                    userViewModel = userViewModel
+                )
+            }
+
+            val userState by userViewModel.state.collectAsState()
+            LaunchedEffect(userState.userData.nickname, userState.errorMessage, triedToSave) {
+                if (triedToSave && userState.errorMessage == null && userState.userData.nickname == newName) {
+                    showEditName = false
+                    triedToSave = false // reset para el siguiente uso
+                }
             }
         }
 

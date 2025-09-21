@@ -47,6 +47,7 @@ class UserViewModel : ViewModel() {
             is UserEvent.LoadUser -> loadUserData(event.uid)
             is UserEvent.ChangeAvatar -> changeAvatar(event.avatarId)
             is UserEvent.ChangeMarco -> changeMarco(event.marcoId)
+            is UserEvent.ChangeNickname -> changeNickname(event.newName)
             UserEvent.Logout -> logout()
             is UserEvent.LoadingSuccess -> updateUserData(event.userData)
             is UserEvent.LoadingFailed -> setError(event.error)
@@ -84,6 +85,51 @@ class UserViewModel : ViewModel() {
             }
         }
     }
+
+    private fun changeNickname(newName: String) {
+        viewModelScope.launch {
+            try {
+                // 🔹 Validación de longitud
+                if (newName.length > 13) {
+                    _state.update { it.copy(errorMessage = "El nombre no puede superar los 13 caracteres") }
+                    return@launch
+                }
+
+                val uid = _state.value.userData.uid
+                if (uid.isEmpty()) return@launch
+
+                // 🔹 Validar que no esté en uso
+                val query = firestore.collection("usuarios")
+                    .whereEqualTo("nickname", newName)
+                    .get()
+                    .await()
+
+                val alreadyTaken = query.documents.any { it.id != uid }
+                if (alreadyTaken) {
+                    _state.update { it.copy(errorMessage = "Ese nombre ya está en uso") }
+                    return@launch
+                }
+
+                // 🔹 Si todo bien, guardar
+                val userRef = firestore.collection("usuarios").document(uid)
+                userRef.update("nickname", newName).await()
+
+                // Actualizar estado local
+                _state.update { state ->
+                    state.copy(
+                        userData = state.userData.copy(nickname = newName),
+                        errorMessage = null
+                    )
+                }
+
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(errorMessage = "Error al cambiar nombre: ${e.message}")
+                }
+            }
+        }
+    }
+
 
     private fun changeAvatar(avatarId: String) {
         viewModelScope.launch {

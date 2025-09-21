@@ -56,6 +56,9 @@ import com.universidad.finankids.ui.components.LoadingOverlay
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.universidad.finankids.events.AvatarEvent
+import com.universidad.finankids.events.UserEvent
 import kotlin.math.abs
 
 @Composable
@@ -64,6 +67,19 @@ fun HomeScreen(
     userViewModel: UserViewModel,
     avataresViewModel: AvataresViewModel
 ) {
+    LaunchedEffect(Unit) {
+        val uid = userViewModel.state.value.userData.uid
+        if (uid.isEmpty()) {
+            val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+            if (currentUid != null) {
+                userViewModel.sendEvent(UserEvent.LoadUser(currentUid))
+            }
+        } else {
+            userViewModel.sendEvent(UserEvent.LoadUser(uid))
+        }
+
+        avataresViewModel.sendEvent(AvatarEvent.LoadAllAvatars)
+    }
 
     // Estados observables
     val userState by userViewModel.state.collectAsState()

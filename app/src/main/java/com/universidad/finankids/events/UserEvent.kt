@@ -15,4 +15,6 @@ sealed class UserEvent {
 
     data class ChangeAvatar(val avatarId: String) : UserEvent()
     data class ChangeMarco(val marcoId: String) : UserEvent()
+
+    data class ChangeNickname(val newName: String) : UserEvent()
 }
