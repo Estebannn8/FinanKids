@@ -94,7 +94,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
 
         composable(AppScreens.StoreScreen.route) {
-            StoreScreen(navController)
+            StoreScreen(
+                navController,
+                userViewModel = userViewModel,
+                avataresViewModel = avataresViewModel
+            )
         }
 
         composable(
