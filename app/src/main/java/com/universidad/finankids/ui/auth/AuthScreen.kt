@@ -576,6 +576,7 @@ fun SocialLoginSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        /*
         // Botón Facebook
         OutlinedButton(
             onClick = { /* Acción Facebook */ },
@@ -599,6 +600,8 @@ fun SocialLoginSection(
                 fontFamily = AppTypography.PoppinsFont
             )
         }
+
+         */
 
         Spacer(modifier = Modifier.height(29.dp))
 
