@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
+import com.universidad.finankids.data.model.Avatar
 import com.universidad.finankids.data.model.Lesson
 import com.universidad.finankids.data.model.UserData
 import com.universidad.finankids.events.UserEvent
@@ -53,6 +54,8 @@ class UserViewModel : ViewModel() {
             is UserEvent.LoadingFailed -> setError(event.error)
             UserEvent.LoadingStarted -> setLoading(true)
             UserEvent.ClearError -> clearError()
+            is UserEvent.BuyAvatar -> buyAvatar(event.avatar)
+
         }
     }
 
@@ -130,7 +133,6 @@ class UserViewModel : ViewModel() {
         }
     }
 
-
     private fun changeAvatar(avatarId: String) {
         viewModelScope.launch {
             try {
@@ -165,6 +167,54 @@ class UserViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 _state.update { it.copy(errorMessage = "Error al cambiar marco: ${e.message}") }
+            }
+        }
+    }
+
+    private fun buyAvatar(avatar: Avatar) {
+        viewModelScope.launch {
+            try {
+                val user = _state.value.userData
+                if (user.avataresDesbloqueados.contains(avatar.id)) {
+                    _state.update { it.copy(errorMessage = "Ya tienes este avatar") }
+                    return@launch
+                }
+
+                val price = avatar.price ?: 0
+                if (user.dinero < price) {
+                    _state.update { it.copy(errorMessage = "No tienes suficiente dinero") }
+                    return@launch
+                }
+
+                val userRef = firestore.collection("usuarios").document(user.uid)
+
+                firestore.runTransaction { transaction ->
+                    val snapshot = transaction.get(userRef)
+                    val currentDinero = snapshot.getLong("dinero")?.toInt() ?: 0
+                    val currentAvatars = (snapshot.get("avataresDesbloqueados") as? List<String>) ?: emptyList()
+
+                    if (currentDinero < price) throw Exception("Dinero insuficiente")
+
+                    val updatedAvatars = currentAvatars + avatar.id
+                    transaction.update(userRef,
+                        "dinero", currentDinero - price,
+                        "avataresDesbloqueados", updatedAvatars
+                    )
+                }.await()
+
+                // actualizar estado local
+                _state.update { st ->
+                    st.copy(
+                        userData = st.userData.copy(
+                            dinero = user.dinero - price,
+                            avataresDesbloqueados = user.avataresDesbloqueados + avatar.id
+                        ),
+                        errorMessage = null
+                    )
+                }
+
+            } catch (e: Exception) {
+                _state.update { it.copy(errorMessage = "Error al comprar: ${e.message}") }
             }
         }
     }
