@@ -22,7 +22,7 @@ import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.components.BottomMenu
 
 @Composable
-fun HomeBankScreen(navController: NavController) {
+fun BankKeypad(navController: NavController) {
     var selectedItem by remember { mutableStateOf("banco") }
 
     val configuration = LocalConfiguration.current
@@ -159,5 +159,5 @@ fun HomeBankScreen(navController: NavController) {
 @Composable
 fun HomeBankScreenPreview() {
     val navController = rememberNavController()
-    HomeBankScreen(navController)
+    BankKeypad(navController)
 }
