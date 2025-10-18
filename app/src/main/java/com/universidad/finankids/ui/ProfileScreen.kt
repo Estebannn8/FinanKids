@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -48,12 +51,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.universidad.finankids.R
 import com.universidad.finankids.events.AvatarEvent
 import com.universidad.finankids.events.UserEvent
+import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.components.BottomMenu
 import com.universidad.finankids.ui.components.ChangeAvatarOverlay
 import com.universidad.finankids.ui.components.EditNameOverlay
 import com.universidad.finankids.ui.components.LoadingOverlay
+import com.universidad.finankids.ui.components.Settings
 import com.universidad.finankids.ui.theme.AppTypography
+import com.universidad.finankids.viewmodel.AuthViewModel
 import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
 
@@ -61,6 +67,7 @@ import com.universidad.finankids.viewmodel.UserViewModel
 fun ProfileScreen(
     navController: NavController,
     userViewModel: UserViewModel,
+    authViewModel: AuthViewModel,
     avataresViewModel: AvataresViewModel
 ) {
     // Estados observables
@@ -103,6 +110,9 @@ fun ProfileScreen(
 
     var showEditName by remember { mutableStateOf(false) }
     var newName by remember { mutableStateOf(userState.userData.nickname) }
+
+    var showSettings by remember { mutableStateOf(false) }
+    var showConfirmLogout by remember { mutableStateOf(false) }
 
     // Marcos locales (para mostrar el actual)
     val frames = listOf(
@@ -315,7 +325,7 @@ fun ProfileScreen(
                             painter = painterResource(id = R.drawable.ic_editar),
                             contentDescription = "Editar",
                             modifier = Modifier
-                                .size(30.dp)
+                                .size(35.dp)
                                 .scale(editScale)
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },
@@ -329,11 +339,29 @@ fun ProfileScreen(
                         Spacer(modifier = Modifier.width(4.dp))
 
                         // --- Ajustes ---
+                        var settingsClicked by remember { mutableStateOf(false) }
+
+                        val settingsScale by animateFloatAsState(
+                            targetValue = if (settingsClicked) 1.1f else 1f,
+                            animationSpec = tween(durationMillis = 200),
+                            finishedListener = { settingsClicked = false }
+                        )
+
                         Image(
                             painter = painterResource(id = R.drawable.ic_ajustes),
-                            contentDescription = "Ajustes",
-                            modifier = Modifier.size(30.dp)
+                            contentDescription = "settings",
+                            modifier = Modifier
+                                .size(35.dp)
+                                .scale(settingsScale)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    settingsClicked = true
+                                    showSettings = true
+                                }
                         )
+
                     }
                 }
 
@@ -670,6 +698,55 @@ fun ProfileScreen(
                 }
             }
         }
+
+        if (showSettings) {
+            Dialog(onDismissRequest = { showSettings = false }) {
+                Settings(
+                    onToggleMusica = { /* tu lógica */ },
+                    onToggleSonido = { /* tu lógica */ },
+                    onChangeFondoPerfil = { /* tu lógica */ },
+                    onLogout = {
+                        showConfirmLogout = true
+                    }
+                )
+            }
+        }
+
+        if (showConfirmLogout) {
+            AlertDialog(
+                onDismissRequest = { showConfirmLogout = false },
+                title = { Text("Cerrar sesión") },
+                text = { Text("¿Seguro que deseas cerrar sesión?") },
+                confirmButton = {
+                    val context = LocalContext.current
+
+                    TextButton(onClick = {
+                        showConfirmLogout = false
+                        showSettings = false
+
+                        authViewModel.logout(context)
+                        userViewModel.clearState()
+                        avataresViewModel.clearState()
+
+                        navController.navigate(AppScreens.MainScreen.route) {
+                            popUpTo(AppScreens.HomeScreen.route) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }) {
+                        Text("Sí")
+                    }
+
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        showConfirmLogout = false
+                    }) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
+
 
     }
 }

@@ -81,6 +81,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             ProfileScreen(
                 navController,
                 userViewModel = userViewModel,
+                authViewModel = authViewModel,
                 avataresViewModel = avataresViewModel
             )
         }

@@ -86,4 +86,8 @@ dependencies {
     //Lottie
     implementation("com.airbnb.android:lottie-compose:6.0.0")
 
+    // Color Picker
+    implementation("com.github.skydoves:colorpicker-compose:1.0.4")
+
+
 }

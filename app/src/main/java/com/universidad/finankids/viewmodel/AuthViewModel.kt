@@ -2,6 +2,7 @@ package com.universidad.finankids.viewmodel
 
 import android.content.Context
 import android.util.Log
+import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.Credential
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -629,10 +630,20 @@ class AuthViewModel : ViewModel() {
         _state.value = AuthState(isLoginSelected = _state.value.isLoginSelected)
     }
 
-    fun logout() {
+    fun logout(context: Context) {
         auth.signOut()
         _state.value = AuthState()
+
+        viewModelScope.launch {
+            try {
+                val credentialManager = CredentialManager.create(context)
+                credentialManager.clearCredentialState(ClearCredentialStateRequest())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
+
 
     fun getCurrentUserId(): String? = auth.currentUser?.uid
 

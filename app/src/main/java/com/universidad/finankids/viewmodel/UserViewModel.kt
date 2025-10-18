@@ -301,9 +301,14 @@ class UserViewModel : ViewModel() {
         _state.update { it.copy(isLoading = isLoading) }
     }
 
-    private fun logout() {
+    fun logout() {
         _state.update { UserState() }
     }
+
+    fun clearState() {
+        _state.value = UserState() // tu estado inicial
+    }
+
 
     fun setCurrentSection(index: Int) {
         _state.update { it.copy(currentSectionIndex = index) }
