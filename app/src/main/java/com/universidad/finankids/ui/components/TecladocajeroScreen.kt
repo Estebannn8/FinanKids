@@ -1,4 +1,4 @@
-package com.universidad.finankids.ui.components.lesson
+package com.universidad.finankids.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -19,7 +19,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
 import com.universidad.finankids.navigation.navigateToScreen
-import com.universidad.finankids.ui.components.BottomMenu
 
 @Composable
 fun TecladocajeroScreen(navController: NavController) {
