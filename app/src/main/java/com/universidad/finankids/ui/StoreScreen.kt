@@ -97,7 +97,7 @@ fun StoreScreen(
                 text = "PESIMARKET",
                 style = TextStyle(
                     fontSize = 20.sp,
-                    fontFamily = FontFamily(Font(R.font.baloo_regular)),
+                        fontFamily = FontFamily(Font(R.font.baloo_regular)),
                     fontWeight = FontWeight(400),
                     color = Color(0xFFFFFFFF),
                     letterSpacing = 3.07.sp,
