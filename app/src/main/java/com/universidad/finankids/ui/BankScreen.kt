@@ -27,6 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -154,7 +156,6 @@ fun BankScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(screenHeight * 0.02f))
 
                         // Intereses
                         Column(horizontalAlignment = Alignment.Start) {
@@ -212,20 +213,39 @@ fun BankScreen(
             }
         }
 
-        // --- Diálogo para PIN ---
+        // --- Keypad superpuesto con blur ---
         if (!state.pinValidado) {
-            Dialog(
-                onDismissRequest = {},
-                properties = DialogProperties(
-                    dismissOnBackPress = false,
-                    dismissOnClickOutside = false
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xB8D9D9D9))
             ) {
                 BankKeypad(
                     bancoViewModel = bancoViewModel,
-                    onPinConfirmado = { /* Se cierra automáticamente */ }
+                    onPinConfirmado = { /* ... */ },
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
+        }
+
+
+        // --- Menú SIEMPRE visible encima del blur ---
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            BottomMenu(
+                isHomeSection = false,
+                sectionColor = "",
+                menuBackgroundColor = Color(0xFFC9CED6),
+                selectedItem = "banco",
+                onItemSelected = { item ->
+                    navigateToScreen(navController, item)
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
 
