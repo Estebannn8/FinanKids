@@ -367,52 +367,6 @@ fun HomeScreen(
                     )
                 }
             }
-
-            // --- Daily Quest ---
-            var questClicked by remember { mutableStateOf(false) }
-            val questScale by animateFloatAsState(
-                targetValue = if (questClicked) 1.2f else 1f,
-                animationSpec = tween(durationMillis = 200),
-                finishedListener = { questClicked = false }
-            )
-
-            val questFrameRes = when (section.color) {
-                "azul" -> R.drawable.ic_quest_frame_azul
-                "morado" -> R.drawable.ic_quest_frame_morado
-                "amarillo" -> R.drawable.ic_quest_frame_amarillo
-                "naranja" -> R.drawable.ic_quest_frame_naranja
-                else -> R.drawable.ic_quest_frame_azul
-            }
-
-            Box(
-                modifier = Modifier
-                    .size(55.dp)
-                    .align(Alignment.BottomEnd)
-                    .offset(x = (-60).dp, y = 15.dp)
-                    .zIndex(1f) // Debajo de la barra de experiencia
-                    .pointerInput(Unit) {
-                        detectTapGestures {
-                            questClicked = true
-                            // Accion de Daily Quest
-                        }
-                    }
-            ) {
-                Image(
-                    painter = painterResource(id = questFrameRes),
-                    contentDescription = "Marco de Daily Quest",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Fit
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.ic_quest),
-                    contentDescription = "Icono de Daily Quest",
-                    modifier = Modifier
-                        .size(45.dp)
-                        .align(Alignment.Center)
-                        .scale(questScale),
-                    contentScale = ContentScale.Fit
-                )
-            }
         }
 
 
@@ -574,27 +528,6 @@ fun HomeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(bottom = 20.dp)
                 ) {
-                    // Puntuación y estrella
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(bottom = 10.dp)
-                    ) {
-
-                        // Puntuacion
-                        Text(
-                            text = "$sectionScore",
-                            color = Color.White,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(end = 8.dp).offset(y = 2.dp)
-                        )
-
-                        Image(
-                            painter = painterResource(id = section.starIcon),
-                            contentDescription = "Estrella",
-                            modifier = Modifier.size(30.dp)
-                        )
-                    }
 
                     // Botón de jugar
                     var playButtonClicked by remember { mutableStateOf(false) }

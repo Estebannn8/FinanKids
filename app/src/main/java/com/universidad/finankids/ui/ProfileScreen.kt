@@ -544,37 +544,61 @@ fun ProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    val items = listOf(
-                        Triple(
+                    // Data class para representar cada categoría
+                    data class CategoryItem(
+                        val backgroundRes: Int,
+                        val pesitoIcon: Int,
+                        val icons: List<Int>,
+                        val categoryName: String
+                    )
+
+                    val categoryItems = listOf(
+                        CategoryItem(
                             R.drawable.rectangulo_estadistica_amarillo,
                             R.drawable.ic_pesito_original,
-                            listOf(R.drawable.ic_estrella_amarillo, R.drawable.ic_precision_amarillo)
+                            listOf(R.drawable.ic_estrella_amarillo, R.drawable.ic_precision_amarillo),
+                            "Ahorro"
                         ),
-                        Triple(
+                        CategoryItem(
                             R.drawable.rectangulo_estadistica_morado,
                             R.drawable.ic_pesito_ahorrador,
-                            listOf(R.drawable.ic_estrella_morado, R.drawable.ic_precision_morado)
+                            listOf(R.drawable.ic_estrella_morado, R.drawable.ic_precision_morado),
+                            "Centro Comercial"
                         ),
-                        Triple(
+                        CategoryItem(
                             R.drawable.rectangulo_estadistica_naranja,
                             R.drawable.ic_pesito_inversionista,
-                            listOf(R.drawable.ic_estrella_naranja, R.drawable.ic_precision_naranja)
+                            listOf(R.drawable.ic_estrella_naranja, R.drawable.ic_precision_naranja),
+                            "Inversiones"
                         ),
-                        Triple(
+                        CategoryItem(
                             R.drawable.rectangulo_estadistica_azul,
                             R.drawable.ic_pesito_comprador,
-                            listOf(R.drawable.ic_estrella_azul, R.drawable.ic_precision_azul)
+                            listOf(R.drawable.ic_estrella_azul, R.drawable.ic_precision_azul),
+                            "Banco"
                         )
                     )
 
+                    // Función para obtener el valor de cada categoría
+                    fun obtenerValorCategoria(categoria: String): Int {
+                        return when (categoria) {
+                            "Ahorro" -> userState.userData.progresoCategorias["ahorro"] ?: 0
+                            "Centro Comercial" -> userState.userData.progresoCategorias["compra"] ?: 0
+                            "Banco" -> userState.userData.progresoCategorias["basica"] ?: 0
+                            "Inversiones" -> userState.userData.progresoCategorias["inversion"] ?: 0
+                            else -> 0
+                        }
+                    }
+
                     // Dividir en filas de 2 elementos
-                    items.chunked(2).forEach { rowItems ->
+                    categoryItems.chunked(2).forEach { rowItems ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(20.dp)
                         ) {
-                            rowItems.forEach { (bgRes, pesitoIcon, icons) ->
-                                val (estrellaIcon, precisionIcon) = icons
+                            rowItems.forEach { categoryItem ->
+                                val (estrellaIcon, precisionIcon) = categoryItem.icons
+                                val valorCategoria = obtenerValorCategoria(categoryItem.categoryName)
 
                                 Box(
                                     modifier = Modifier
@@ -584,19 +608,19 @@ fun ProfileScreen(
                                 ) {
                                     // Fondo
                                     Image(
-                                        painter = painterResource(id = bgRes),
+                                        painter = painterResource(id = categoryItem.backgroundRes),
                                         contentDescription = null,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(70.dp)
                                             .align(Alignment.Center)
-                                            .zIndex(0f), // Fondo debajo
+                                            .zIndex(0f),
                                         contentScale = ContentScale.FillBounds
                                     )
 
                                     // Pesito sobresalido
                                     Image(
-                                        painter = painterResource(id = pesitoIcon),
+                                        painter = painterResource(id = categoryItem.pesitoIcon),
                                         contentDescription = null,
                                         modifier = Modifier
                                             .size(150.dp)
@@ -606,50 +630,31 @@ fun ProfileScreen(
                                     )
 
                                     Column(
-                                    horizontalAlignment = Alignment.Start,
-                                    verticalArrangement = Arrangement.Center,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterEnd)
-                                        .padding(end = 12.dp)
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .padding(end = 12.dp)
+                                            .offset(x = (-10).dp)
                                     ) {
-                                        Text(
-                                            text = "1",
-                                            color = Color.White,
-                                            fontSize = 20.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            fontFamily = FontFamily(Font(R.font.baloo_regular))
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Image(
-                                            painter = painterResource(id = estrellaIcon),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(20.dp)
-                                        )
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                text = "$valorCategoria",
+                                                color = Color.White,
+                                                fontSize = 25.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                fontFamily = FontFamily(Font(R.font.baloo_regular))
+                                            )
+                                            Spacer(modifier = Modifier.width(9.dp))
+                                            Image(
+                                                painter = painterResource(id = estrellaIcon),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(23.dp).offset(y = (-4).dp)
+                                            )
+                                        }
                                     }
-
-                                    Spacer(modifier = Modifier.height(4.dp))
-
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = "80%",
-                                            color = Color.White,
-                                            fontSize = 16.sp,
-                                            fontFamily = FontFamily(Font(R.font.baloo_regular))
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Image(
-                                            painter = painterResource(id = precisionIcon),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(30.dp)
-                                        )
-                                    }
-                                }
-
                                 }
                             }
                         }
