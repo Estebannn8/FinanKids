@@ -61,6 +61,7 @@ import com.universidad.finankids.ui.components.Settings
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AuthViewModel
 import com.universidad.finankids.viewmodel.AvataresViewModel
+import com.universidad.finankids.viewmodel.UserSettingsViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
 
 @Composable
@@ -68,11 +69,13 @@ fun ProfileScreen(
     navController: NavController,
     userViewModel: UserViewModel,
     authViewModel: AuthViewModel,
-    avataresViewModel: AvataresViewModel
+    avataresViewModel: AvataresViewModel,
+    userSettingsViewModel: UserSettingsViewModel
 ) {
     // Estados observables
     val userState by userViewModel.state.collectAsState()
     val avatarState by avataresViewModel.state.collectAsState()
+    val userSettings by userSettingsViewModel.settings.collectAsState()
 
     // Función para obtener el título según el nivel
     fun obtenerTituloNivel(nivel: Int): String {
@@ -138,10 +141,26 @@ fun ProfileScreen(
         "cafe" to R.drawable.ic_frame_cafe
     )
 
+    // Cargar settings cuando el usuario esté disponible
+    LaunchedEffect(userState.userData.uid) {
+        if (userState.userData.uid.isNotEmpty()) {
+            userSettingsViewModel.loadUserSettings(userState.userData.uid)
+        }
+    }
+
+    // Convertir el color hexadecimal del settings a Color de Compose
+    val backgroundColor = remember(userSettings.colorFondoPerfil) {
+        try {
+            Color(android.graphics.Color.parseColor(userSettings.colorFondoPerfil))
+        } catch (e: Exception) {
+            Color(0xFFDCDEE2) // Color por defecto si hay error
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFDCDEE2)),
+            .background(backgroundColor),
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
@@ -719,12 +738,19 @@ fun ProfileScreen(
         if (showSettings) {
             Dialog(onDismissRequest = { showSettings = false }) {
                 Settings(
-                    onToggleMusica = { /* tu lógica */ },
-                    onToggleSonido = { /* tu lógica */ },
-                    onChangeFondoPerfil = { /* tu lógica */ },
+                    onToggleMusica = {
+                        userSettingsViewModel.toggleMusica(userState.userData.uid)
+                    },
+                    onToggleSonido = {
+                        userSettingsViewModel.toggleSonido(userState.userData.uid)
+                    },
+                    onChangeFondoPerfil = { colorHex ->
+                        userSettingsViewModel.updateBackgroundColor(userState.userData.uid, colorHex)
+                    },
                     onLogout = {
                         showConfirmLogout = true
-                    }
+                    },
+                    userSettings = userSettings
                 )
             }
         }
@@ -744,6 +770,7 @@ fun ProfileScreen(
                         authViewModel.logout(context)
                         userViewModel.clearState()
                         avataresViewModel.clearState()
+                        userSettingsViewModel.clearState()
 
                         navController.navigate(AppScreens.MainScreen.route) {
                             popUpTo(AppScreens.HomeScreen.route) { inclusive = true }
