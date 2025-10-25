@@ -74,6 +74,18 @@ fun ProfileScreen(
     val userState by userViewModel.state.collectAsState()
     val avatarState by avataresViewModel.state.collectAsState()
 
+    // Función para obtener el título según el nivel
+    fun obtenerTituloNivel(nivel: Int): String {
+        return when {
+            nivel < 10 -> "Ahorrista"
+            nivel < 20 -> "Explorador"
+            nivel < 30 -> "Guardián del Oro"
+            nivel < 40 -> "Maestro Cash"
+            nivel < 50 -> "Leyenda $"
+            else -> "Gran Sabio $"
+        }
+    }
+
     // Lanzar carga de datos al entrar a la pantalla
     LaunchedEffect(Unit) {
         val uid = userViewModel.state.value.userData.uid
@@ -268,7 +280,7 @@ fun ProfileScreen(
 
                         // --- Titulo de nivel ---
                         Text(
-                            text = "NOVATO AHORRADOR",
+                            text = obtenerTituloNivel(userState.nivel),
                             modifier = Modifier
                                 .padding(start = 10.dp),
                             style = TextStyle(
