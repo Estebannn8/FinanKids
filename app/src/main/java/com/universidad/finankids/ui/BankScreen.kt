@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -210,8 +211,11 @@ fun BankScreen(
                             modifier = Modifier
                                 .width(screenWidth * 0.6f)
                                 .height(screenHeight * 0.2f)
-                                .background(Color.Red.copy(alpha = 0.5f)) // Temporal: color visible para debug
-                                .clickable {
+                                .background(Color.Red.copy(alpha = 0f)) // Temporal: color visible para debug
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
                                     Log.d("BankScreen", "Click en cuadrado rojo - abriendo teclado")
                                     // LIMPIAR MENSAJES ANTES DE ABRIR
                                     bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
@@ -220,7 +224,7 @@ fun BankScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "TOCA AQUÍ PARA\nRETIRAR O DEPOSITAR",
+                                text = "",
                                 color = Color.White,
                                 fontSize = (screenWidth.value * 0.04).sp,
                                 fontWeight = FontWeight.Bold,

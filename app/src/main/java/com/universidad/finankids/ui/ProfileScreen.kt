@@ -260,11 +260,11 @@ fun ProfileScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(32.dp),
+                                .size(34.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.ic_nivel_naranja),
+                                painter = painterResource(id = R.drawable.ic_nivel_gris),
                                 contentDescription = "Icono de nivel",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Fit
@@ -272,7 +272,7 @@ fun ProfileScreen(
                             Text(
                                 text = "${userState.nivel}",  // <- Nivel
                                 color = Color.White,
-                                fontSize = 14.sp,
+                                fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -284,7 +284,7 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .padding(start = 10.dp),
                             style = TextStyle(
-                                fontSize = 15.sp,
+                                fontSize = 20.sp,
                                 lineHeight = 10.99.sp,
                                 fontFamily = FontFamily(Font(R.font.baloo_regular)),
                                 fontWeight = FontWeight(400),

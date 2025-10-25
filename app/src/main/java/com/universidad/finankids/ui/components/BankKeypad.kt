@@ -126,7 +126,7 @@ fun BankKeypad(
             // --- Texto superior ---
             Text(
                 text = when {
-                    confirmMode -> "CONFIRMA TU CLAVE"
+                    confirmMode -> "      \nCONFIRMA TU CLAVE"
                     esRegistro -> "CREA TU CLAVE SECRETA\nDE 4 NÚMEROS"
                     else -> "INGRESA TU CLAVE\nPARA ACCEDER AL BANCO"
                 },

@@ -4,5 +4,7 @@ data class BancoData(
     val pin: String? = null,
     val interes: Double = 0.02, // 2% mensual
     val ultimaActualizacion: Long = System.currentTimeMillis(),
-    val historial: List<Transaccion> = emptyList()
+    val historial: List<Transaccion> = emptyList(),
+    val ultimoCalculoInteres: Long = System.currentTimeMillis(),
+    val interesDiario: Double = 0.01
 )

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.Calendar
 
 class BancoViewModel : ViewModel() {
 
@@ -304,17 +305,34 @@ class BancoViewModel : ViewModel() {
     private fun calcularIntereses() {
         viewModelScope.launch {
             val banco = _state.value.banco ?: return@launch
-            val dias =
-                ((System.currentTimeMillis() - banco.ultimaActualizacion) / (1000 * 60 * 60 * 24)).toInt()
+
+            val ahora = System.currentTimeMillis()
+            val ultimoCalculo = banco.ultimoCalculoInteres
+
+            // Verificar si ya se calcularon intereses hoy
+            if (!debeCalcularInteresesHoy(ultimoCalculo, ahora)) {
+                return@launch
+            }
+
+            // Calcular días transcurridos (máximo 1 día para evitar exploits)
+            val dias = calcularDiasDesdeUltimoInteres(ultimoCalculo, ahora)
             if (dias <= 0) return@launch
 
-            val interesMensual = banco.interes
-            val interesesGanados = (banco.saldo * interesMensual / 30 * dias).toInt()
+            // Calcular intereses con mejor precisión
+            val interesesGanados = calcularInteresesDiarios(
+                saldo = banco.saldo,
+                tasaDiaria = banco.interesDiario,
+                dias = dias
+            )
+
+            if (interesesGanados <= 0) return@launch
+
             val nuevoSaldo = banco.saldo + interesesGanados
 
             val bancoActualizado = banco.copy(
                 saldo = nuevoSaldo,
-                ultimaActualizacion = System.currentTimeMillis()
+                ultimaActualizacion = ahora,
+                ultimoCalculoInteres = ahora // Actualizar fecha del último cálculo
             )
 
             try {
@@ -328,11 +346,49 @@ class BancoViewModel : ViewModel() {
 
                 _state.value = _state.value.copy(
                     banco = bancoActualizado,
-                    mensaje = "Tu ahorro creció en +$interesesGanados pesitos por intereses."
+                    mensaje = "Interés diario: +$interesesGanados pesitos. Saldo: $nuevoSaldo"
                 )
             } catch (e: Exception) {
-                _state.value = _state.value.copy(errorMessage = e.message)
+                _state.value = _state.value.copy(errorMessage = "Error al calcular intereses: ${e.message}")
             }
         }
     }
+
+
+    // -----------------------------------------------------------
+    // Funciones auxiliares para cálculo de intereses
+    // -----------------------------------------------------------
+
+    /**
+     * Calcula si deben calcularse intereses hoy
+     * Evita múltiples cálculos en el mismo día
+     */
+    private fun debeCalcularInteresesHoy(ultimoCalculo: Long, ahora: Long): Boolean {
+        val calendarUltimo = Calendar.getInstance().apply { timeInMillis = ultimoCalculo }
+        val calendarAhora = Calendar.getInstance().apply { timeInMillis = ahora }
+
+        return calendarUltimo.get(Calendar.DAY_OF_YEAR) != calendarAhora.get(Calendar.DAY_OF_YEAR) ||
+                calendarUltimo.get(Calendar.YEAR) != calendarAhora.get(Calendar.YEAR)
+    }
+
+    /**
+     * Calcula días transcurridos desde el último interés (máximo 1 día)
+     */
+    private fun calcularDiasDesdeUltimoInteres(ultimoCalculo: Long, ahora: Long): Int {
+        val milisegundosPorDia = 1000 * 60 * 60 * 24
+        val diasTranscurridos = ((ahora - ultimoCalculo) / milisegundosPorDia).toInt()
+
+        // Para evitar que acumule muchos días de una vez (por seguridad)
+        return minOf(diasTranscurridos, 1)
+    }
+
+    /**
+     * Calcula intereses diarios con precisión
+     */
+    private fun calcularInteresesDiarios(saldo: Int, tasaDiaria: Double, dias: Int): Int {
+        // Fórmula: Interés = Saldo × Tasa Diaria × Días
+        val intereses = saldo * tasaDiaria * dias
+        return intereses.toInt() // Redondeamos hacia abajo para evitar decimales
+    }
+
 }
