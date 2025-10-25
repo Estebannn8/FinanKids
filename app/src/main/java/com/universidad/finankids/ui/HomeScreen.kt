@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,7 +47,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.google.firebase.auth.FirebaseAuth
 import com.universidad.finankids.R
+import com.universidad.finankids.events.AvatarEvent
+import com.universidad.finankids.events.UserEvent
 import com.universidad.finankids.navigation.navigateToLesson
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.components.BottomMenu
@@ -56,9 +58,6 @@ import com.universidad.finankids.ui.components.LoadingOverlay
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.universidad.finankids.events.AvatarEvent
-import com.universidad.finankids.events.UserEvent
 import kotlin.math.abs
 
 @Composable
@@ -158,15 +157,6 @@ fun HomeScreen(
 
     var selectedItem by remember { mutableStateOf("inicio") }
     val section = sections[currentSectionIndex]
-
-    val sectionScore = when (section.name) {
-        "Ahorro" -> userState.userData.progresoCategorias["ahorro"] ?: 0
-        "Centro Comercial" -> userState.userData.progresoCategorias["compra"] ?: 0
-        "Banco" -> userState.userData.progresoCategorias["basica"] ?: 0
-        "Inversiones" -> userState.userData.progresoCategorias["inversion"] ?: 0
-        else -> 0
-    }
-
 
     // Log de estado
     LaunchedEffect(userState) {
