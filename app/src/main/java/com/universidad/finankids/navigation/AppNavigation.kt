@@ -21,6 +21,7 @@ import com.universidad.finankids.ui.lesson.LessonScreen
 import com.universidad.finankids.viewmodel.AuthViewModel
 import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.LessonsViewModel
+import com.universidad.finankids.viewmodel.StreakViewModel
 import com.universidad.finankids.viewmodel.UserSettingsViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
 
@@ -34,6 +35,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     val avataresViewModel: AvataresViewModel = viewModel()
     val lessonsViewModel: LessonsViewModel = viewModel()
     val userSettingsViewModel: UserSettingsViewModel = viewModel()
+    val streakViewModel: StreakViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -85,7 +87,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,
                 avataresViewModel = avataresViewModel,
-                userSettingsViewModel = userSettingsViewModel
+                userSettingsViewModel = userSettingsViewModel,
+                streakViewModel = streakViewModel
             )
         }
 
@@ -117,6 +120,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 category = category,
                 userViewModel = userViewModel,
                 lessonsViewModel = lessonsViewModel,
+                streakViewModel = streakViewModel,
                 navController = navController
             )
         }

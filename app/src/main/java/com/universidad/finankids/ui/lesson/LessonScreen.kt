@@ -54,6 +54,7 @@ import com.universidad.finankids.ui.lesson.activities.SentenceBuilderActivity
 import com.universidad.finankids.ui.lesson.activities.TeachingActivity
 import com.universidad.finankids.viewmodel.LessonsViewModel
 import com.universidad.finankids.viewmodel.LessonsViewModel.LoadingState
+import com.universidad.finankids.viewmodel.StreakViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
 
 @Composable
@@ -61,6 +62,7 @@ fun LessonScreen(
     category: String,
     userViewModel: UserViewModel,
     lessonsViewModel: LessonsViewModel,
+    streakViewModel: StreakViewModel,
     navController: NavController
 ) {
     val userState by userViewModel.state.collectAsState()
@@ -116,6 +118,7 @@ fun LessonScreen(
                 onEvent = lessonsViewModel::sendEvent,
                 navController = navController,
                 userViewModel = userViewModel,
+                streakViewModel = streakViewModel,
                 category = category
             )
         }
@@ -168,6 +171,7 @@ fun LessonContentScreen(
     onEvent: (LessonEvent) -> Unit,
     navController: NavController,
     userViewModel: UserViewModel,
+    streakViewModel: StreakViewModel,
     category: String
 ) {
 
@@ -219,15 +223,24 @@ fun LessonContentScreen(
                     dinero = lessonState.earnedDinero,
                     onContinue = {
                         onEvent(LessonEvent.CompleteLesson)
+
                         // Usar los valores finales (con bonus si aplica) para actualizar el usuario
                         val finalExp = if (lessonState.perfectLesson) (lessonState.earnedExp * 1.2f).toInt() else lessonState.earnedExp
                         val finalDinero = if (lessonState.perfectLesson) (lessonState.earnedDinero * 1.2f).toInt() else lessonState.earnedDinero
 
+                        // Actualizar progreso del usuario
                         userViewModel.markLessonAsCompleted(
                             lessonState.currentLesson?.id ?: "",
                             finalExp,
                             finalDinero
                         )
+
+                        // Actualizar la racha (SOLO si se completó una lección)
+                        val userId = userViewModel.state.value.userData.uid
+                        if (userId.isNotEmpty()) {
+                            streakViewModel.updateStreak(userId, true)
+                        }
+
                         navController.popBackStack()
                         navController.navigate(AppScreens.HomeScreen.route)
                     },

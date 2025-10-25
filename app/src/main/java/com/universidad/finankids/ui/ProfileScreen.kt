@@ -58,9 +58,11 @@ import com.universidad.finankids.ui.components.ChangeAvatarOverlay
 import com.universidad.finankids.ui.components.EditNameOverlay
 import com.universidad.finankids.ui.components.LoadingOverlay
 import com.universidad.finankids.ui.components.Settings
+import com.universidad.finankids.ui.components.StreakCalendarOverlay
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AuthViewModel
 import com.universidad.finankids.viewmodel.AvataresViewModel
+import com.universidad.finankids.viewmodel.StreakViewModel
 import com.universidad.finankids.viewmodel.UserSettingsViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
 
@@ -70,12 +72,14 @@ fun ProfileScreen(
     userViewModel: UserViewModel,
     authViewModel: AuthViewModel,
     avataresViewModel: AvataresViewModel,
-    userSettingsViewModel: UserSettingsViewModel
+    userSettingsViewModel: UserSettingsViewModel,
+    streakViewModel: StreakViewModel
 ) {
     // Estados observables
     val userState by userViewModel.state.collectAsState()
     val avatarState by avataresViewModel.state.collectAsState()
     val userSettings by userSettingsViewModel.settings.collectAsState()
+    val streakState by streakViewModel.streak.collectAsState()
 
     // Función para obtener el título según el nivel
     fun obtenerTituloNivel(nivel: Int): String {
@@ -88,6 +92,16 @@ fun ProfileScreen(
             else -> "Gran Sabio $"
         }
     }
+
+    // Cargar settings y rachas cuando el usuario esté disponible
+    LaunchedEffect(userState.userData.uid) {
+        if (userState.userData.uid.isNotEmpty()) {
+            userSettingsViewModel.loadUserSettings(userState.userData.uid)
+            streakViewModel.loadUserStreak(userState.userData.uid)
+            streakViewModel.checkAndResetStreakIfNeeded(userState.userData.uid)
+        }
+    }
+
 
     // Lanzar carga de datos al entrar a la pantalla
     LaunchedEffect(Unit) {
@@ -115,6 +129,9 @@ fun ProfileScreen(
     if (!isDataLoaded) {
         LoadingOverlay()
     }
+
+    // Overlay para el calendario de rachas
+    var showStreakCalendar by remember { mutableStateOf(false) }
 
     var selectedItem by remember { mutableStateOf("perfil") }
     val sectionMenuColor = Color(0xFFC9CED6)
@@ -493,14 +510,35 @@ fun ProfileScreen(
                     ) {
                         listOf(
                             Triple(R.drawable.ic_xp, "${userState.userData.exp}", "TOTAL XP"),
-                            Triple(R.drawable.ic_racha_normal, "1", "DIAS DE RACHA"),
+                            Triple(
+                                if (streakViewModel.isStreakActive()) R.drawable.ic_racha_normal else R.drawable.ic_racha_apagada,
+                                "${streakState.currentStreak}",
+                                "DIAS DE RACHA"
+                            ),
                             Triple(R.drawable.ic_coin, "${userState.userData.dinero}", "PESITOS")
                         ).forEach { (icon, value, label) ->
+                            var boxClicked by remember { mutableStateOf(false) }
+                            val boxScale by animateFloatAsState(
+                                targetValue = if (boxClicked) 1.05f else 1f,
+                                animationSpec = tween(durationMillis = 200),
+                                finishedListener = { boxClicked = false }
+                            )
+
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 4.dp)
                                     .height(70.dp)
+                                    .scale(boxScale)
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) {
+                                        if (label == "DIAS DE RACHA") {
+                                            boxClicked = true
+                                            showStreakCalendar = true
+                                        }
+                                    }
                             ) {
                                 // Fondo del recuadro
                                 Image(
@@ -549,7 +587,6 @@ fun ProfileScreen(
                                             )
                                         }
                                     }
-
                                 }
                             }
                         }
@@ -771,6 +808,7 @@ fun ProfileScreen(
                         userViewModel.clearState()
                         avataresViewModel.clearState()
                         userSettingsViewModel.clearState()
+                        streakViewModel.clearState()
 
                         navController.navigate(AppScreens.MainScreen.route) {
                             popUpTo(AppScreens.HomeScreen.route) { inclusive = true }
@@ -788,6 +826,14 @@ fun ProfileScreen(
                         Text("Cancelar")
                     }
                 }
+            )
+        }
+
+        // Calendario de Rachas
+        if (showStreakCalendar) {
+            StreakCalendarOverlay(
+                streak = streakState,
+                onDismiss = { showStreakCalendar = false }
             )
         }
 

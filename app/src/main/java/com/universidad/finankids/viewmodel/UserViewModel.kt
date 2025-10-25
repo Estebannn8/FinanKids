@@ -270,7 +270,6 @@ class UserViewModel : ViewModel() {
                         this[categoryId] = (this[categoryId] as? Long ?: 0) + 1
                     }
 
-                    // Guardar todo
                     transaction.update(
                         userRef,
                         "exp",
