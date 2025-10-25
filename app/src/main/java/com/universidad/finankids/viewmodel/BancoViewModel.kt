@@ -38,6 +38,12 @@ class BancoViewModel : ViewModel() {
             is BancoEvent.CalcularIntereses -> calcularIntereses()
             is BancoEvent.ResetValidacion -> resetValidacion()
             is BancoEvent.Error -> mostrarError(event.mensaje)
+            is BancoEvent.LimpiarMensajeOperacion -> {
+                _state.value = _state.value.copy(
+                    mensajeOperacion = null,
+                    errorOperacion = null
+                )
+            }
         }
     }
 
@@ -164,7 +170,7 @@ class BancoViewModel : ViewModel() {
     // -----------------------------------------------------------
     private fun depositar(monto: Int) {
         if (monto <= 0) {
-            _state.value = _state.value.copy(errorMessage = "Monto inválido.")
+            _state.value = _state.value.copy(errorOperacion = "Monto inválido.")
             return
         }
 
@@ -192,10 +198,11 @@ class BancoViewModel : ViewModel() {
 
                 _state.value = _state.value.copy(
                     banco = bancoActualizado,
-                    mensaje = "Depósito exitoso de $monto pesitos."
+                    mensajeOperacion = "Depósito exitoso de $monto pesitos.", // USAR mensajeOperacion
+                    mensaje = null // limpiar mensaje general
                 )
             } catch (e: Exception) {
-                _state.value = _state.value.copy(errorMessage = e.message)
+                _state.value = _state.value.copy(errorOperacion = e.message)
             }
         }
     }
@@ -205,7 +212,7 @@ class BancoViewModel : ViewModel() {
     // -----------------------------------------------------------
     private fun retirar(monto: Int) {
         if (monto <= 0) {
-            _state.value = _state.value.copy(errorMessage = "Monto inválido.")
+            _state.value = _state.value.copy(errorOperacion = "Monto inválido.")
             return
         }
 
@@ -215,7 +222,7 @@ class BancoViewModel : ViewModel() {
                 val bancoActual = _state.value.banco ?: return@launch
 
                 if (monto > bancoActual.saldo) {
-                    _state.value = _state.value.copy(errorMessage = "Saldo insuficiente.")
+                    _state.value = _state.value.copy(errorOperacion = "Saldo insuficiente.")
                     return@launch
                 }
 
@@ -238,10 +245,11 @@ class BancoViewModel : ViewModel() {
 
                 _state.value = _state.value.copy(
                     banco = bancoActualizado,
-                    mensaje = "Retiro exitoso de $monto pesitos."
+                    mensajeOperacion = "Retiro exitoso de $monto pesitos.", // USAR mensajeOperacion
+                    mensaje = null // limpiar mensaje general
                 )
             } catch (e: Exception) {
-                _state.value = _state.value.copy(errorMessage = e.message)
+                _state.value = _state.value.copy(errorOperacion = e.message)
             }
         }
     }

@@ -6,5 +6,7 @@ data class BancoState(
     val loading: Boolean = false,
     val pinValidado: Boolean = false,
     val mensaje: String? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val mensajeOperacion: String? = null,
+    val errorOperacion: String? = null
 )

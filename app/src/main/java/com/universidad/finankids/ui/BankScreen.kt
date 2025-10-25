@@ -3,6 +3,9 @@ package com.universidad.finankids.ui
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,19 +28,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
 import com.universidad.finankids.events.BancoEvent
 import com.universidad.finankids.navigation.navigateToScreen
+import com.universidad.finankids.ui.components.BankKeyboard
 import com.universidad.finankids.ui.components.BankKeypad
 import com.universidad.finankids.ui.components.BottomMenu
 import com.universidad.finankids.viewmodel.BancoViewModel
@@ -54,6 +62,14 @@ fun BankScreen(
     var confirmPinInput by remember { mutableStateOf("") }
     var confirmMode by remember { mutableStateOf(false) }
 
+    // Estado para controlar la visibilidad del teclado bancario
+    var showBankKeyboard by remember { mutableStateOf(false) }
+
+    // DEBUG: Para ver cuándo cambia el estado
+    LaunchedEffect(showBankKeyboard) {
+        Log.d("BankScreen", "showBankKeyboard cambió a: $showBankKeyboard")
+    }
+
     // Cargar banco al iniciar
     LaunchedEffect(Unit) {
         bancoViewModel.onEvent(BancoEvent.CargarBanco)
@@ -68,9 +84,11 @@ fun BankScreen(
     }
 
     // Logs (puedes reemplazar por Snackbar)
-    LaunchedEffect(state.errorMessage, state.mensaje) {
+    LaunchedEffect(state.errorMessage, state.mensaje, state.mensajeOperacion, state.errorOperacion) {
         state.errorMessage?.let { Log.e("BankScreen", it) }
         state.mensaje?.let { Log.d("BankScreen", it) }
+        state.mensajeOperacion?.let { Log.d("BankScreen", "mensajeOperacion: $it") }
+        state.errorOperacion?.let { Log.e("BankScreen", "errorOperacion: $it") }
     }
 
     var selectedItem by remember { mutableStateOf("banco") }
@@ -82,7 +100,7 @@ fun BankScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        // Fondo del cajero
+        // 1. Fondo del cajero
         Image(
             painter = painterResource(id = R.drawable.fondo_cajero),
             contentDescription = null,
@@ -90,14 +108,14 @@ fun BankScreen(
             contentScale = ContentScale.Crop
         )
 
-        // --- Vista principal del banco ---
+        // 2. Vista principal del banco
         if (state.pinValidado) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
 
-                // --- Header con saldo ---
+                // --- Header con Dinero usuario ---
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -111,7 +129,7 @@ fun BankScreen(
                         modifier = Modifier.size(screenWidth * 0.07f)
                     )
                     Text(
-                        text = "${state.banco?.saldo ?: 0}",
+                        text = "",
                         color = Color.Black,
                         fontSize = (screenWidth.value * 0.06).sp,
                         fontWeight = FontWeight.Bold
@@ -148,7 +166,6 @@ fun BankScreen(
                             )
                         }
 
-
                         // Intereses
                         Column(horizontalAlignment = Alignment.Start) {
                             Text(
@@ -181,6 +198,30 @@ fun BankScreen(
                                 )
                             }
                         }
+
+                        // NUEVO: Cuadrado en el medio para abrir el teclado
+                        Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+                        Box(
+                            modifier = Modifier
+                                .width(screenWidth * 0.6f)
+                                .height(screenHeight * 0.2f)
+                                .background(Color.Red.copy(alpha = 0.5f)) // Temporal: color visible para debug
+                                .clickable {
+                                    Log.d("BankScreen", "Click en cuadrado rojo - abriendo teclado")
+                                    // LIMPIAR MENSAJES ANTES DE ABRIR
+                                    bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
+                                    showBankKeyboard = true
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "TOCA AQUÍ PARA\nRETIRAR O DEPOSITAR",
+                                color = Color.White,
+                                fontSize = (screenWidth.value * 0.04).sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
 
@@ -205,7 +246,7 @@ fun BankScreen(
             }
         }
 
-        // --- Keypad superpuesto con blur ---
+        // 3. Keypad superpuesto con blur
         if (!state.pinValidado) {
             Box(
                 modifier = Modifier
@@ -220,8 +261,35 @@ fun BankScreen(
             }
         }
 
+        // 4. BankKeyboard superpuesto - USANDO DIALOG
+        if (showBankKeyboard) {
+            Dialog(
+                onDismissRequest = {
+                    Log.d("BankScreen", "Dialog onDismissRequest - cerrando teclado")
+                    // LIMPIAR MENSAJES AL CERRAR
+                    bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
+                    showBankKeyboard = false
+                },
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true
+                )
+            ) {
+                BankKeyboard(
+                    bancoViewModel = bancoViewModel,
+                    onClose = {
+                        Log.d("BankScreen", "onClose llamado desde BankKeyboard")
+                        // LIMPIAR MENSAJES AL CERRAR
+                        bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
+                        showBankKeyboard = false
+                    },
+                    modifier = Modifier
+                )
+            }
+        }
 
-        // --- Menú SIEMPRE visible encima del blur ---
+        // 5. Menú SIEMPRE visible encima de todo
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -239,11 +307,8 @@ fun BankScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
-
-
     }
 }
-
 
 
 @Preview(showBackground = true, showSystemUi = true, name = "Phone")
