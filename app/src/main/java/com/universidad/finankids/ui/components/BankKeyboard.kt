@@ -1,6 +1,8 @@
 package com.universidad.finankids.ui.components
 
 import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,10 +22,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -38,6 +42,8 @@ import com.universidad.finankids.R
 import com.universidad.finankids.events.BancoEvent
 import com.universidad.finankids.viewmodel.BancoViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun BankKeyboard(
@@ -48,10 +54,6 @@ fun BankKeyboard(
 ) {
     val state by bancoViewModel.state.collectAsState()
     val userState by userViewModel.state.collectAsState()
-
-    LaunchedEffect(Unit) {
-        Log.d("BankKeyboard", "BankKeyboard COMPOSADO - iniciando")
-    }
 
     var montoInput by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -70,6 +72,8 @@ fun BankKeyboard(
     val buttonHeight = screenHeight * 0.07f * scaleFactor
     val balooFont = FontFamily(Font(R.font.baloo_regular))
 
+    val scope = rememberCoroutineScope()
+
     // --- Escucha de errores y mensajes ---
     LaunchedEffect(state.errorOperacion) {
         state.errorOperacion?.let { error ->
@@ -78,10 +82,11 @@ fun BankKeyboard(
     }
 
     LaunchedEffect(state.mensajeOperacion) {
-        state.mensajeOperacion?.let { mensaje ->
+        state.mensajeOperacion?.let {
             bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
-            val currentUser = FirebaseAuth.getInstance().currentUser
-            currentUser?.uid?.let { uid -> userViewModel.loadUserData(uid) }
+            FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
+                userViewModel.loadUserData(uid)
+            }
             onClose()
         }
     }
@@ -124,7 +129,7 @@ fun BankKeyboard(
                         color = Color(0xFF5B2C00),
                         fontFamily = balooFont,
                         textAlign = TextAlign.Center,
-                        fontSize = (screenWidth.value * 0.04 * scaleFactor).sp,
+                        fontSize = (screenWidth.value * 0.05 * scaleFactor).sp,
                         lineHeight = (screenWidth.value * 0.05 * scaleFactor).sp
                     )
                     Spacer(modifier = Modifier.height(screenHeight * 0.003f))
@@ -154,7 +159,7 @@ fun BankKeyboard(
                             color = Color(0xFF5B2C00),
                             fontFamily = balooFont,
                             fontWeight = FontWeight.Bold,
-                            fontSize = (screenWidth.value * 0.05 * scaleFactor).sp
+                            fontSize = (screenWidth.value * 0.06 * scaleFactor).sp
                         )
                     }
                 }
@@ -198,20 +203,38 @@ fun BankKeyboard(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 fila.forEach { (icono, value) ->
+                                    var pressed by remember { mutableStateOf(false) }
+                                    val scale by animateFloatAsState(
+                                        targetValue = if (pressed) 0.9f else 1f,
+                                        animationSpec = tween(80),
+                                        label = "keyScale"
+                                    )
+
                                     Box(
                                         modifier = Modifier
                                             .width(buttonWidth)
                                             .height(buttonHeight)
+                                            .graphicsLayer(
+                                                scaleX = scale,
+                                                scaleY = scale
+                                            )
                                             .clickable(
                                                 enabled = value.isNotEmpty(),
                                                 indication = null,
                                                 interactionSource = remember { MutableInteractionSource() }
                                             ) {
                                                 if (value.isNotEmpty()) {
+                                                    scope.launch {
+                                                        pressed = true
+                                                        delay(80)
+                                                        pressed = false
+                                                    }
+
                                                     if (errorMessage != null) {
                                                         errorMessage = null
                                                         bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
                                                     }
+
                                                     montoInput += value
                                                     if (montoInput.length > 9) {
                                                         montoInput = montoInput.dropLast(1)
@@ -333,7 +356,6 @@ fun BankKeyboard(
         }
     }
 }
-
 
 /*
 /* ---------------------------------------
