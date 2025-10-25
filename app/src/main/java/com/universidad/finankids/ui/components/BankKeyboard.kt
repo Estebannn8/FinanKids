@@ -3,7 +3,16 @@ package com.universidad.finankids.ui.components
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,27 +31,28 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
 import com.universidad.finankids.R
 import com.universidad.finankids.events.BancoEvent
 import com.universidad.finankids.viewmodel.BancoViewModel
+import com.universidad.finankids.viewmodel.UserViewModel
 
 @Composable
 fun BankKeyboard(
     bancoViewModel: BancoViewModel,
+    userViewModel: UserViewModel,
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by bancoViewModel.state.collectAsState()
+    val userState by userViewModel.state.collectAsState()
 
-    // DEBUG
     LaunchedEffect(Unit) {
         Log.d("BankKeyboard", "BankKeyboard COMPOSADO - iniciando")
     }
 
-    // Estado local para el monto ingresado
     var montoInput by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -50,7 +60,6 @@ fun BankKeyboard(
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
 
-    // === ESCALA RESPONSIVA ===
     val scaleFactor = when {
         screenHeight < 550.dp -> 0.8f
         screenHeight < 700.dp -> 0.9f
@@ -59,32 +68,20 @@ fun BankKeyboard(
 
     val buttonWidth = screenWidth * 0.12f * scaleFactor
     val buttonHeight = screenHeight * 0.07f * scaleFactor
-
     val balooFont = FontFamily(Font(R.font.baloo_regular))
 
-    // FIX: Manejar errores de forma persistente
+    // --- Escucha de errores y mensajes ---
     LaunchedEffect(state.errorOperacion) {
-        Log.d("BankKeyboard", "LaunchedEffect errorOperacion: ${state.errorOperacion}")
-
-        // Cuando llega un nuevo error del ViewModel, mostrarlo y mantenerlo
         state.errorOperacion?.let { error ->
-            if (error != errorMessage) {
-                Log.d("BankKeyboard", "Nuevo error recibido: $error")
-                errorMessage = error
-                // NO limpiar el error del ViewModel aquí - se mantiene hasta nueva acción
-            }
+            if (error != errorMessage) errorMessage = error
         }
     }
 
-    // Manejar mensajes de operación exitosa
     LaunchedEffect(state.mensajeOperacion) {
-        Log.d("BankKeyboard", "LaunchedEffect mensajeOperacion: ${state.mensajeOperacion}")
-
         state.mensajeOperacion?.let { mensaje ->
-            Log.d("BankKeyboard", "Mensaje de operación exitosa: $mensaje - cerrando teclado")
-            // Limpiar el mensaje del ViewModel
             bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
-            // Cerrar el teclado
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            currentUser?.uid?.let { uid -> userViewModel.loadUserData(uid) }
             onClose()
         }
     }
@@ -95,14 +92,12 @@ fun BankKeyboard(
             .padding(bottom = screenHeight * 0.1f),
         contentAlignment = Alignment.Center
     ) {
-        // Caja principal del cajero
         Box(
             modifier = Modifier
                 .width(screenWidth * 0.98f)
                 .height(screenHeight * 0.65f),
             contentAlignment = Alignment.Center
         ) {
-            // Fondo beige del cajero
             Image(
                 painter = painterResource(id = R.drawable.ic_bank_beigh),
                 contentDescription = "Fondo cajero",
@@ -110,7 +105,6 @@ fun BankKeyboard(
                 modifier = Modifier.fillMaxSize()
             )
 
-            // Contenido interno
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -123,38 +117,30 @@ fun BankKeyboard(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // ======== TEXTOS SUPERIORES ========
+                // ===== TEXTOS SUPERIORES =====
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "ESCRIBE LA CANTIDAD DE\nPESITOS QUE QUIERES USAR",
                         color = Color(0xFF5B2C00),
                         fontFamily = balooFont,
-                        fontWeight = FontWeight(400),
                         textAlign = TextAlign.Center,
                         fontSize = (screenWidth.value * 0.04 * scaleFactor).sp,
                         lineHeight = (screenWidth.value * 0.05 * scaleFactor).sp
                     )
                     Spacer(modifier = Modifier.height(screenHeight * 0.003f))
 
-                    // Mensaje de error - PERSISTENTE
                     Text(
                         text = errorMessage ?: "",
                         color = Color(0xFFD33333),
                         fontFamily = balooFont,
-                        fontWeight = FontWeight(400),
                         textAlign = TextAlign.Center,
                         fontSize = (screenWidth.value * 0.035 * scaleFactor).sp,
-                        modifier = Modifier
-                            .height(screenHeight * 0.03f) // Más espacio para errores
-                            .padding(horizontal = screenWidth * 0.05f)
+                        modifier = Modifier.height(screenHeight * 0.03f)
                     )
 
                     Spacer(modifier = Modifier.height(screenHeight * 0.01f))
 
-                    // Campo de texto sobre la barra
-                    Box(
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(contentAlignment = Alignment.Center) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_barra),
                             contentDescription = "Barra superior",
@@ -168,18 +154,17 @@ fun BankKeyboard(
                             color = Color(0xFF5B2C00),
                             fontFamily = balooFont,
                             fontWeight = FontWeight.Bold,
-                            fontSize = (screenWidth.value * 0.05 * scaleFactor).sp,
-                            modifier = Modifier.padding(bottom = screenHeight * 0.005f)
+                            fontSize = (screenWidth.value * 0.05 * scaleFactor).sp
                         )
                     }
                 }
 
-                // ======== TECLADO Y BOTONES ========
+                // ===== TECLADO Y BOTONES =====
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(screenWidth * 0.04f),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // ----- Teclado numérico -----
+                    // --- Teclado numérico ---
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(screenHeight * 0.005f * scaleFactor)
@@ -217,16 +202,17 @@ fun BankKeyboard(
                                         modifier = Modifier
                                             .width(buttonWidth)
                                             .height(buttonHeight)
-                                            .clickable(enabled = value.isNotEmpty()) {
-                                                Log.d("BankKeyboard", "Tecla presionada: $value")
+                                            .clickable(
+                                                enabled = value.isNotEmpty(),
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) {
                                                 if (value.isNotEmpty()) {
-                                                    // Limpiar error cuando el usuario empiece a escribir
                                                     if (errorMessage != null) {
                                                         errorMessage = null
                                                         bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
                                                     }
                                                     montoInput += value
-                                                    // Validar que no exceda el máximo
                                                     if (montoInput.length > 9) {
                                                         montoInput = montoInput.dropLast(1)
                                                         errorMessage = "Monto máximo excedido"
@@ -247,12 +233,12 @@ fun BankKeyboard(
                         }
                     }
 
-                    // ----- Botones laterales -----
+                    // --- Botones laterales ---
                     Column(
                         verticalArrangement = Arrangement.spacedBy(screenHeight * 0.011f * scaleFactor),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Botón Borrar - LIMPIA TODO
+                        // BORRAR
                         Image(
                             painter = painterResource(id = R.drawable.ic_boton_borrar),
                             contentDescription = "BORRAR",
@@ -260,16 +246,17 @@ fun BankKeyboard(
                             modifier = Modifier
                                 .width(screenWidth * 0.25f)
                                 .height(screenHeight * 0.08f * scaleFactor)
-                                .clickable {
-                                    Log.d("BankKeyboard", "Botón BORRAR presionado")
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
                                     montoInput = ""
                                     errorMessage = null
-                                    // Limpiar cualquier error en el ViewModel
                                     bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
                                 }
                         )
 
-                        // Botón Retirar
+                        // RETIRAR
                         Image(
                             painter = painterResource(id = R.drawable.ic_boton_retirar),
                             contentDescription = "RETIRAR",
@@ -277,9 +264,10 @@ fun BankKeyboard(
                             modifier = Modifier
                                 .width(screenWidth * 0.25f)
                                 .height(screenHeight * 0.08f * scaleFactor)
-                                .clickable {
-                                    Log.d("BankKeyboard", "Botón RETIRAR presionado - monto: $montoInput")
-                                    // Limpiar error anterior antes de nueva operación
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
                                     errorMessage = null
                                     bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
 
@@ -294,12 +282,17 @@ fun BankKeyboard(
                                         return@clickable
                                     }
 
-                                    // Ejecutar retiro inmediatamente
+                                    val saldoBanco = state.banco?.saldo ?: 0
+                                    if (monto > saldoBanco) {
+                                        errorMessage = "Saldo insuficiente en el banco"
+                                        return@clickable
+                                    }
+
                                     bancoViewModel.onEvent(BancoEvent.Retirar(monto))
                                 }
                         )
 
-                        // Botón Depositar
+                        // DEPOSITAR
                         Image(
                             painter = painterResource(id = R.drawable.ic_boton_depositar),
                             contentDescription = "DEPOSITAR",
@@ -307,9 +300,10 @@ fun BankKeyboard(
                             modifier = Modifier
                                 .width(screenWidth * 0.25f)
                                 .height(screenHeight * 0.08f * scaleFactor)
-                                .clickable {
-                                    Log.d("BankKeyboard", "Botón DEPOSITAR presionado - monto: $montoInput")
-                                    // Limpiar error anterior antes de nueva operación
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
                                     errorMessage = null
                                     bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
 
@@ -324,7 +318,12 @@ fun BankKeyboard(
                                         return@clickable
                                     }
 
-                                    // Ejecutar depósito inmediatamente
+                                    val dineroUsuario = userState.userData.dinero
+                                    if (monto > dineroUsuario) {
+                                        errorMessage = "No tienes suficiente dinero"
+                                        return@clickable
+                                    }
+
                                     bancoViewModel.onEvent(BancoEvent.Depositar(monto))
                                 }
                         )
@@ -334,6 +333,7 @@ fun BankKeyboard(
         }
     }
 }
+
 
 /*
 /* ---------------------------------------

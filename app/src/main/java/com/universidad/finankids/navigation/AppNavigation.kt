@@ -91,7 +91,10 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
 
         composable(AppScreens.BankScreen.route) {
-            BankScreen(navController)
+            BankScreen(
+                navController = navController,
+                userViewModel = userViewModel
+            )
         }
 
         composable(AppScreens.StoreScreen.route) {
@@ -105,15 +108,15 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(
             route = AppScreens.LessonScreen.route,
             arguments = listOf(navArgument("category") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val category = backStackEntry.arguments?.getString("category") ?: "ahorro"
-                LessonScreen(
-                    category = category,
-                    userViewModel = userViewModel,
-                    lessonsViewModel = lessonsViewModel,
-                    navController = navController
-                )
-            }
+        ) { backStackEntry ->
+            val category = backStackEntry.arguments?.getString("category") ?: "ahorro"
+            LessonScreen(
+                category = category,
+                userViewModel = userViewModel,
+                lessonsViewModel = lessonsViewModel,
+                navController = navController
+            )
+        }
 
     }
 }

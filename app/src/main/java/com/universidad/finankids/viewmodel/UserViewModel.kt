@@ -190,12 +190,14 @@ class UserViewModel : ViewModel() {
                 firestore.runTransaction { transaction ->
                     val snapshot = transaction.get(userRef)
                     val currentDinero = snapshot.getLong("dinero")?.toInt() ?: 0
-                    val currentAvatars = (snapshot.get("avataresDesbloqueados") as? List<String>) ?: emptyList()
+                    val currentAvatars =
+                        (snapshot.get("avataresDesbloqueados") as? List<String>) ?: emptyList()
 
                     if (currentDinero < price) throw Exception("Dinero insuficiente")
 
                     val updatedAvatars = currentAvatars + avatar.id
-                    transaction.update(userRef,
+                    transaction.update(
+                        userRef,
                         "dinero", currentDinero - price,
                         "avataresDesbloqueados", updatedAvatars
                     )
@@ -251,8 +253,10 @@ class UserViewModel : ViewModel() {
                     val currentDinero = userDoc.getLong("dinero")?.toInt() ?: 0
 
                     // Estructura anidada: leccionesCompletadas/{categoriaID}/{leccionID}
-                    val completedLessons = userDoc.get("leccionesCompletadas") as? Map<String, Any> ?: emptyMap()
-                    val categoryLessons = completedLessons[categoryId] as? Map<String, Any> ?: emptyMap()
+                    val completedLessons =
+                        userDoc.get("leccionesCompletadas") as? Map<String, Any> ?: emptyMap()
+                    val categoryLessons =
+                        completedLessons[categoryId] as? Map<String, Any> ?: emptyMap()
 
                     // Actualizar lecciones completadas para la categoría
                     val updatedCategoryLessons = categoryLessons.toMutableMap().apply {
@@ -260,17 +264,23 @@ class UserViewModel : ViewModel() {
                     }
 
                     // Actualizar progreso de categoría
-                    val currentProgress = userDoc.get("progresoCategorias") as? Map<String, Any> ?: emptyMap()
+                    val currentProgress =
+                        userDoc.get("progresoCategorias") as? Map<String, Any> ?: emptyMap()
                     val updatedProgress = currentProgress.toMutableMap().apply {
                         this[categoryId] = (this[categoryId] as? Long ?: 0) + 1
                     }
 
                     // Guardar todo
-                    transaction.update(userRef,
-                        "exp", currentExp + expEarned,
-                        "dinero", currentDinero + dineroEarned,
-                        "progresoCategorias", updatedProgress,
-                        "leccionesCompletadas.$categoryId", updatedCategoryLessons // Notación de puntos
+                    transaction.update(
+                        userRef,
+                        "exp",
+                        currentExp + expEarned,
+                        "dinero",
+                        currentDinero + dineroEarned,
+                        "progresoCategorias",
+                        updatedProgress,
+                        "leccionesCompletadas.$categoryId",
+                        updatedCategoryLessons // Notación de puntos
                     )
                 }.await()
 

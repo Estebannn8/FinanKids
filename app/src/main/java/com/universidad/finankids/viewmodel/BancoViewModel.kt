@@ -179,30 +179,58 @@ class BancoViewModel : ViewModel() {
                 val userId = uid ?: return@launch
                 val bancoActual = _state.value.banco ?: return@launch
 
-                val nuevoSaldo = bancoActual.saldo + monto
-                val nuevaTransaccion = Transaccion("Depósito", monto)
-                val nuevoHistorial = bancoActual.historial + nuevaTransaccion
+                // Validar que el usuario tenga suficiente dinero
+                val userDoc = firestore.collection("usuarios").document(userId).get().await()
+                val dineroUsuario = userDoc.getLong("dinero")?.toInt() ?: 0
 
-                val bancoActualizado = bancoActual.copy(
-                    saldo = nuevoSaldo,
-                    historial = nuevoHistorial,
-                    ultimaActualizacion = System.currentTimeMillis()
-                )
+                if (monto > dineroUsuario) {
+                    _state.value = _state.value.copy(errorOperacion = "No tienes suficiente dinero")
+                    return@launch
+                }
 
-                firestore.collection("usuarios")
-                    .document(userId)
-                    .collection("banco")
-                    .document("info")
-                    .set(bancoActualizado)
-                    .await()
+                // Transacción para actualizar banco Y usuario
+                firestore.runTransaction { transaction ->
+                    // Actualizar banco
+                    val nuevoSaldo = bancoActual.saldo + monto
+                    val nuevaTransaccion = Transaccion("Depósito", monto)
+                    val nuevoHistorial = bancoActual.historial + nuevaTransaccion
+
+                    val bancoActualizado = bancoActual.copy(
+                        saldo = nuevoSaldo,
+                        historial = nuevoHistorial,
+                        ultimaActualizacion = System.currentTimeMillis()
+                    )
+
+                    // Actualizar usuario (restar dinero)
+                    val userDoc = transaction.get(firestore.collection("usuarios").document(userId))
+                    val currentDinero = userDoc.getLong("dinero")?.toInt() ?: 0
+
+                    if (currentDinero < monto) {
+                        throw Exception("Saldo insuficiente")
+                    }
+
+                    // Guardar cambios
+                    transaction.set(
+                        firestore.collection("usuarios").document(userId).collection("banco")
+                            .document("info"),
+                        bancoActualizado
+                    )
+                    transaction.update(
+                        firestore.collection("usuarios").document(userId),
+                        "dinero", currentDinero - monto
+                    )
+                }.await()
 
                 _state.value = _state.value.copy(
-                    banco = bancoActualizado,
-                    mensajeOperacion = "Depósito exitoso de $monto pesitos.", // USAR mensajeOperacion
-                    mensaje = null // limpiar mensaje general
+                    banco = bancoActual.copy(
+                        saldo = bancoActual.saldo + monto,
+                        historial = bancoActual.historial + Transaccion("Depósito", monto),
+                        ultimaActualizacion = System.currentTimeMillis()
+                    ),
+                    mensajeOperacion = "Depósito exitoso de $monto pesitos."
                 )
             } catch (e: Exception) {
-                _state.value = _state.value.copy(errorOperacion = e.message)
+                _state.value = _state.value.copy(errorOperacion = e.message ?: "Error al depositar")
             }
         }
     }
@@ -222,34 +250,50 @@ class BancoViewModel : ViewModel() {
                 val bancoActual = _state.value.banco ?: return@launch
 
                 if (monto > bancoActual.saldo) {
-                    _state.value = _state.value.copy(errorOperacion = "Saldo insuficiente.")
+                    _state.value =
+                        _state.value.copy(errorOperacion = "Saldo insuficiente en el banco")
                     return@launch
                 }
 
-                val nuevoSaldo = bancoActual.saldo - monto
-                val nuevaTransaccion = Transaccion("Retiro", monto)
-                val nuevoHistorial = bancoActual.historial + nuevaTransaccion
+                // Transacción para actualizar banco Y usuario
+                firestore.runTransaction { transaction ->
+                    // Actualizar banco
+                    val nuevoSaldo = bancoActual.saldo - monto
+                    val nuevaTransaccion = Transaccion("Retiro", monto)
+                    val nuevoHistorial = bancoActual.historial + nuevaTransaccion
 
-                val bancoActualizado = bancoActual.copy(
-                    saldo = nuevoSaldo,
-                    historial = nuevoHistorial,
-                    ultimaActualizacion = System.currentTimeMillis()
-                )
+                    val bancoActualizado = bancoActual.copy(
+                        saldo = nuevoSaldo,
+                        historial = nuevoHistorial,
+                        ultimaActualizacion = System.currentTimeMillis()
+                    )
 
-                firestore.collection("usuarios")
-                    .document(userId)
-                    .collection("banco")
-                    .document("info")
-                    .set(bancoActualizado)
-                    .await()
+                    // Actualizar usuario (sumar dinero)
+                    val userDoc = transaction.get(firestore.collection("usuarios").document(userId))
+                    val currentDinero = userDoc.getLong("dinero")?.toInt() ?: 0
+
+                    // Guardar cambios
+                    transaction.set(
+                        firestore.collection("usuarios").document(userId).collection("banco")
+                            .document("info"),
+                        bancoActualizado
+                    )
+                    transaction.update(
+                        firestore.collection("usuarios").document(userId),
+                        "dinero", currentDinero + monto
+                    )
+                }.await()
 
                 _state.value = _state.value.copy(
-                    banco = bancoActualizado,
-                    mensajeOperacion = "Retiro exitoso de $monto pesitos.", // USAR mensajeOperacion
-                    mensaje = null // limpiar mensaje general
+                    banco = bancoActual.copy(
+                        saldo = bancoActual.saldo - monto,
+                        historial = bancoActual.historial + Transaccion("Retiro", monto),
+                        ultimaActualizacion = System.currentTimeMillis()
+                    ),
+                    mensajeOperacion = "Retiro exitoso de $monto pesitos."
                 )
             } catch (e: Exception) {
-                _state.value = _state.value.copy(errorOperacion = e.message)
+                _state.value = _state.value.copy(errorOperacion = e.message ?: "Error al retirar")
             }
         }
     }
@@ -260,7 +304,8 @@ class BancoViewModel : ViewModel() {
     private fun calcularIntereses() {
         viewModelScope.launch {
             val banco = _state.value.banco ?: return@launch
-            val dias = ((System.currentTimeMillis() - banco.ultimaActualizacion) / (1000 * 60 * 60 * 24)).toInt()
+            val dias =
+                ((System.currentTimeMillis() - banco.ultimaActualizacion) / (1000 * 60 * 60 * 24)).toInt()
             if (dias <= 0) return@launch
 
             val interesMensual = banco.interes

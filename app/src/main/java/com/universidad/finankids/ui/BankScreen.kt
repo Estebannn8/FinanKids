@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -42,6 +39,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.universidad.finankids.R
 import com.universidad.finankids.events.BancoEvent
 import com.universidad.finankids.navigation.navigateToScreen
@@ -49,13 +47,16 @@ import com.universidad.finankids.ui.components.BankKeyboard
 import com.universidad.finankids.ui.components.BankKeypad
 import com.universidad.finankids.ui.components.BottomMenu
 import com.universidad.finankids.viewmodel.BancoViewModel
+import com.universidad.finankids.viewmodel.UserViewModel
 
 @Composable
 fun BankScreen(
     navController: NavController,
+    userViewModel: UserViewModel = viewModel(),
     bancoViewModel: BancoViewModel = viewModel()
 ) {
     val state by bancoViewModel.state.collectAsState()
+    val userState by userViewModel.state.collectAsState()
 
     var showDialog by remember { mutableStateOf(true) }
     var pinInput by remember { mutableStateOf("") }
@@ -70,9 +71,16 @@ fun BankScreen(
         Log.d("BankScreen", "showBankKeyboard cambió a: $showBankKeyboard")
     }
 
-    // Cargar banco al iniciar
+    // Cargar banco y usuario al iniciar
     LaunchedEffect(Unit) {
         bancoViewModel.onEvent(BancoEvent.CargarBanco)
+        // Cargar datos del usuario si no están cargados
+        if (userState.userData.uid.isEmpty()) {
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            currentUser?.uid?.let { uid ->
+                userViewModel.loadUserData(uid)
+            }
+        }
     }
 
     // Si se valida el PIN correctamente, cerrar el diálogo y aplicar intereses
@@ -83,7 +91,6 @@ fun BankScreen(
         }
     }
 
-    // Logs (puedes reemplazar por Snackbar)
     LaunchedEffect(state.errorMessage, state.mensaje, state.mensajeOperacion, state.errorOperacion) {
         state.errorMessage?.let { Log.e("BankScreen", it) }
         state.mensaje?.let { Log.d("BankScreen", it) }
@@ -115,7 +122,7 @@ fun BankScreen(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
 
-                // --- Header con Dinero usuario ---
+                // --- Header con Dinero usuario ACTUALIZADO ---
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -129,7 +136,7 @@ fun BankScreen(
                         modifier = Modifier.size(screenWidth * 0.07f)
                     )
                     Text(
-                        text = "",
+                        text = "${userState.userData.dinero}",  // MOSTRAR DINERO DEL USUARIO
                         color = Color.Black,
                         fontSize = (screenWidth.value * 0.06).sp,
                         fontWeight = FontWeight.Bold
@@ -199,7 +206,7 @@ fun BankScreen(
                             }
                         }
 
-                        // NUEVO: Cuadrado en el medio para abrir el teclado
+                        // Cuadrado en el medio para abrir el teclado
                         Spacer(modifier = Modifier.height(screenHeight * 0.03f))
                         Box(
                             modifier = Modifier
@@ -278,6 +285,7 @@ fun BankScreen(
             ) {
                 BankKeyboard(
                     bancoViewModel = bancoViewModel,
+                    userViewModel = userViewModel,
                     onClose = {
                         Log.d("BankScreen", "onClose llamado desde BankKeyboard")
                         // LIMPIAR MENSAJES AL CERRAR
@@ -289,7 +297,7 @@ fun BankScreen(
             }
         }
 
-        // 5. Menú SIEMPRE visible encima de todo
+        // 5. Menú SIEMPRE visible
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -310,7 +318,7 @@ fun BankScreen(
     }
 }
 
-
+/*
 @Preview(showBackground = true, showSystemUi = true, name = "Phone")
 @Composable
 fun BankScreenPreviewPhone() {
@@ -341,5 +349,7 @@ fun BankScreenPreviewSmallPhone() {
     val navController = rememberNavController()
     BankScreen(navController = navController)
 }
+
+ */
 
 

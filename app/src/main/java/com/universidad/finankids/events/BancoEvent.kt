@@ -7,7 +7,6 @@ sealed class BancoEvent {
     data class ValidarPin(val pin: String) : BancoEvent()
     data class Depositar(val monto: Int) : BancoEvent()
     data class Retirar(val monto: Int) : BancoEvent()
-
     object LimpiarMensajeOperacion : BancoEvent()
     object CalcularIntereses : BancoEvent()
     object ResetValidacion : BancoEvent()
