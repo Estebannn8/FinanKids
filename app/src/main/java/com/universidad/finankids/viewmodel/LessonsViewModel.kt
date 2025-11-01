@@ -356,7 +356,7 @@ class LessonsViewModel : ViewModel() {
         val penaltyFactor = (state.errorCount.toFloat() / maxAllowedErrors).coerceIn(0f, 0.7f)
 
         // Factor de recompensa (0.3 a 1.0)
-        var rewardFactor = 1 - penaltyFactor
+        val rewardFactor = 1 - penaltyFactor
 
         // Calcular recompensas base (sin bonus)
         val exp = (baseExp * rewardFactor).toInt().coerceAtLeast((baseExp * 0.3f).toInt())

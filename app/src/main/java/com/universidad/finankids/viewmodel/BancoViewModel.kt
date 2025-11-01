@@ -307,9 +307,6 @@ class BancoViewModel : ViewModel() {
                     mensajeOperacion = "Retiro exitoso de $monto pesitos."
                 )
 
-                val nuevoSaldo = bancoActual.saldo - monto
-
-
             } catch (e: Exception) {
                 _state.value = _state.value.copy(errorOperacion = e.message ?: "Error al retirar")
             }

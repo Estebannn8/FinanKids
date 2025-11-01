@@ -671,7 +671,7 @@ fun ProfileScreen(
                             horizontalArrangement = Arrangement.spacedBy(20.dp)
                         ) {
                             rowItems.forEach { categoryItem ->
-                                val (estrellaIcon, precisionIcon) = categoryItem.icons
+                                val (estrellaIcon, _) = categoryItem.icons
                                 val valorCategoria = obtenerValorCategoria(categoryItem.categoryName)
 
                                 Box(

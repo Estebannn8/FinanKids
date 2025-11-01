@@ -60,7 +60,7 @@ fun TrophyScreen(
     achievementsViewModel: AchievementsViewModel,
     userViewModel: UserViewModel
 ) {
-    var selectedItem = remember { mutableStateOf("home") }
+    val selectedItem = remember { mutableStateOf("home") }
     val achievementsState by achievementsViewModel.state.collectAsState()
     val userState by userViewModel.state.collectAsState()
     val achievements = achievementsState.uiAchievements
