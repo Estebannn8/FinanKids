@@ -1,5 +1,8 @@
 package com.universidad.finankids.ui.components
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,9 +16,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -49,142 +55,114 @@ fun AchievementDetailDialog(
     onDismiss: () -> Unit
 ) {
     val unlocked = logroUI.desbloqueado
-
-    // Estado local para reaccionar al instante
     var claimedLocal by remember { mutableStateOf(logroUI.reclamado) }
 
     val progress = logroUI.progresoActual.toFloat() / logroUI.progresoTotal.toFloat()
 
+    // Animación de entrada suave
+    val scale by animateFloatAsState(
+        targetValue = 1f,
+        animationSpec = tween(220, easing = FastOutSlowInEasing),
+        label = ""
+    )
+
     Box(
+        contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xAA000000)),
-        contentAlignment = Alignment.Center
+            .clickable(enabled = false) {} // evita click-through
     ) {
         Box(
             modifier = Modifier
-                .padding(24.dp)
-                .shadow(12.dp, RoundedCornerShape(20.dp))
-                .border(4.dp, Color(0xFFB0B0B0), RoundedCornerShape(20.dp))
-                .background(Color(0xFFD9D9D9), RoundedCornerShape(20.dp))
-                .fillMaxWidth()
+                .scale(scale)
+                .fillMaxWidth(0.88f)
+                .wrapContentHeight()
+                .shadow(14.dp, RoundedCornerShape(24.dp))
+                .border(4.dp, Color(0xFFB0B0B0), RoundedCornerShape(24.dp))
+                .background(Color(0xFFD9D9D9), RoundedCornerShape(24.dp))
+                .padding(horizontal = 24.dp, vertical = 28.dp)
         ) {
+
             Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                // Encabezado
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
                         painter = rememberAsyncImagePainter(logroUI.logro.iconoUrl),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(68.dp)
                             .clip(RoundedCornerShape(12.dp))
                     )
-                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Spacer(Modifier.width(16.dp))
+
                     Text(
                         text = logroUI.logro.titulo.uppercase(),
                         fontSize = 20.sp,
                         fontFamily = PoppinsBold,
                         color = Color.Black,
-                        lineHeight = 22.sp
+                        lineHeight = 20.sp
                     )
                 }
 
+                // Descripción
                 Text(
-                    text = logroUI.logro.descripcion,
+                    logroUI.logro.descripcion,
                     fontSize = 15.sp,
-                    color = Color.Black
+                    fontFamily = ItimRegular,
+                    color = Color(0xFF2E2E2E),
+                    lineHeight = 18.sp
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                // Barra de progreso
+                AchievementProgressBar(
+                    progress = progress,
+                    current = logroUI.progresoActual,
+                    total = logroUI.progresoTotal
+                )
 
-                    Column(modifier = Modifier.weight(1f)) {
-
-                        AchievementProgressBar(
-                            progress = progress,
-                            current = logroUI.progresoActual,
-                            total = logroUI.progresoTotal
-                        )
-
-                        Spacer(modifier = Modifier.height(6.dp))
-
-                        when {
-                            !unlocked -> Text(
-                                "En progreso…",
-                                fontFamily = ItimRegular,
-                                fontSize = 14.sp
-                            )
-                            unlocked && !claimedLocal -> Text(
-                                "¡Reclama tu premio!",
-                                fontFamily = ItimRegular,
-                                fontSize = 14.sp
-                            )
-                            claimedLocal -> Text(
-                                "Premio reclamado ✅",
-                                fontFamily = ItimRegular,
-                                fontSize = 14.sp
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Botón desaparece al instante gracias al estado local
-                    if (unlocked && !claimedLocal) {
-                        Box(
-                            modifier = Modifier
-                                .background(Color.White, RoundedCornerShape(16.dp))
-                                .clickable {
-                                    claimedLocal = true  // cambia UI inmediatamente
-                                    onClaim()
-                                }
-                                .padding(horizontal = 20.dp, vertical = 12.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = "RECLAMAR",
-                                    fontSize = 12.sp,
-                                    fontFamily = PoppinsSemiBold
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.ic_coin),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "${logroUI.logro.dineroRecompensa}",
-                                        fontSize = 19.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+                Text(
+                    text = when {
+                        !unlocked -> "Sigue mejorando…"
+                        unlocked && !claimedLocal -> "¡Reclama tu recompensa!"
+                        else -> "Premio reclamado ✅"
+                    },
+                    fontSize = 13.sp,
+                    fontFamily = ItimRegular,
+                    color = Color(0xFF6D563A)
+                )
             }
 
+            // Botón cerrar
             Image(
                 painter = painterResource(id = R.drawable.ic_x),
-                contentDescription = "Cerrar",
+                contentDescription = "",
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(12.dp)
+                    .offset(y = (-28).dp, x = (20).dp)
+                    .padding(10.dp)
                     .size(32.dp)
                     .clickable { onDismiss() }
             )
+
+            // Botón reclamar (flotante)
+            if (unlocked && !claimedLocal) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_boton_comprar),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .offset(y = 26.dp)
+                        .size(110.dp)
+                        .clickable {
+                            claimedLocal = true
+                            onClaim()
+                        }
+                )
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package com.universidad.finankids.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.universidad.finankids.data.model.AchievementNotification
@@ -26,7 +27,7 @@ class AchievementsViewModel : ViewModel() {
     init {
         // Escuchamos TODOS los triggers globales de logros
         viewModelScope.launch {
-            AchievementsEventBus.events.collect { trigger: AchievementTrigger  ->
+            AchievementsEventBus.events.collect { trigger: AchievementTrigger ->
                 when (trigger) {
                     is AchievementTrigger.LessonCompleted -> handleLessonCompleted(trigger)
                     is AchievementTrigger.StreakChanged -> handleStreakChanged(trigger)
@@ -236,6 +237,11 @@ class AchievementsViewModel : ViewModel() {
                 val logro = _state.value.globalAchievements.find { it.id == logroId }
 
                 logro?.let {
+                    firestore.collection("usuarios")
+                        .document(uid)
+                        .update("dinero", FieldValue.increment(it.dineroRecompensa.toLong()))
+                        .await()
+
                     addNotification(
                         AchievementNotification(
                             logroId = logroId,
