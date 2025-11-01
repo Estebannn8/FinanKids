@@ -194,14 +194,24 @@ class AchievementsViewModel : ViewModel() {
     }
 
     private suspend fun handleBankBalanceChanged(e: AchievementTrigger.BankBalanceChanged) {
-        if (e.newSaldo >= 1000) unlockInstant(e.uid, "primer_ahorro")
-        if (e.newSaldo >= 25000) unlockInstant(e.uid, "caja_fuerte")
+        // Logro 1: primer ahorro (1000)
+        incrementProgress(e.uid, "primer_ahorro", e.montoDepositado)
+
+        // Logro 2: caja fuerte (25000)
+        incrementProgress(e.uid, "caja_fuerte", e.montoDepositado)
     }
 
     private suspend fun handleAvatarPurchased(e: AchievementTrigger.AvatarPurchased) {
-        unlockInstant(e.uid, "comprador_inteligente")
+
+        // 1) Comprador inteligente → solo una vez
+        if (!isAchievementUnlocked(e.uid, "comprador_inteligente")) {
+            unlockInstant(e.uid, "comprador_inteligente")
+        }
+
+        // 2) Progreso acumulativo para “desbloqueador”
         incrementProgress(e.uid, "desbloqueador", 1)
     }
+
 
     private suspend fun handleProfileOpened(e: AchievementTrigger.ProfileOpenedFirstTime) {
         unlockInstant(e.uid, "cientifico_dinero")
@@ -243,6 +253,30 @@ class AchievementsViewModel : ViewModel() {
             }
         }
     }
+
+    private suspend fun setProgressTo(uid: String, logroId: String, value: Int) {
+        val doc = firestore.collection("usuarios")
+            .document(uid)
+            .collection("logrosUsuario")
+            .document(logroId)
+
+        val logro = _state.value.globalAchievements.find { it.id == logroId }
+        val required = logro?.progresoRequerido ?: 1
+        val unlocked = value >= required
+
+        doc.set(
+            UserAchievement(
+                logroId = logroId,
+                progress = value,
+                unlocked = unlocked,
+                claimed = false, // puedes poner false si SÓLO desbloquea
+            ),
+            SetOptions.merge()
+        ).await()
+
+        refresh(uid)
+    }
+
 
     suspend fun isAchievementUnlocked(uid: String, logroId: String): Boolean {
         val doc = firestore.collection("usuarios")

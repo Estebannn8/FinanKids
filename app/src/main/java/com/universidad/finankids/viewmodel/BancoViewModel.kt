@@ -238,7 +238,7 @@ class BancoViewModel : ViewModel() {
                     AchievementsEventBus.emit(
                         AchievementTrigger.BankBalanceChanged(
                             uid = userId,
-                            newSaldo = bancoActual.saldo + monto
+                            montoDepositado = monto
                         )
                     )
                 }
@@ -307,15 +307,8 @@ class BancoViewModel : ViewModel() {
                     mensajeOperacion = "Retiro exitoso de $monto pesitos."
                 )
 
-                // Emitir trigger de saldo cambiado
-                viewModelScope.launch {
-                    AchievementsEventBus.emit(
-                        AchievementTrigger.BankBalanceChanged(
-                            uid = userId,
-                            newSaldo = bancoActual.saldo - monto
-                        )
-                    )
-                }
+                val nuevoSaldo = bancoActual.saldo - monto
+
 
             } catch (e: Exception) {
                 _state.value = _state.value.copy(errorOperacion = e.message ?: "Error al retirar")
@@ -372,16 +365,6 @@ class BancoViewModel : ViewModel() {
                     banco = bancoActualizado,
                     mensaje = "Interés diario: +$interesesGanados pesitos. Saldo: $nuevoSaldo"
                 )
-
-                viewModelScope.launch {
-                    val userId = uid ?: return@launch
-                    AchievementsEventBus.emit(
-                        AchievementTrigger.BankBalanceChanged(
-                            uid = userId,
-                            newSaldo = nuevoSaldo
-                        )
-                    )
-                }
 
             } catch (e: Exception) {
                 _state.value = _state.value.copy(errorMessage = "Error al calcular intereses: ${e.message}")
