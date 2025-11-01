@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.universidad.finankids.data.model.AchievementNotification
 import com.universidad.finankids.events.AchievementTrigger
 import com.universidad.finankids.data.model.Logro
 import com.universidad.finankids.data.model.LogroUI
@@ -142,6 +143,19 @@ class AchievementsViewModel : ViewModel() {
                 SetOptions.merge()
             ).await()
 
+        val logro = _state.value.globalAchievements.find { it.id == logroId }
+
+        logro?.let {
+            addNotification(
+                AchievementNotification(
+                    logroId = logroId,
+                    titulo = "¡Logro desbloqueado!",
+                    recompensa = it.dineroRecompensa,
+                    icono = it.iconoUrl
+                )
+            )
+        }
+
         refresh(uid)
     }
 
@@ -209,6 +223,19 @@ class AchievementsViewModel : ViewModel() {
                     .document(logroId)
                     .update("claimed", true).await()
 
+                val logro = _state.value.globalAchievements.find { it.id == logroId }
+
+                logro?.let {
+                    addNotification(
+                        AchievementNotification(
+                            logroId = logroId,
+                            titulo = "¡Recompensa reclamada!",
+                            recompensa = it.dineroRecompensa,
+                            icono = it.iconoUrl
+                        )
+                    )
+                }
+
                 refresh(uid)
 
             } catch (e: Exception) {
@@ -216,4 +243,31 @@ class AchievementsViewModel : ViewModel() {
             }
         }
     }
+
+    suspend fun isAchievementUnlocked(uid: String, logroId: String): Boolean {
+        val doc = firestore.collection("usuarios")
+            .document(uid)
+            .collection("logrosUsuario")
+            .document(logroId)
+            .get()
+            .await()
+
+        return doc.getBoolean("unlocked") == true
+    }
+
+
+    private fun addNotification(notif: AchievementNotification) {
+        _state.value = _state.value.copy(
+            notifications = _state.value.notifications + notif
+        )
+    }
+
+    fun removeNotification(notif: AchievementNotification) {
+        _state.value = _state.value.copy(
+            notifications = _state.value.notifications - notif
+        )
+    }
+
 }
+
+

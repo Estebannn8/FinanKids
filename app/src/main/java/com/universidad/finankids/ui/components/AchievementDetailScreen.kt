@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,13 +39,16 @@ fun AchievementDetailDialog(
     onDismiss: () -> Unit
 ) {
     val unlocked = logroUI.desbloqueado
-    val claimed = logroUI.reclamado
+
+    // Estado local para reaccionar al instante
+    var claimedLocal by remember { mutableStateOf(logroUI.reclamado) }
+
     val progress = logroUI.progresoActual.toFloat() / logroUI.progresoTotal.toFloat()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xAA000000)), // sombra
+            .background(Color(0xAA000000)),
         contentAlignment = Alignment.Center
     ) {
         Box(
@@ -68,9 +75,7 @@ fun AchievementDetailDialog(
                             .size(60.dp)
                             .clip(RoundedCornerShape(12.dp))
                     )
-
                     Spacer(modifier = Modifier.width(10.dp))
-
                     Text(
                         text = logroUI.logro.titulo.uppercase(),
                         fontSize = 20.sp,
@@ -108,12 +113,12 @@ fun AchievementDetailDialog(
                                 fontFamily = ItimRegular,
                                 fontSize = 14.sp
                             )
-                            unlocked && !claimed -> Text(
+                            unlocked && !claimedLocal -> Text(
                                 "¡Reclama tu premio!",
                                 fontFamily = ItimRegular,
                                 fontSize = 14.sp
                             )
-                            claimed -> Text(
+                            claimedLocal -> Text(
                                 "Premio reclamado ✅",
                                 fontFamily = ItimRegular,
                                 fontSize = 14.sp
@@ -123,25 +128,25 @@ fun AchievementDetailDialog(
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    // BOTÓN SOLO SI HAY PREMIO
-                    if (unlocked && !claimed) {
+                    // Botón desaparece al instante gracias al estado local
+                    if (unlocked && !claimedLocal) {
                         Box(
                             modifier = Modifier
                                 .background(Color.White, RoundedCornerShape(16.dp))
-                                .clickable { onClaim() }
+                                .clickable {
+                                    claimedLocal = true  // cambia UI inmediatamente
+                                    onClaim()
+                                }
                                 .padding(horizontal = 20.dp, vertical = 12.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
                                 Text(
                                     text = "RECLAMAR",
                                     fontSize = 12.sp,
                                     fontFamily = PoppinsSemiBold
                                 )
-
                                 Spacer(modifier = Modifier.height(4.dp))
-
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Image(
                                         painter = painterResource(id = R.drawable.ic_coin),
@@ -161,7 +166,6 @@ fun AchievementDetailDialog(
                 }
             }
 
-            // Botón cerrar
             Image(
                 painter = painterResource(id = R.drawable.ic_x),
                 contentDescription = "Cerrar",
@@ -174,6 +178,7 @@ fun AchievementDetailDialog(
         }
     }
 }
+
 
 @Composable
 fun AchievementProgressBar(

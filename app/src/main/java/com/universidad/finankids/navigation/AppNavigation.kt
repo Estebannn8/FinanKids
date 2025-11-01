@@ -1,5 +1,7 @@
 package com.universidad.finankids.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -17,6 +19,7 @@ import com.universidad.finankids.ui.auth.RecoveryScreen
 import com.universidad.finankids.ui.SplashScreen
 import com.universidad.finankids.ui.StoreScreen
 import com.universidad.finankids.ui.TrophyScreen
+import com.universidad.finankids.ui.components.AchievementNotificationHost
 import com.universidad.finankids.ui.lesson.LessonScreen
 import com.universidad.finankids.viewmodel.AchievementsViewModel
 import com.universidad.finankids.viewmodel.AuthViewModel
@@ -39,97 +42,103 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     val streakViewModel: StreakViewModel = viewModel()
     val achievementsViewModel: AchievementsViewModel = viewModel()
 
-    NavHost(
-        navController = navController,
-        startDestination = AppScreens.SplashScreen.route
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
 
-        composable(AppScreens.SplashScreen.route) {
-            SplashScreen(
-                navController = navController,
-                authViewModel = authViewModel,
-                userViewModel = userViewModel,
-                avataresViewModel = avataresViewModel
-            )
+        NavHost(
+            navController = navController,
+            startDestination = AppScreens.SplashScreen.route
+        ) {
+
+            composable(AppScreens.SplashScreen.route) {
+                SplashScreen(
+                    navController = navController,
+                    authViewModel = authViewModel,
+                    userViewModel = userViewModel,
+                    avataresViewModel = avataresViewModel
+                )
+            }
+
+            composable(AppScreens.MainScreen.route) {
+                MainScreen(navController)
+            }
+
+            composable(
+                route = AppScreens.AuthScreen.route,
+                arguments = listOf(navArgument("startInLogin") { type = NavType.BoolType })
+            ) { backStackEntry ->
+                val startInLogin = backStackEntry.arguments?.getBoolean("startInLogin") ?: true
+                AuthScreen(
+                    startInLogin,
+                    navController = navController,
+                    authViewModel = authViewModel,
+                    userViewModel = userViewModel,
+                    avataresViewModel = avataresViewModel
+                )
+            }
+
+            composable(AppScreens.RecoveryScreen.route) {
+                RecoveryScreen(navController)
+            }
+
+            composable(AppScreens.HomeScreen.route) {
+                HomeScreen(
+                    navController = navController,
+                    userViewModel = userViewModel,
+                    avataresViewModel = avataresViewModel
+                )
+            }
+
+            composable(AppScreens.ProfileScreen.route) {
+                ProfileScreen(
+                    navController,
+                    userViewModel = userViewModel,
+                    authViewModel = authViewModel,
+                    avataresViewModel = avataresViewModel,
+                    userSettingsViewModel = userSettingsViewModel,
+                    streakViewModel = streakViewModel,
+                    achievementsViewModel = achievementsViewModel
+                )
+            }
+
+            composable(AppScreens.TrophyScreen.route) {
+                TrophyScreen(
+                    navController,
+                    userViewModel = userViewModel,
+                    achievementsViewModel = achievementsViewModel
+                )
+            }
+
+            composable(AppScreens.BankScreen.route) {
+                BankScreen(
+                    navController = navController,
+                    userViewModel = userViewModel
+                )
+            }
+
+            composable(AppScreens.StoreScreen.route) {
+                StoreScreen(
+                    navController,
+                    userViewModel = userViewModel,
+                    avataresViewModel = avataresViewModel
+                )
+            }
+
+            composable(
+                route = AppScreens.LessonScreen.route,
+                arguments = listOf(navArgument("category") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val category = backStackEntry.arguments?.getString("category") ?: "ahorro"
+                LessonScreen(
+                    category = category,
+                    userViewModel = userViewModel,
+                    lessonsViewModel = lessonsViewModel,
+                    streakViewModel = streakViewModel,
+                    navController = navController
+                )
+            }
         }
 
-        composable(AppScreens.MainScreen.route) {
-            MainScreen(navController)
-        }
-
-        composable(
-            route = AppScreens.AuthScreen.route,
-            arguments = listOf(navArgument("startInLogin") { type = NavType.BoolType })
-        ) { backStackEntry ->
-            val startInLogin = backStackEntry.arguments?.getBoolean("startInLogin") ?: true
-            AuthScreen(
-                startInLogin,
-                navController = navController,
-                authViewModel = authViewModel,
-                userViewModel = userViewModel,
-                avataresViewModel = avataresViewModel
-            )
-        }
-
-        composable(AppScreens.RecoveryScreen.route) {
-            RecoveryScreen(navController)
-        }
-
-        composable(AppScreens.HomeScreen.route) {
-            HomeScreen(
-                navController = navController,
-                userViewModel = userViewModel,
-                avataresViewModel = avataresViewModel
-            )
-        }
-
-        composable(AppScreens.ProfileScreen.route) {
-            ProfileScreen(
-                navController,
-                userViewModel = userViewModel,
-                authViewModel = authViewModel,
-                avataresViewModel = avataresViewModel,
-                userSettingsViewModel = userSettingsViewModel,
-                streakViewModel = streakViewModel
-            )
-        }
-
-        composable(AppScreens.TrophyScreen.route) {
-            TrophyScreen(
-                navController,
-                userViewModel = userViewModel,
-                achievementsViewModel = achievementsViewModel
-            )
-        }
-
-        composable(AppScreens.BankScreen.route) {
-            BankScreen(
-                navController = navController,
-                userViewModel = userViewModel
-            )
-        }
-
-        composable(AppScreens.StoreScreen.route) {
-            StoreScreen(
-                navController,
-                userViewModel = userViewModel,
-                avataresViewModel = avataresViewModel
-            )
-        }
-
-        composable(
-            route = AppScreens.LessonScreen.route,
-            arguments = listOf(navArgument("category") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val category = backStackEntry.arguments?.getString("category") ?: "ahorro"
-            LessonScreen(
-                category = category,
-                userViewModel = userViewModel,
-                lessonsViewModel = lessonsViewModel,
-                streakViewModel = streakViewModel,
-                navController = navController
-            )
-        }
-
+        // Overlay global de notificaciones
+        AchievementNotificationHost(achievementsViewModel)
     }
 }

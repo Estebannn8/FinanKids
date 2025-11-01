@@ -62,6 +62,7 @@ import com.universidad.finankids.ui.components.LoadingOverlay
 import com.universidad.finankids.ui.components.Settings
 import com.universidad.finankids.ui.components.StreakCalendarOverlay
 import com.universidad.finankids.ui.theme.AppTypography
+import com.universidad.finankids.viewmodel.AchievementsViewModel
 import com.universidad.finankids.viewmodel.AuthViewModel
 import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.StreakViewModel
@@ -75,7 +76,8 @@ fun ProfileScreen(
     authViewModel: AuthViewModel,
     avataresViewModel: AvataresViewModel,
     userSettingsViewModel: UserSettingsViewModel,
-    streakViewModel: StreakViewModel
+    streakViewModel: StreakViewModel,
+    achievementsViewModel: AchievementsViewModel,
 ) {
     // Estados observables
     val userState by userViewModel.state.collectAsState()
@@ -179,11 +181,16 @@ fun ProfileScreen(
     LaunchedEffect(userState.userData.uid) {
         val uid = userState.userData.uid
         if (uid.isNotEmpty()) {
-            AchievementsEventBus.emit(
-                AchievementTrigger.ProfileOpenedFirstTime(uid)
-            )
+            val alreadyUnlocked = achievementsViewModel.isAchievementUnlocked(uid, "cientifico_dinero")
+
+            if (!alreadyUnlocked) {
+                AchievementsEventBus.emit(
+                    AchievementTrigger.ProfileOpenedFirstTime(uid)
+                )
+            }
         }
     }
+
 
     Column(
         modifier = Modifier
