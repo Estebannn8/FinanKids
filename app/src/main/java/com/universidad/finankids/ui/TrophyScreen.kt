@@ -3,35 +3,75 @@ package com.universidad.finankids.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.universidad.finankids.R
+import com.universidad.finankids.data.model.LogroUI
 import com.universidad.finankids.navigation.navigateToScreen
+import com.universidad.finankids.ui.components.AchievementDetailDialog
 import com.universidad.finankids.ui.components.BottomMenu
+import com.universidad.finankids.viewmodel.AchievementsViewModel
+import com.universidad.finankids.viewmodel.UserViewModel
 
 @Composable
-fun TrophyScreen(navController: NavController) {
+fun TrophyScreen(
+    navController: NavController,
+    achievementsViewModel: AchievementsViewModel,
+    userViewModel: UserViewModel
+) {
     var selectedItem = remember { mutableStateOf("home") }
+    val achievementsState by achievementsViewModel.state.collectAsState()
+    val userState by userViewModel.state.collectAsState()
+    val achievements = achievementsState.uiAchievements
+
+    val uid = userState.userData.uid
+
+    LaunchedEffect(uid) {
+        if (uid.isNotEmpty()) achievementsViewModel.load(uid)
+    }
+
+    var selectedAchievement by remember { mutableStateOf<LogroUI?>(null) }
 
     Column(
         modifier = Modifier
@@ -41,17 +81,13 @@ fun TrophyScreen(navController: NavController) {
     ) {
         Spacer(modifier = Modifier.height(56.dp))
 
-        //Title
         Text(
             text = "MIS LOGROS",
             style = TextStyle(
                 fontSize = 20.sp,
-                lineHeight = 18.99.sp,
                 fontFamily = FontFamily(Font(R.font.baloo_regular)),
-                fontWeight = FontWeight(400),
-                color = Color(0xFF000000),
-                textAlign = TextAlign.Right,
-                letterSpacing = 3.07.sp,
+                color = Color.Black,
+                letterSpacing = 3.sp
             )
         )
 
@@ -71,6 +107,7 @@ fun TrophyScreen(navController: NavController) {
                     .background(Color(0xFFE1E1E1))
             ) {
                 val scrollState = rememberScrollState()
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -78,29 +115,29 @@ fun TrophyScreen(navController: NavController) {
                         .padding(start = 16.dp, end = 16.dp, bottom = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Imagen en la parte superior
                     Image(
                         painter = painterResource(id = R.drawable.ic_pesito_logros),
-                        contentDescription = "Muñeco Logros",
+                        contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(180.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .padding(top = 8.dp, bottom = 8.dp)
+                            .padding(top = 8.dp)
                     )
 
-
-                    repeat(6) {
+                    achievements.chunked(3).forEach { row ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            repeat(3) {
+                            row.forEach { logroUI ->
                                 AchievementItem(
+                                    logroUI = logroUI,
                                     modifier = Modifier
                                         .weight(1f)
                                         .padding(4.dp)
-                                )
+                                ) {
+                                    selectedAchievement = logroUI
+                                }
                             }
                         }
                     }
@@ -139,6 +176,19 @@ fun TrophyScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(8.dp))
     }
+
+    // 👇 Mostrar detalle
+    if (selectedAchievement != null) {
+        Dialog(onDismissRequest = { selectedAchievement = null }) {
+            AchievementDetailDialog(
+                logroUI = selectedAchievement!!,
+                onClaim = {
+                    achievementsViewModel.claimReward(uid, selectedAchievement!!.logro.id)
+                },
+                onDismiss = { selectedAchievement = null }
+            )
+        }
+    }
 }
 
 @Composable
@@ -168,27 +218,50 @@ fun AchievementsContainer(
 }
 
 @Composable
-fun AchievementItem(modifier: Modifier = Modifier) {
+fun AchievementItem(
+    logroUI: LogroUI,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val grayscale = !logroUI.desbloqueado
+    val rewardPending = logroUI.desbloqueado && !logroUI.reclamado
+
     Box(
         modifier = modifier
             .aspectRatio(1f)
             .clip(RoundedCornerShape(12.dp))
-            .border(2.dp, Color.Black, RoundedCornerShape(12.dp)),
+            .border(2.dp, Color.Black, RoundedCornerShape(12.dp))
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.achievement_placeholder),
-            contentDescription = "Achievement",
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(12.dp))
+            painter = rememberAsyncImagePainter(logroUI.logro.iconoUrl),
+            contentDescription = logroUI.logro.titulo,
+            modifier = Modifier.fillMaxSize(),
+            colorFilter = if (grayscale) {
+                ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+            } else null,
+            contentScale = ContentScale.Crop
         )
+
+        if (rewardPending) {
+            Image(
+                painter = painterResource(id = R.drawable.multiple_coins),
+                contentDescription = "Recompensa pendiente",
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp)
+                    .size(28.dp)
+            )
+        }
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun TrophyScreenPreview() {
     val navController = rememberNavController()
     TrophyScreen(navController = navController)
 }
+ */

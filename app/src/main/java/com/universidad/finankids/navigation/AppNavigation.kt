@@ -18,6 +18,7 @@ import com.universidad.finankids.ui.SplashScreen
 import com.universidad.finankids.ui.StoreScreen
 import com.universidad.finankids.ui.TrophyScreen
 import com.universidad.finankids.ui.lesson.LessonScreen
+import com.universidad.finankids.viewmodel.AchievementsViewModel
 import com.universidad.finankids.viewmodel.AuthViewModel
 import com.universidad.finankids.viewmodel.AvataresViewModel
 import com.universidad.finankids.viewmodel.LessonsViewModel
@@ -36,6 +37,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     val lessonsViewModel: LessonsViewModel = viewModel()
     val userSettingsViewModel: UserSettingsViewModel = viewModel()
     val streakViewModel: StreakViewModel = viewModel()
+    val achievementsViewModel: AchievementsViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -93,7 +95,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
 
         composable(AppScreens.TrophyScreen.route) {
-            TrophyScreen(navController)
+            TrophyScreen(
+                navController,
+                userViewModel = userViewModel,
+                achievementsViewModel = achievementsViewModel
+            )
         }
 
         composable(AppScreens.BankScreen.route) {
