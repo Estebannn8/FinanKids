@@ -1,0 +1,152 @@
+[
+  {
+    "id": "escalador_financiero",
+    "titulo": "Escalador Financiero",
+    "descripcion": "Completa 10 lecciones para demostrar que estás conquistando la montaña del conocimiento financiero y alcanzando nuevas alturas en tu educación económica y desarrollo personal............................",
+    "dineroRecompensa": 500,
+    "progresoRequerido": 10,
+    "tipo": "lecciones",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fescalador_financiero.png?alt=media&token=c74d2abe-8bbb-44bb-8e26-bb0dee35b88b",
+    "orden": 1
+  },
+  {
+    "id": "constancia_dorada",
+    "titulo": "Constancia Dorada",
+    "descripcion": "Estudia al menos 5 días seguidos para demostrar tu constancia, disciplina y compromiso con tu camino financiero, manteniendo el enfoque día tras día sin rendirte.........................",
+    "dineroRecompensa": 1000,
+    "progresoRequerido": 5,
+    "tipo": "racha",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fconstancia_dorada.png?alt=media&token=a9978146-99c6-4cdd-b420-b64a8fbcebb2",
+    "orden": 2
+  },
+  {
+    "id": "tiro_perfecto",
+    "titulo": "Tiro Perfecto",
+    "descripcion": "Completa una lección sin fallar vidas demostrando tu precisión, concentración y dominio total sobre las actividades asignadas.................................",
+    "dineroRecompensa": 500,
+    "progresoRequerido": null,
+    "tipo": "perfeccion",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Ftiro_perfecto.png?alt=media&token=6b8bdfd2-75dc-4bd9-82af-9cb5d608fb0d",
+    "orden": 3
+  },
+  {
+    "id": "maquina_financiera",
+    "titulo": "Máquina Financiera",
+    "descripcion": "Completa 3 lecciones para demostrar que dominas los engranajes del ahorro, presupuesto y progreso económico.",
+    "dineroRecompensa": 850,
+    "progresoRequerido": 3,
+    "tipo": "lecciones",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fmaquina_financiera.png?alt=media&token=123e7c69-6f81-496b-a129-993a8446ec2d",
+    "orden": 4
+  },
+  {
+    "id": "primer_ahorro",
+    "titulo": "Primer Ahorro",
+    "descripcion": "Almacena por primera vez un total acumulado de 1000 monedas para demostrar tu capacidad de ahorrar y gestionar recursos de forma responsable.................................",
+    "dineroRecompensa": 300,
+    "progresoRequerido": 1000,
+    "tipo": "banco",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fprimer_ahorro.png?alt=media&token=7bfb4571-c840-44ce-948b-3abc1fc90fb4",
+    "orden": 5
+  },
+  {
+    "id": "lanzamiento_epico",
+    "titulo": "Lanzamiento Épico",
+    "descripcion": "Completa tu primera lección e inicia tu viaje por el conocimiento financiero con energía explosiva y ganas de aprender y crecer cada día.................................",
+    "dineroRecompensa": 100,
+    "progresoRequerido": null,
+    "tipo": "lecciones",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Flanzamiento_epico.png?alt=media&token=e6937609-2390-49b4-b0a8-0e1d7f0bb774",
+    "orden": 6
+  },
+  {
+    "id": "agenda_inteligente",
+    "titulo": "Agenda Inteligente",
+    "descripcion": "Completa una lección durante 3 días seguidos, demostrando planificación, constancia y atención a tu progreso personal.....................",
+    "dineroRecompensa": 500,
+    "progresoRequerido": 3,
+    "tipo": "agenda",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fagenda_inteligente.png?alt=media&token=5b312404-23fa-4738-9274-a7fac1a3f53f",
+    "orden": 7
+  },
+  {
+    "id": "explorador_global",
+    "titulo": "Explorador Global",
+    "descripcion": "Completa una lección de cada categoría y demuestra dominio balanceado en las distintas áreas del universo financiero.................................",
+    "dineroRecompensa": 600,
+    "progresoRequerido": 4,
+    "tipo": "categorias",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fexplorador_global.png?alt=media&token=9e117ae2-640c-43df-a431-f3d7ec5a180b",
+    "orden": 8
+  },
+  {
+    "id": "medalla_bronce",
+    "titulo": "Medalla de Bronce",
+    "descripcion": "Alcanza el nivel 5 para demostrar progreso en tu camino financiero.................................",
+    "dineroRecompensa": 400,
+    "progresoRequerido": 5,
+    "tipo": "nivel",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fmedalla_bronce.png?alt=media&token=ea5d2805-1d7f-417d-99e2-f10ec006c3d7",
+    "orden": 9
+  },
+  {
+    "id": "racha_ardiente",
+    "titulo": "Racha Ardiente",
+    "descripcion": "Mantén una racha diaria durante 7 días consecutivos, demostrando disciplina, enfoque y un compromiso ardiente con tu educación financiera.................................",
+    "dineroRecompensa": 600,
+    "progresoRequerido": 7,
+    "tipo": "racha",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fracha_ardiente.png?alt=media&token=52334016-464e-47ac-9922-beb36fd5d49e",
+    "orden": 10
+  },
+  {
+    "id": "campeon_dorado",
+    "titulo": "Campeón Dorado",
+    "descripcion": "Alcanza el nivel 20 para convertirte en un verdadero campeón entre tus compañeros y brillar en el mundo del ahorro.................................",
+    "dineroRecompensa": 1000,
+    "progresoRequerido": 20,
+    "tipo": "nivel",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fcampeon_dorado.png?alt=media&token=995d7bb4-d801-4f61-8005-51901296c0fa",
+    "orden": 11
+  },
+  {
+    "id": "caja_fuerte",
+    "titulo": "Caja Fuerte",
+    "descripcion": "Acumula un total de 25000 monedas guardadas, demostrando ahorro constante, administración y visión financiera a largo plazo.................................",
+    "dineroRecompensa": 2500,
+    "progresoRequerido": 25000,
+    "tipo": "dinero",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fcaja_fuerte.png?alt=media&token=abc94459-eb81-4a1a-ac33-17b2954de9b8",
+    "orden": 12
+  },
+  {
+    "id": "comprador_inteligente",
+    "titulo": "Comprador Inteligente",
+    "descripcion": "Compra tu primer avatar utilizando tus monedas ganadas para demostrar gestión financiera inteligente.................................",
+    "dineroRecompensa": 200,
+    "progresoRequerido": null,
+    "tipo": "compra",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fcomprador_inteligente.png?alt=media&token=1ade44f9-6d92-47d3-854c-0766b8e78c14",
+    "orden": 13
+  },
+  {
+    "id": "desbloqueador",
+    "titulo": "Desbloqueador",
+    "descripcion": "Desbloquea 3 avatares en el mercado para demostrar progreso social y personalización.................................",
+    "dineroRecompensa": 650,
+    "progresoRequerido": 3,
+    "tipo": "avatares",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fdesbloqueador.png?alt=media&token=c6395bb0-db56-46c2-8df6-c152d7ba15a7",
+    "orden": 14
+  },
+  {
+    "id": "cientifico_dinero",
+    "titulo": "Científico del Dinero",
+    "descripcion": "Entra por primera vez a tu perfil para demostrar curiosidad científica y visión objetiva de tu progreso.................................",
+    "dineroRecompensa": 250,
+    "progresoRequerido": null,
+    "tipo": "estadisticas",
+    "iconoUrl": "https://firebasestorage.googleapis.com/v0/b/finankids.firebasestorage.app/o/logros%2Fcientifico_dinero.png?alt=media&token=6b60f06a-3047-4f72-b97c-683bb12ad4cb",
+    "orden": 15
+  }
+]

@@ -14,7 +14,7 @@ import com.universidad.finankids.navigation.AppNavigation
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // JsonUploader.cargarYSubirLecciones(this) por ahora no se necesita
+        // JsonUploader.cargarYSubirLogros(this)
         enableEdgeToEdge()
         setContent {
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

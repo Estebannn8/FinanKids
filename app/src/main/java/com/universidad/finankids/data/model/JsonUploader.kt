@@ -59,35 +59,82 @@ object JsonUploader {
         Log.d(TAG, "Proceso de carga de lecciones completado")
     }
 
-    private fun convertJsonToMap(jsonObject: JSONObject): Map<String, Any> {
-        val map = mutableMapOf<String, Any>()
-        jsonObject.keys().forEach { key ->
-            try {
-                when (val value = jsonObject.get(key)) {
-                    is JSONObject -> map[key] = convertJsonToMap(value)
-                    is JSONArray -> map[key] = convertJsonArrayToList(value)
-                    else -> map[key] = value
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error procesando key $key: ${e.message}")
+    fun cargarYSubirLogros(context: Context) {
+        val db = FirebaseFirestore.getInstance()
+        val archivo = "logros.json"
+
+        Log.d(TAG, "Iniciando proceso de carga de logros...")
+
+        try {
+            val jsonString = context.assets.open(archivo).bufferedReader().use { it.readText() }
+            val jsonArray = JSONArray(jsonString)
+
+            Log.d(TAG, "Archivo $archivo leído correctamente, ${jsonArray.length()} logros encontrados")
+
+            Log.d(TAG, "Contenido completo JSON: $jsonString")
+
+            for (i in 0 until jsonArray.length()) {
+                val logroData = jsonArray.getJSONObject(i)
+                val logroId = logroData.getString("id")
+
+                val logroMap = convertJsonToMap(logroData)
+
+                Log.d(TAG, "Subiendo logro $logroId a Firestore...")
+                db.collection("logros")
+                    .document(logroId)
+                    .set(logroMap)
+                    .addOnSuccessListener {
+                        Log.i(TAG, "✅ Logro $logroId subido exitosamente")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e(TAG, "❌ Error subiendo logro $logroId: ${e.message}")
+                    }
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "⚠️ Error procesando archivo $archivo: ${e.message}")
+            e.printStackTrace()
+        }
+
+        Log.d(TAG, "Proceso de carga de logros completado")
+    }
+
+
+    fun convertJsonToMap(json: JSONObject): MutableMap<String, Any?> {
+        val map = mutableMapOf<String, Any?>()
+        val keys = json.keys()
+
+        while (keys.hasNext()) {
+            val key = keys.next()
+            val value = json.get(key)
+
+            map[key] = when (value) {
+                JSONObject.NULL -> null
+                is JSONObject -> convertJsonToMap(value)
+                is JSONArray -> convertJsonArray(value)
+                else -> value
             }
         }
+
         return map
     }
 
-    private fun convertJsonArrayToList(jsonArray: JSONArray): List<Any> {
-        val list = mutableListOf<Any>()
-        for (i in 0 until jsonArray.length()) {
-            try {
-                when (val value = jsonArray.get(i)) {
-                    is JSONObject -> list.add(convertJsonToMap(value))
-                    is JSONArray -> list.add(convertJsonArrayToList(value))
-                    else -> list.add(value)
+    fun convertJsonArray(array: JSONArray): List<Any?> {
+        val list = mutableListOf<Any?>()
+
+        for (i in 0 until array.length()) {
+            val value = array.get(i)
+            list.add(
+                when (value) {
+                    JSONObject.NULL -> null
+                    is JSONObject -> convertJsonToMap(value)
+                    is JSONArray -> convertJsonArray(value)
+                    else -> value
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error procesando elemento $i del array: ${e.message}")
-            }
+            )
         }
+
         return list
     }
+
 }
