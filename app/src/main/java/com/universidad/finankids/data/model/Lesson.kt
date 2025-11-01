@@ -7,5 +7,6 @@ data class Lesson(
     val baseExp: Int = 100,
     val baseDinero: Int = 500,
     val lives: Int = 5,
-    val activities: List<ActivityContent> = emptyList()
+    val activities: List<ActivityContent> = emptyList(),
+    val categoryId: String = ""
 )

@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import com.universidad.finankids.events.AchievementsEventBus
+import com.universidad.finankids.events.AchievementTrigger
 
 class LessonsViewModel : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
@@ -56,6 +58,7 @@ class LessonsViewModel : ViewModel() {
     private fun handleEvent(event: LessonEvent) {
         when (event) {
             is LessonEvent.LoadLessonAndInitialize -> {
+                _state.update { it.copy(uid = event.uid) }
                 viewModelScope.launch {
                     loadLessonsAndInitialize(event.categoryId, event.completedLessons)
                 }
@@ -106,7 +109,10 @@ class LessonsViewModel : ViewModel() {
                 .await()
 
             allLessons = snapshot.documents.mapNotNull { doc ->
-                doc.toObject(Lesson::class.java)?.copy(id = doc.id)
+                doc.toObject(Lesson::class.java)?.copy(
+                    id = doc.id,
+                    categoryId = categoryId
+                )
             }
 
             Log.d(TAG, "Lecciones obtenidas: ${allLessons.size}")
@@ -362,6 +368,21 @@ class LessonsViewModel : ViewModel() {
                 earnedDinero = dinero,
                 showCompleteScreen = true,
                 perfectLesson = state.errorCount == 0  // Indicar si la lección fue perfecta
+            )
+        }
+
+        // Logro
+        val lesson = _state.value.currentLesson ?: return
+        val uid = _state.value.uid
+
+        viewModelScope.launch {
+            AchievementsEventBus.emit(
+                AchievementTrigger.LessonCompleted(
+                    uid = uid,
+                    lessonId = lesson.id,
+                    category = lesson.categoryId,
+                    perfectLesson = _state.value.errorCount == 0
+                )
             )
         }
     }

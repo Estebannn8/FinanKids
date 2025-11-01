@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Calendar
+import com.universidad.finankids.events.AchievementsEventBus
+import com.universidad.finankids.events.AchievementTrigger
 
 class BancoViewModel : ViewModel() {
 
@@ -230,6 +232,17 @@ class BancoViewModel : ViewModel() {
                     ),
                     mensajeOperacion = "Depósito exitoso de $monto pesitos."
                 )
+
+                // Emitir trigger de saldo cambiado
+                viewModelScope.launch {
+                    AchievementsEventBus.emit(
+                        AchievementTrigger.BankBalanceChanged(
+                            uid = userId,
+                            newSaldo = bancoActual.saldo + monto
+                        )
+                    )
+                }
+
             } catch (e: Exception) {
                 _state.value = _state.value.copy(errorOperacion = e.message ?: "Error al depositar")
             }
@@ -293,6 +306,17 @@ class BancoViewModel : ViewModel() {
                     ),
                     mensajeOperacion = "Retiro exitoso de $monto pesitos."
                 )
+
+                // Emitir trigger de saldo cambiado
+                viewModelScope.launch {
+                    AchievementsEventBus.emit(
+                        AchievementTrigger.BankBalanceChanged(
+                            uid = userId,
+                            newSaldo = bancoActual.saldo - monto
+                        )
+                    )
+                }
+
             } catch (e: Exception) {
                 _state.value = _state.value.copy(errorOperacion = e.message ?: "Error al retirar")
             }
@@ -348,6 +372,17 @@ class BancoViewModel : ViewModel() {
                     banco = bancoActualizado,
                     mensaje = "Interés diario: +$interesesGanados pesitos. Saldo: $nuevoSaldo"
                 )
+
+                viewModelScope.launch {
+                    val userId = uid ?: return@launch
+                    AchievementsEventBus.emit(
+                        AchievementTrigger.BankBalanceChanged(
+                            uid = userId,
+                            newSaldo = nuevoSaldo
+                        )
+                    )
+                }
+
             } catch (e: Exception) {
                 _state.value = _state.value.copy(errorMessage = "Error al calcular intereses: ${e.message}")
             }

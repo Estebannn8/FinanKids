@@ -5,7 +5,8 @@ import com.universidad.finankids.data.model.MatchingPair
 sealed class LessonEvent {
     data class LoadLessonAndInitialize(
         val categoryId: String,
-        val completedLessons: Map<String, Any>
+        val completedLessons: Map<String, Any>,
+        val uid: String
     ) : LessonEvent()
     object ContinueActivity : LessonEvent()
     object MoveToNextActivity : LessonEvent()

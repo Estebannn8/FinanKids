@@ -75,7 +75,8 @@ fun LessonScreen(
         lessonsViewModel.sendEvent(
             LessonEvent.LoadLessonAndInitialize(
                 categoryId = category,
-                completedLessons = completedLessons
+                completedLessons = completedLessons,
+                uid = userViewModel.state.value.userData.uid
             )
         )
     }
@@ -84,7 +85,8 @@ fun LessonScreen(
         lessonsViewModel.state.collect { state ->
             if (state.currentLesson == null &&
                 !state.isLoading &&
-                lessonsViewModel.loadingState.value == LoadingState.Idle) {
+                lessonsViewModel.loadingState.value == LoadingState.Idle
+            ) {
                 navController.popBackStack()
             }
         }
@@ -103,7 +105,10 @@ fun LessonScreen(
                 onRetry = {
                     userState.userData.leccionesCompletadas?.let { completed ->
                         lessonsViewModel.sendEvent(
-                            LessonEvent.LoadLessonAndInitialize(category, completed)
+                            LessonEvent.LoadLessonAndInitialize(
+                                category, completed,
+                                uid = userViewModel.state.value.userData.uid
+                            )
                         )
                     }
                 },
@@ -127,7 +132,8 @@ fun LessonScreen(
         loadingState.let { it is LoadingState.LessonsLoaded } &&
                 lessonState.currentLesson == null -> {
             // Verificar si todas las lecciones de esta categoría están completadas
-            val categoryCompletedLessons = userState.userData.leccionesCompletadas?.get(category) as? Map<*, *>
+            val categoryCompletedLessons =
+                userState.userData.leccionesCompletadas?.get(category) as? Map<*, *>
             val allLessonsInCategory = lessonsViewModel.allLessons
             val allCompleted = allLessonsInCategory.isNotEmpty() &&
                     allLessonsInCategory.all { lesson ->
@@ -144,7 +150,8 @@ fun LessonScreen(
                     lessonsViewModel.sendEvent(
                         LessonEvent.LoadLessonAndInitialize(
                             category,
-                            userState.userData.leccionesCompletadas ?: emptyMap()
+                            userState.userData.leccionesCompletadas ?: emptyMap(),
+                            uid = userViewModel.state.value.userData.uid
                         )
                     )
                 }
@@ -157,7 +164,10 @@ fun LessonScreen(
             LaunchedEffect(Unit) {
                 userState.userData.leccionesCompletadas?.let { completed ->
                     lessonsViewModel.sendEvent(
-                        LessonEvent.LoadLessonAndInitialize(category, completed)
+                        LessonEvent.LoadLessonAndInitialize(
+                            category, completed,
+                            uid = userViewModel.state.value.userData.uid
+                        )
                     )
                 }
             }
@@ -177,7 +187,8 @@ fun LessonContentScreen(
 
     // Obtener el tema visual para la categoría actual
     val temaVisual = remember(category) {
-        val tema = TemaVisualManager.obtenerTemaPorCategoria(category) ?: TemaVisualManager.obtenerTemaPorCategoria("Ahorro")!!
+        val tema = TemaVisualManager.obtenerTemaPorCategoria(category)
+            ?: TemaVisualManager.obtenerTemaPorCategoria("Ahorro")!!
         Log.d("TemaVisual", "Categoría seleccionada: $category")
         Log.d("TemaVisual", "Tema aplicado: ${tema.baseColor}, Icono: ${tema.categoryIcon}")
         tema
@@ -203,7 +214,10 @@ fun LessonContentScreen(
                 ActivityType.SentenceBuilder -> temaVisual.sentenceBuilderBackground
                 else -> temaVisual.teachingBackground
             }
-            Log.d("TemaVisual", "Tipo de actividad: ${lessonState.currentActivity?.type}, Fondo: $resource")
+            Log.d(
+                "TemaVisual",
+                "Tipo de actividad: ${lessonState.currentActivity?.type}, Fondo: $resource"
+            )
             resource
         }
 
@@ -213,7 +227,9 @@ fun LessonContentScreen(
             painter = painterResource(id = backgroundResource),
             contentDescription = "Background",
             contentScale = ContentScale.FillBounds,
-            modifier = Modifier.fillMaxSize().alpha(0.7f)
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.7f)
         )
 
         when {
@@ -225,8 +241,10 @@ fun LessonContentScreen(
                         onEvent(LessonEvent.CompleteLesson)
 
                         // Usar los valores finales (con bonus si aplica) para actualizar el usuario
-                        val finalExp = if (lessonState.perfectLesson) (lessonState.earnedExp * 1.2f).toInt() else lessonState.earnedExp
-                        val finalDinero = if (lessonState.perfectLesson) (lessonState.earnedDinero * 1.2f).toInt() else lessonState.earnedDinero
+                        val finalExp =
+                            if (lessonState.perfectLesson) (lessonState.earnedExp * 1.2f).toInt() else lessonState.earnedExp
+                        val finalDinero =
+                            if (lessonState.perfectLesson) (lessonState.earnedDinero * 1.2f).toInt() else lessonState.earnedDinero
 
                         // Actualizar progreso del usuario
                         userViewModel.markLessonAsCompleted(
@@ -248,6 +266,7 @@ fun LessonContentScreen(
                     perfectLesson = lessonState.perfectLesson
                 )
             }
+
             lessonState.isLessonLocked -> {
                 LessonLockedScreen(
                     onRestart = { onEvent(LessonEvent.RestartLesson) },
@@ -255,6 +274,7 @@ fun LessonContentScreen(
                     temaVisual = temaVisual
                 )
             }
+
             else -> {
                 Column(
                     modifier = Modifier
@@ -278,6 +298,7 @@ fun LessonContentScreen(
                                         temaVisual = temaVisual
                                     )
                                 }
+
                                 ActivityType.MultipleChoice -> {
                                     MultipleChoiceActivity(
                                         state = lessonState,
@@ -285,6 +306,7 @@ fun LessonContentScreen(
                                         temaVisual = temaVisual
                                     )
                                 }
+
                                 ActivityType.FillBlank -> {
                                     FillBlankActivity(
                                         state = lessonState,
@@ -292,6 +314,7 @@ fun LessonContentScreen(
                                         temaVisual = temaVisual
                                     )
                                 }
+
                                 ActivityType.Matching -> {
                                     MatchingActivity(
                                         state = lessonState,
@@ -299,6 +322,7 @@ fun LessonContentScreen(
                                         temaVisual = temaVisual
                                     )
                                 }
+
                                 ActivityType.DragPairs -> {
                                     DragPairsActivity(
                                         state = lessonState,
@@ -306,6 +330,7 @@ fun LessonContentScreen(
                                         temaVisual = temaVisual
                                     )
                                 }
+
                                 ActivityType.SentenceBuilder -> {
                                     SentenceBuilderActivity(
                                         state = lessonState,
@@ -366,9 +391,11 @@ fun LessonContentScreen(
                         enabled = when (lessonState.currentActivity?.type) {
                             ActivityType.MultipleChoice, ActivityType.FillBlank -> lessonState.selectedAnswer != null
                             ActivityType.Matching -> {
-                                val totalPairs = lessonState.currentActivity?.matchingPairs?.size ?: 0
+                                val totalPairs =
+                                    lessonState.currentActivity?.matchingPairs?.size ?: 0
                                 lessonState.matchedPairs.size == totalPairs
                             }
+
                             else -> true
                         }
                     )
@@ -437,10 +464,12 @@ fun LessonHeader(
                     .padding(end = 12.2.dp)
                     .zIndex(3f)
                     .offset(y = 3.73.dp, x = 5.8.dp)
-                    .clip(RoundedCornerShape(
-                        topEnd = 8.dp,
-                        bottomEnd = 8.dp
-                    ))
+                    .clip(
+                        RoundedCornerShape(
+                            topEnd = 8.dp,
+                            bottomEnd = 8.dp
+                        )
+                    )
                     .background(temaVisual.progressColor)
             )
         }
@@ -487,7 +516,7 @@ fun BottomSection(
             .fillMaxWidth()
             .padding(16.dp)
             .height(80.dp)
-    ){
+    ) {
         CustomButton(
             modifier = Modifier.align(Alignment.Center),
             buttonText = "CONTINUAR",

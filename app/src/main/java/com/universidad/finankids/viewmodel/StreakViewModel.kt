@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.universidad.finankids.events.AchievementsEventBus
+import com.universidad.finankids.events.AchievementTrigger
 
 class StreakViewModel : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
@@ -94,6 +96,16 @@ class StreakViewModel : ViewModel() {
                 // Guardar en Firestore
                 firestore.collection("userStreaks").document(uid).set(updatedStreak).await()
                 _streak.value = updatedStreak
+
+                viewModelScope.launch {
+                    AchievementsEventBus.emit(
+                        AchievementTrigger.StreakChanged(
+                            uid = uid,
+                            currentStreak = newCurrentStreak
+                        )
+                    )
+                }
+
 
             } catch (e: Exception) {
                 e.printStackTrace()

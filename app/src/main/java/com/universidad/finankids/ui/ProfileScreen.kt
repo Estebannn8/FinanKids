@@ -49,6 +49,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.universidad.finankids.R
+import com.universidad.finankids.events.AchievementTrigger
+import com.universidad.finankids.events.AchievementsEventBus
 import com.universidad.finankids.events.AvatarEvent
 import com.universidad.finankids.events.UserEvent
 import com.universidad.finankids.navigation.AppScreens
@@ -171,6 +173,15 @@ fun ProfileScreen(
             Color(android.graphics.Color.parseColor(userSettings.colorFondoPerfil))
         } catch (e: Exception) {
             Color(0xFFDCDEE2) // Color por defecto si hay error
+        }
+    }
+
+    LaunchedEffect(userState.userData.uid) {
+        val uid = userState.userData.uid
+        if (uid.isNotEmpty()) {
+            AchievementsEventBus.emit(
+                AchievementTrigger.ProfileOpenedFirstTime(uid)
+            )
         }
     }
 

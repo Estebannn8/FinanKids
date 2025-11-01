@@ -30,6 +30,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import com.universidad.finankids.events.AchievementsEventBus
+import com.universidad.finankids.events.AchievementTrigger
 
 class AuthViewModel : ViewModel() {
 

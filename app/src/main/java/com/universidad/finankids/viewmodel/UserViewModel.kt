@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.universidad.finankids.data.model.Avatar
 import com.universidad.finankids.data.model.UserData
+import com.universidad.finankids.events.AchievementTrigger
+import com.universidad.finankids.events.AchievementsEventBus
 import com.universidad.finankids.events.UserEvent
 import com.universidad.finankids.state.UserState
 import kotlinx.coroutines.channels.Channel
@@ -214,6 +216,16 @@ class UserViewModel : ViewModel() {
                     )
                 }
 
+                // Emitir logro de avatar comprado
+                viewModelScope.launch {
+                    AchievementsEventBus.emit(
+                        AchievementTrigger.AvatarPurchased(
+                            uid = user.uid,
+                            totalAvatarsOwned = user.avataresDesbloqueados.size + 1
+                        )
+                    )
+                }
+
             } catch (e: Exception) {
                 _state.update { it.copy(errorMessage = "Error al comprar: ${e.message}") }
             }
@@ -285,6 +297,16 @@ class UserViewModel : ViewModel() {
 
                 Log.d("UserVM", "Lección $lessonId completada en categoría $categoryId")
                 loadUserData(_state.value.userData.uid) // Refrescar datos
+
+                val newLevel = _state.value.userData.nivel
+                viewModelScope.launch {
+                    AchievementsEventBus.emit(
+                        AchievementTrigger.LevelChanged(
+                            uid = _state.value.userData.uid,
+                            newLevel = newLevel
+                        )
+                    )
+                }
 
             } catch (e: Exception) {
                 Log.e("UserVM", "Error al guardar progreso: ${e.message}", e)
