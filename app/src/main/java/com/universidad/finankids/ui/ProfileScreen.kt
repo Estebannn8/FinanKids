@@ -1,5 +1,6 @@
 package com.universidad.finankids.ui
 
+import android.content.Context
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -84,6 +85,8 @@ fun ProfileScreen(
     val avatarState by avataresViewModel.state.collectAsState()
     val userSettings by userSettingsViewModel.settings.collectAsState()
     val streakState by streakViewModel.streak.collectAsState()
+
+    val context = LocalContext.current
 
     // Función para obtener el título según el nivel
     fun obtenerTituloNivel(nivel: Int): String {
@@ -191,6 +194,35 @@ fun ProfileScreen(
         }
     }
 
+    // Función para obtener el valor de cada categoría
+    fun obtenerValorCategoria(categoria: String): Int {
+        return when (categoria) {
+            "Ahorro" -> userState.userData.progresoCategorias["ahorro"] ?: 0
+            "Centro Comercial" -> userState.userData.progresoCategorias["compra"] ?: 0
+            "Banco" -> userState.userData.progresoCategorias["basica"] ?: 0
+            "Inversiones" -> userState.userData.progresoCategorias["inversion"] ?: 0
+            else -> 0
+        }
+    }
+
+    fun getInsigniaDrawable(
+        context: Context,
+        categoria: String,
+        progreso: Int
+    ): Int {
+        val baseName = when (categoria) {
+            "Ahorro" -> "ic_insignia_ahorro"
+            "Compra" -> "ic_insignia_compra"
+            "Inversiones" -> "ic_insignia_inversion"
+            "Basica" -> "ic_insignia_basica"
+            else -> "ic_insignia_basica"
+        }
+
+        val nivel = ((progreso / 5) + 1).coerceAtMost(5)
+        val fullName = "${baseName}_nivel$nivel"
+
+        return context.resources.getIdentifier(fullName, "drawable", context.packageName)
+    }
 
     Column(
         modifier = Modifier
@@ -470,29 +502,25 @@ fun ProfileScreen(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(horizontal = 5.dp, vertical = 5.dp)
+                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp)
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_insignia_nivel9),
-                                contentDescription = "Insignia Nivel 9",
-                                modifier = Modifier.size(70.dp)
-                            )
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_insignia_nivel8),
-                                contentDescription = "Insignia Nivel 8",
-                                modifier = Modifier.size(70.dp)
-                            )
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_insignia_nivel4),
-                                contentDescription = "Insignia Nivel 4",
-                                modifier = Modifier.size(70.dp)
-                            )
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_insignia_nivel3),
-                                contentDescription = "Insignia Nivel 3",
-                                modifier = Modifier.size(70.dp)
-                            )
+
+                            listOf(
+                                "Basica",
+                                "Ahorro",
+                                "Compra",
+                                "Inversiones"
+                            ).forEach { categoria ->
+
+                                val progreso = obtenerValorCategoria(categoria)
+                                val resId = getInsigniaDrawable(context, categoria, progreso)
+
+                                Image(
+                                    painter = painterResource(id = resId),
+                                    contentDescription = "Insignia $categoria",
+                                    modifier = Modifier.size(70.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -652,17 +680,6 @@ fun ProfileScreen(
                             "Banco"
                         )
                     )
-
-                    // Función para obtener el valor de cada categoría
-                    fun obtenerValorCategoria(categoria: String): Int {
-                        return when (categoria) {
-                            "Ahorro" -> userState.userData.progresoCategorias["ahorro"] ?: 0
-                            "Centro Comercial" -> userState.userData.progresoCategorias["compra"] ?: 0
-                            "Banco" -> userState.userData.progresoCategorias["basica"] ?: 0
-                            "Inversiones" -> userState.userData.progresoCategorias["inversion"] ?: 0
-                            else -> 0
-                        }
-                    }
 
                     // Dividir en filas de 2 elementos
                     categoryItems.chunked(2).forEach { rowItems ->
