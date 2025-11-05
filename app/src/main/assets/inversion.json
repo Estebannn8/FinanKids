@@ -1,6 +1,6 @@
 {
   "leccion_001": {
-    "title": "Pesito Inversionista 💹🐷",
+    "title": "¿Qué es invertir?",
     "order": 1,
     "baseExp": 200,
     "baseDinero": 100,
@@ -8,96 +8,454 @@
     "activities": [
       {
         "type": "Teaching",
-        "title": "¿Qué es invertir? 🌱💰",
-        "explanation": "¡Hola! Soy Pesito Inversionista 🐷📈. Invertir es usar tu dinero para hacerlo crecer, como plantar una semilla 🌱 que se convierte en un árbol 🌳. ¡Vamos a aprender! 🎓"
-      },
-      {
-        "type": "MultipleChoice",
-        "title": "¿Para qué invertir? ❓💡",
-        "question": "¿Cuál es el objetivo de invertir? 🧐",
-        "options": [
-          "Hacer crecer el dinero",
-          "Gastarlo todo",
-          "Perderlo",
-          "Esconderlo"
-        ],
-        "correctAnswer": "Hacer crecer el dinero"
+        "title": "Introducción a invertir",
+        "explanation": "Invertir significa usar tu dinero para obtener más en el futuro. Es como plantar una semilla que crece con el tiempo si la cuidas."
       },
       {
         "type": "SentenceBuilder",
-        "title": "Construye la frase 🧩✍️",
-        "question": "Ordena las palabras sobre invertir: 📈💬",
-        "sentenceParts": ["el", "Invertir", "crecer", "hace", "dinero"],
-        "correctOrder": ["Invertir", "hace", "crecer", "el", "dinero"]
+        "title": "Ordena la idea",
+        "question": "Organiza las palabras para formar una frase sobre invertir:",
+        "sentenceParts": ["dinero", "hacer", "es", "crecer", "Invertir", "el"],
+        "correctOrder": ["Invertir", "es", "hacer", "crecer", "el", "dinero"]
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Por qué invertir?",
+        "question": "¿Cuál es el propósito de invertir?",
+        "options": ["Hacer crecer el dinero", "Perder dinero", "Gastarlo todo", "No usar el dinero"],
+        "correctAnswer": "Hacer crecer el dinero"
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Invertir ayuda a que el dinero ______ con el tiempo.",
+        "options": ["crezca", "desaparezca", "se pierda", "se gaste"],
+        "correctAnswer": "crezca"
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona conceptos",
+        "question": "Empareja cada palabra con su significado:",
+        "matchingPairs": [
+          { "leftItem": "Invertir", "rightItem": "Usar dinero para hacerlo crecer" },
+          { "leftItem": "Ahorro", "rightItem": "Guardar dinero para después" },
+          { "leftItem": "Gasto", "rightItem": "Usar dinero en algo inmediato" }
+        ],
+        "shuffledRightItems": ["Guardar dinero para después", "Usar dinero para hacerlo crecer", "Usar dinero en algo inmediato"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Pasos básicos para invertir",
+        "question": "Ordena los pasos para comenzar a invertir:",
+        "orderedPairs": [
+          { "item": "Elegir dónde invertir", "correctPosition": 2 },
+          { "item": "Tener dinero guardado", "correctPosition": 1 },
+          { "item": "Dejar que el tiempo actúe", "correctPosition": 3 }
+        ],
+        "showNumbers": true
       }
     ]
   },
   "leccion_002": {
-    "title": "Tipos de inversión 🏦📚",
+    "title": "Diferencia entre ahorrar e invertir",
     "order": 2,
-    "baseExp": 250,
-    "baseDinero": 150,
+    "baseExp": 220,
+    "baseDinero": 110,
     "lives": 5,
     "activities": [
       {
         "type": "Teaching",
-        "title": "Pesito explica 🤓🐷",
-        "explanation": "Hay muchas formas de invertir 💡: en una cuenta de banco 🏦, en un negocio 🍋 o incluso en tu educación 📚. ¡Cada una tiene sus beneficios! ✅"
+        "title": "Ahorrar vs invertir",
+        "explanation": "Ahorrar es guardar dinero para usarlo después. Invertir es usar ese dinero guardado para intentar aumentar su valor."
       },
       {
-        "type": "Matching",
-        "title": "Une las ideas 🔗🧠",
-        "question": "Empareja cada inversión con su ejemplo: 🧩",
-        "matchingPairs": [
-          { "leftItem": "Cuenta de banco 🏦", "rightItem": "Ahorro con intereses 💰" },
-          { "leftItem": "Negocio 🏪", "rightItem": "Vender limonada 🍋" },
-          { "leftItem": "Educación 📚", "rightItem": "Aprender algo nuevo 🧠" }
-        ],
-        "shuffledRightItems": ["Ahorro con intereses 💰", "Vender limonada 🍋", "Aprender algo nuevo 🧠"]
+        "type": "MultipleChoice",
+        "title": "¿Qué es ahorrar?",
+        "question": "¿Cuál es la mejor descripción de ahorrar?",
+        "options": ["Guardar dinero sin gastarlo", "Usar dinero para crecer", "Pedir dinero prestado", "Gastar todo el dinero"],
+        "correctAnswer": "Guardar dinero sin gastarlo"
       },
       {
         "type": "FillBlank",
-        "title": "Completa la frase ✍️📘",
-        "question": "Invertir en educación te ayuda a ______. 📚",
-        "options": ["crecer", "dormir", "correr", "gritar"],
-        "correctAnswer": "crecer"
+        "title": "Completa la frase",
+        "question": "Invertir puede ayudar a que el dinero ______ más que solo ahorrarlo.",
+        "options": ["crezca", "desaparezca", "se pierda", "se gaste"],
+        "correctAnswer": "crezca"
+      },
+      {
+        "type": "Matching",
+        "title": "Empareja ideas",
+        "question": "Relaciona cada acción con su descripción:",
+        "matchingPairs": [
+          { "leftItem": "Ahorrar", "rightItem": "Guardar dinero" },
+          { "leftItem": "Invertir", "rightItem": "Hacer crecer el dinero" },
+          { "leftItem": "Gastar", "rightItem": "Usar dinero ahora" }
+        ],
+        "shuffledRightItems": ["Guardar dinero", "Hacer crecer el dinero", "Usar dinero ahora"]
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase",
+        "question": "Forma una frase correcta:",
+        "sentenceParts": ["inversión", "Una", "es", "crecer", "dinero", "para", "el"],
+        "correctOrder": ["Una", "inversión", "es", "para", "crecer", "el", "dinero"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Clasifica acciones",
+        "question": "Ordena estas acciones de menor a mayor crecimiento de dinero:",
+        "orderedPairs": [
+          { "item": "Gastar todo", "correctPosition": 1 },
+          { "item": "Ahorrar", "correctPosition": 2 },
+          { "item": "Invertir", "correctPosition": 3 }
+        ],
+        "showNumbers": true
       }
     ]
   },
   "leccion_003": {
-    "title": "Paciencia y crecimiento 🕰️🌳",
+    "title": "Tipos de inversión básicos",
     "order": 3,
-    "baseExp": 180,
-    "baseDinero": 120,
+    "baseExp": 240,
+    "baseDinero": 130,
     "lives": 5,
     "activities": [
       {
         "type": "Teaching",
-        "title": "Pesito te aconseja 🐷💬",
-        "explanation": "Invertir requiere paciencia 🕰️. ¡El dinero no crece de la noche a la mañana! 🌜➡️🌞 Pero con tiempo y cuidado, verás los resultados 📈🍀."
+        "title": "Formas de invertir",
+        "explanation": "Existen varias formas de invertir: en un banco, en un negocio, o en uno mismo aprendiendo algo nuevo."
       },
       {
-        "type": "DragPairs",
-        "title": "Ordena los pasos 🔢🧩",
-        "question": "Pon en orden cómo invertir correctamente: 📊",
-        "orderedPairs": [
-          { "item": "Elegir una opción ✅", "correctPosition": 1 },
-          { "item": "Invertir con cuidado 💡", "correctPosition": 2 },
-          { "item": "Esperar con paciencia 🕰️", "correctPosition": 3 }
+        "type": "Matching",
+        "title": "Relaciona inversión con ejemplo",
+        "question": "Empareja cada tipo de inversión con su ejemplo:",
+        "matchingPairs": [
+          { "leftItem": "Banco", "rightItem": "Cuenta con intereses" },
+          { "leftItem": "Negocio", "rightItem": "Vender productos" },
+          { "leftItem": "Educación", "rightItem": "Aprender una habilidad nueva" }
         ],
-        "showNumbers": true
+        "shuffledRightItems": ["Cuenta con intereses", "Vender productos", "Aprender una habilidad nueva"]
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Invertir en educación es invertir en tu propio ______.",
+        "options": ["futuro", "juguete", "descanso", "problema"],
+        "correctAnswer": "futuro"
       },
       {
         "type": "MultipleChoice",
-        "title": "¿Qué necesitas para invertir? 🤔📈",
-        "question": "¿Qué cualidad es importante al invertir? 🧠",
-        "options": [
-          "Paciencia",
-          "Prisa",
-          "Desinterés",
-          "Miedo"
+        "title": "¿Cuál es una inversión?",
+        "question": "¿Cuál de las siguientes opciones es una inversión?",
+        "options": ["Abrir un negocio", "Comprar dulces", "Gastar todo el dinero", "No ahorrar nada"],
+        "correctAnswer": "Abrir un negocio"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la idea",
+        "question": "Ordena las palabras:",
+        "sentenceParts": ["Invertir", "educación", "es", "en", "importante"],
+        "correctOrder": ["Invertir", "en", "educación", "es", "importante"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden lógico",
+        "question": "Ordena de menor a mayor riesgo de inversión:",
+        "orderedPairs": [
+          { "item": "Cuenta de banco", "correctPosition": 1 },
+          { "item": "Invertir en acciones", "correctPosition": 3 },
+          { "item": "Negocio propio", "correctPosition": 2 }
         ],
-        "correctAnswer": "Paciencia"
+        "showNumbers": true
+      }
+    ]
+  },
+  "leccion_006": {
+    "title": "¿Qué es el riesgo al invertir?",
+    "order": 6,
+    "baseExp": 300,
+    "baseDinero": 170,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Riesgo en inversiones",
+        "explanation": "El riesgo es la posibilidad de que al invertir no ganes dinero o incluso pierdas una parte. Algunas inversiones son más seguras que otras, pero suelen tener menores ganancias."
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Qué es el riesgo?",
+        "question": "¿Qué significa riesgo al invertir?",
+        "options": ["Posibilidad de perder dinero", "Tener dinero seguro", "Ahorrar sin invertir", "Gastar sin pensar"],
+        "correctAnswer": "Posibilidad de perder dinero"
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Las inversiones con más riesgo pueden dar más ______.",
+        "options": ["ganancia", "ruido", "dudas", "deudas"],
+        "correctAnswer": "ganancia"
+      },
+      {
+        "type": "Matching",
+        "title": "Riesgo vs seguridad",
+        "question": "Une cada inversión con su nivel de riesgo:",
+        "matchingPairs": [
+          { "leftItem": "Cuenta de ahorros", "rightItem": "Bajo riesgo" },
+          { "leftItem": "Negocio nuevo", "rightItem": "Riesgo medio" },
+          { "leftItem": "Acciones", "rightItem": "Alto riesgo" }
+        ],
+        "shuffledRightItems": ["Alto riesgo", "Riesgo medio", "Bajo riesgo"]
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase",
+        "question": "Ordena las palabras para formar una frase:",
+        "sentenceParts": ["inversiones", "Algunas", "más", "riesgo", "tienen"],
+        "correctOrder": ["Algunas", "inversiones", "tienen", "más", "riesgo"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden de riesgo",
+        "question": "Ordena de menor a mayor riesgo:",
+        "orderedPairs": [
+          { "item": "Cuenta de ahorros", "correctPosition": 1 },
+          { "item": "Negocio propio", "correctPosition": 2 },
+          { "item": "Acciones", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      }
+    ]
+  },
+
+  "leccion_007": {
+    "title": "Interés y ganancia",
+    "order": 7,
+    "baseExp": 320,
+    "baseDinero": 180,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Qué es el interés?",
+        "explanation": "El interés es el dinero extra que recibes por invertir o ahorrar. Si guardas tu dinero en un banco o lo inviertes, puede crecer con el tiempo gracias al interés."
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "El interés es dinero ______ cuando ahorras o inviertes.",
+        "options": ["extra", "perdido", "viejo", "prestado"],
+        "correctAnswer": "extra"
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Dónde ganas interés?",
+        "question": "¿En qué lugar puedes ganar interés?",
+        "options": ["Cuenta de ahorros", "Comprar dulces", "Gastar todo", "Guardar dinero en casa"],
+        "correctAnswer": "Cuenta de ahorros"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase",
+        "question": "Forma una frase correcta:",
+        "sentenceParts": ["interés", "dinero", "extra", "es", "El"],
+        "correctOrder": ["El", "interés", "es", "dinero", "extra"]
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona conceptos",
+        "question": "Une el concepto correcto:",
+        "matchingPairs": [
+          { "leftItem": "Interés", "rightItem": "Ganancia adicional" },
+          { "leftItem": "Ahorro", "rightItem": "Guardar dinero" },
+          { "leftItem": "Gastar", "rightItem": "Usar dinero ahora" }
+        ],
+        "shuffledRightItems": ["Guardar dinero", "Ganancia adicional", "Usar dinero ahora"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Cómo funciona el interés",
+        "question": "Ordena los pasos para ganar interés:",
+        "orderedPairs": [
+          { "item": "Guardar dinero", "correctPosition": 1 },
+          { "item": "Esperar tiempo", "correctPosition": 2 },
+          { "item": "Recibir interés", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      }
+    ]
+  },
+
+  "leccion_008": {
+    "title": "Interés compuesto",
+    "order": 8,
+    "baseExp": 340,
+    "baseDinero": 200,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Dinero que crece sobre dinero",
+        "explanation": "El interés compuesto es cuando no solo ganas dinero extra por lo que ahorraste, sino también ganas dinero sobre el interés que ya obtuviste."
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Qué es el interés compuesto?",
+        "question": "¿Qué describe mejor el interés compuesto?",
+        "options": ["Ganar interés sobre el interés", "Gastar dinero rápido", "Ahorrar solo una vez", "Perder dinero"],
+        "correctAnswer": "Ganar interés sobre el interés"
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Con el interés compuesto, el dinero crece cada vez ______.",
+        "options": ["más", "menos", "nada", "lento"],
+        "correctAnswer": "más"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la idea",
+        "question": "Organiza las palabras:",
+        "sentenceParts": ["compuesto", "interés", "El", "dinero", "hace", "crecer"],
+        "correctOrder": ["El", "interés", "compuesto", "hace", "crecer", "dinero"]
+      },
+      {
+        "type": "Matching",
+        "title": "Empareja conceptos",
+        "question": "Relaciona el concepto con su descripción:",
+        "matchingPairs": [
+          { "leftItem": "Interés simple", "rightItem": "Ganas solo sobre el dinero inicial" },
+          { "leftItem": "Interés compuesto", "rightItem": "Ganas sobre el dinero y el interés" },
+          { "leftItem": "Ahorro", "rightItem": "Guardar dinero sin invertir" }
+        ],
+        "shuffledRightItems": ["Ganas sobre el dinero y el interés", "Guardar dinero sin invertir", "Ganas solo sobre el dinero inicial"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden del crecimiento compuesto",
+        "question": "Ordena cómo crece el dinero en interés compuesto:",
+        "orderedPairs": [
+          { "item": "Guardar dinero", "correctPosition": 1 },
+          { "item": "Ganar interés", "correctPosition": 2 },
+          { "item": "Ganar interés sobre el interés", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      }
+    ]
+  },
+
+  "leccion_009": {
+    "title": "Invertir a corto y largo plazo",
+    "order": 9,
+    "baseExp": 360,
+    "baseDinero": 220,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Plazos de inversión",
+        "explanation": "Una inversión a corto plazo es para pocos meses o un año. Una inversión a largo plazo puede tardar varios años, pero suele generar más ganancias."
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Cuál es una inversión a largo plazo?",
+        "question": "¿Cuál de estas opciones es una inversión a largo plazo?",
+        "options": ["Comprar un terreno", "Comprar dulces", "Gastar todo", "Guardar en casa"],
+        "correctAnswer": "Comprar un terreno"
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Las inversiones a largo plazo pueden dar más ______.",
+        "options": ["ganancias", "ruido", "problemas", "dudas"],
+        "correctAnswer": "ganancias"
+      },
+      {
+        "type": "Matching",
+        "title": "Empareja los plazos",
+        "question": "Relaciona cada situación con su tipo de inversión:",
+        "matchingPairs": [
+          { "leftItem": "Comprar bonos por 3 meses", "rightItem": "Corto plazo" },
+          { "leftItem": "Invertir para la universidad", "rightItem": "Largo plazo" },
+          { "leftItem": "Comprar acciones para 10 años", "rightItem": "Largo plazo" }
+        ],
+        "shuffledRightItems": ["Largo plazo", "Corto plazo", "Largo plazo"]
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase",
+        "question": "Ordena las palabras:",
+        "sentenceParts": ["plazo", "largo", "El", "más", "genera", "dinero"],
+        "correctOrder": ["El", "largo", "plazo", "genera", "más", "dinero"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden de tiempo",
+        "question": "Ordena de menor a mayor tiempo de inversión:",
+        "orderedPairs": [
+          { "item": "Invertir por 6 meses", "correctPosition": 1 },
+          { "item": "Invertir por 2 años", "correctPosition": 2 },
+          { "item": "Invertir por 10 años", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      }
+    ]
+  },
+
+  "leccion_010": {
+    "title": "Diversificación de inversiones",
+    "order": 10,
+    "baseExp": 380,
+    "baseDinero": 250,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "No poner todo en un solo lugar",
+        "explanation": "Diversificar significa no invertir todo el dinero en una sola cosa. Es mejor repartirlo en diferentes opciones para reducir el riesgo."
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Qué es diversificar?",
+        "question": "¿Qué significa diversificar inversiones?",
+        "options": ["Repartir el dinero en varias inversiones", "Gastar todo el dinero en una cosa", "No invertir nada", "Guardar todo en casa"],
+        "correctAnswer": "Repartir el dinero en varias inversiones"
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Diversificar ayuda a reducir el ______.",
+        "options": ["riesgo", "ruido", "cansancio", "juego"],
+        "correctAnswer": "riesgo"
+      },
+      {
+        "type": "Matching",
+        "title": "Empareja las acciones",
+        "question": "Relaciona cada acción con su descripción:",
+        "matchingPairs": [
+          { "leftItem": "Invertir solo en un negocio", "rightItem": "Más riesgo" },
+          { "leftItem": "Invertir en banco, negocio y educación", "rightItem": "Menos riesgo" },
+          { "leftItem": "Guardar todo sin invertir", "rightItem": "No hay crecimiento" }
+        ],
+        "shuffledRightItems": ["Menos riesgo", "No hay crecimiento", "Más riesgo"]
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase",
+        "question": "Organiza las palabras:",
+        "sentenceParts": ["Diversificar", "ayuda", "riesgo", "a", "reducir", "el"],
+        "correctOrder": ["Diversificar", "ayuda", "a", "reducir", "el", "riesgo"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Elige lo más seguro",
+        "question": "Ordena de más seguro a más arriesgado:",
+        "orderedPairs": [
+          { "item": "Invertir en varias opciones", "correctPosition": 1 },
+          { "item": "Invertir en un solo negocio", "correctPosition": 2 },
+          { "item": "No informarse antes de invertir", "correctPosition": 3 }
+        ],
+        "showNumbers": true
       }
     ]
   }

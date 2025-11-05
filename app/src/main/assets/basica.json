@@ -1,99 +1,609 @@
 {
   "leccion_001": {
-    "title": "¡Hola, soy Pesito! 👋💰",
+    "title": "¿Qué es el dinero?",
     "order": 1,
-    "baseExp": 200,
-    "baseDinero": 100,
+    "baseExp": 150,
+    "baseDinero": 50,
     "lives": 5,
     "activities": [
       {
         "type": "Teaching",
-        "title": "¿Qué es el dinero? 💸🤔",
-        "explanation": "¡Hola, soy Pesito! 🐷💬 El dinero es como una herramienta mágica ✨ que nos ayuda a conseguir cosas que necesitamos o queremos, como juguetes 🧸 o comida 🍎. ¡Vamos a aprender juntos! 🎉"
-      },
-      {
-        "type": "Matching",
-        "title": "¿Se compra con dinero? 💸✅❌",
-        "question": "Empareja cada cosa con 'Se compra con dinero' o 'No se compra con dinero': 🧠",
-        "matchingPairs": [
-          { "leftItem": "Un juguete 🧸", "rightItem": "Se compra con dinero ✅" },
-          { "leftItem": "Un abrazo 🤗", "rightItem": "No se compra con dinero ❌" },
-          { "leftItem": "Una manzana 🍎", "rightItem": "Se compra con dinero ✅" },
-          { "leftItem": "La amistad 👫", "rightItem": "No se compra con dinero ❌" }
-        ],
-        "shuffledRightItems": [
-          "Se compra con dinero ✅",
-          "No se compra con dinero ❌",
-          "Se compra con dinero ✅",
-          "No se compra con dinero ❌"
-        ]
+        "title": "Introducción al dinero",
+        "explanation": "El dinero es algo que usamos para comprar cosas o pagar servicios. Antes se usaban objetos como sal o metales, pero ahora usamos monedas, billetes o dinero digital."
       },
       {
         "type": "FillBlank",
-        "title": "Completa la frase ✍️📘",
-        "question": "El dinero sirve para ______ cosas. 🛍️",
-        "options": ["romper", "comprar", "tirar", "esconder"],
+        "title": "Completa la frase",
+        "question": "El dinero sirve para ______ productos o servicios.",
+        "options": ["comprar", "romper", "esconder", "dibujar"],
         "correctAnswer": "comprar"
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Para qué sirve?",
+        "question": "¿Qué permite hacer el dinero?",
+        "options": ["Comprar cosas", "Dormir mejor", "Correr rápido", "Hacer ruido"],
+        "correctAnswer": "Comprar cosas"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase",
+        "question": "Ordena las palabras: dinero, para, usamos, comprar",
+        "sentenceParts": ["Usamos", "dinero", "para", "comprar", "el"],
+        "correctOrder": ["Usamos", "el", "dinero", "para", "comprar"]
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona",
+        "question": "Une el tipo de dinero con su ejemplo",
+        "matchingPairs": [
+          { "leftItem": "Billete", "rightItem": "Papel moneda" },
+          { "leftItem": "Moneda", "rightItem": "Dinero de metal" },
+          { "leftItem": "Dinero digital", "rightItem": "Aplicaciones bancarias" }
+        ],
+        "shuffledRightItems": ["Dinero de metal", "Aplicaciones bancarias", "Papel moneda"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden lógico",
+        "question": "Ordena de más antiguo a más moderno",
+        "orderedPairs": [
+          { "item": "Trueque", "correctPosition": 1 },
+          { "item": "Monedas y billetes", "correctPosition": 2 },
+          { "item": "Dinero digital", "correctPosition": 3 }
+        ],
+        "showNumbers": true
       }
     ]
   },
   "leccion_002": {
-    "title": "Monedas y billetes 🪙💵",
+    "title": "¿Para qué existe un banco?",
     "order": 2,
-    "baseExp": 250,
-    "baseDinero": 150,
+    "baseExp": 180,
+    "baseDinero": 70,
     "lives": 5,
     "activities": [
       {
         "type": "Teaching",
-        "title": "Pesito te enseña 📚🐷",
-        "explanation": "Las monedas son redondas y pequeñas 🪙, y los billetes son rectangulares y grandes 💵. Cada uno tiene un valor diferente 💲. ¡Aprende a reconocerlos! 👀"
+        "title": "El rol del banco",
+        "explanation": "Un banco es un lugar donde se guarda dinero de forma segura. También permite hacer pagos, ahorrar y prestar dinero a las personas."
       },
       {
         "type": "MultipleChoice",
-        "title": "¿Cuál vale más? 🔍💲",
-        "question": "¿Qué vale más, una moneda de $1 🪙 o un billete de $10 💵?",
-        "options": ["Moneda de $1", "Billete de $10", "Las dos valen igual", "Ninguna"],
-        "correctAnswer": "Billete de $10"
-      },
-      {
-        "type": "SentenceBuilder",
-        "title": "Ordena la frase 🧩📝",
-        "question": "Arma esta frase sobre el dinero: 🧠",
-        "sentenceParts": ["es", "importante", "El", "dinero"],
-        "correctOrder": ["El", "dinero", "es", "importante"]
-      }
-    ]
-  },
-  "leccion_003": {
-    "title": "Gastar con cuidado 🛍️🤓",
-    "order": 3,
-    "baseExp": 180,
-    "baseDinero": 120,
-    "lives": 5,
-    "activities": [
-      {
-        "type": "Teaching",
-        "title": "Pesito te aconseja 🐷💬",
-        "explanation": "Es importante pensar antes de gastar 🤔. ¿Lo necesito? ✅ ¿Lo quiero? 🤩 Así evitamos gastar todo el dinero de una vez 💸."
+        "title": "Función del banco",
+        "question": "¿Qué hace un banco?",
+        "options": ["Guarda dinero", "Vende juguetes", "Organiza fiestas", "Hace ropa"],
+        "correctAnswer": "Guarda dinero"
       },
       {
         "type": "DragPairs",
-        "title": "Ordena los pasos 🪄📋",
-        "question": "Pon en orden lo que debes hacer antes de gastar: 🧠💡",
+        "title": "Ordena las ideas",
+        "question": "Ordena lo que hace una persona en el banco",
         "orderedPairs": [
-          { "item": "Pensar si lo necesito 🤔", "correctPosition": 1 },
-          { "item": "Comparar precios 🛒", "correctPosition": 2 },
-          { "item": "Decidir comprar 🛍️", "correctPosition": 3 }
+          { "item": "Ir al banco", "correctPosition": 1 },
+          { "item": "Guardar el dinero seguro", "correctPosition": 3 },
+          { "item": "Entregar su dinero", "correctPosition": 2 }
         ],
         "showNumbers": true
       },
       {
         "type": "FillBlank",
-        "title": "Completa la idea 💭📝",
-        "question": "Antes de gastar, debes ______. 🧠",
-        "options": ["correr", "pensar", "gritar", "dormir"],
-        "correctAnswer": "pensar"
+        "title": "Completa",
+        "question": "El banco ayuda a mantener el dinero ______.",
+        "options": ["seguro", "perdido", "sucio", "mojado"],
+        "correctAnswer": "seguro"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Forma la oración",
+        "question": "Ordena: banco, un, dinero, guarda",
+        "sentenceParts": ["dinero", "banco", "Un", "guarda"],
+        "correctOrder": ["Un", "banco", "guarda", "dinero"]
+      },
+      {
+        "type": "Matching",
+        "title": "Empareja",
+        "question": "Relaciona cada palabra con su significado",
+        "matchingPairs": [
+          { "leftItem": "Caja fuerte", "rightItem": "Lugar seguro para dinero" },
+          { "leftItem": "Cuenta bancaria", "rightItem": "Dinero guardado a tu nombre" },
+          { "leftItem": "Cajero automático", "rightItem": "Máquina para retirar dinero" }
+        ],
+        "shuffledRightItems": [
+          "Lugar seguro para dinero",
+          "Dinero guardado a tu nombre",
+          "Máquina para retirar dinero"
+        ]
+      }
+    ]
+  },
+  "leccion_003": {
+    "title": "Tipos de dinero y formas de pago",
+    "order": 3,
+    "baseExp": 190,
+    "baseDinero": 80,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Dinero físico y digital",
+        "explanation": "Existen diferentes formas de dinero. El dinero físico son billetes y monedas. El dinero digital se usa con tarjetas o aplicaciones sin necesidad de efectivo."
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona los conceptos",
+        "question": "Une cada forma de pago con su ejemplo",
+        "matchingPairs": [
+          { "leftItem": "Billete", "rightItem": "Dinero de papel" },
+          { "leftItem": "Moneda", "rightItem": "Dinero de metal" },
+          { "leftItem": "Tarjeta bancaria", "rightItem": "Dinero digital" }
+        ],
+        "shuffledRightItems": ["Dinero digital", "Dinero de metal", "Dinero de papel"]
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "El dinero digital se usa con ______ o aplicaciones.",
+        "options": ["tarjetas", "lápices", "papeles", "juguetes"],
+        "correctAnswer": "tarjetas"
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden de evolución",
+        "question": "Ordena la evolución del dinero",
+        "orderedPairs": [
+          { "item": "Dinero digital", "correctPosition": 3 },
+          { "item": "Billetes y monedas", "correctPosition": 2 },
+          { "item": "Trueque", "correctPosition": 1 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Forma moderna de dinero",
+        "question": "¿Cuál es una forma moderna de usar dinero?",
+        "options": ["Aplicaciones bancarias", "Intercambiar frutas", "Trueque", "Usar rocas"],
+        "correctAnswer": "Aplicaciones bancarias"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la oración",
+        "question": "Ordena las palabras: usar, se, tarjetas, dinero, con",
+        "sentenceParts": ["usa", "dinero", "con", "tarjetas", "Se"],
+        "correctOrder": ["Se", "usa", "dinero", "con", "tarjetas"]
+      }
+    ]
+  },
+  "leccion_004": {
+    "title": "¿Qué es una cuenta bancaria?",
+    "order": 4,
+    "baseExp": 200,
+    "baseDinero": 90,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Cuenta bancaria",
+        "explanation": "Una cuenta bancaria es un lugar seguro donde las personas guardan su dinero en el banco. Pueden depositarlo, retirarlo o consultarlo cuando lo necesiten."
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Función principal",
+        "question": "¿Qué permite hacer una cuenta bancaria?",
+        "options": ["Guardar dinero de forma segura", "Fabricar billetes", "Comprar juguetes", "Pintar paredes"],
+        "correctAnswer": "Guardar dinero de forma segura"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Crea la frase",
+        "question": "Ordena: dinero, guarda, banco, el, en, cuenta",
+        "sentenceParts": ["El", "dinero", "guarda", "se", "banco", "en", "el"],
+        "correctOrder": ["El", "dinero", "se", "guarda", "en", "el", "banco"]
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona términos",
+        "question": "Une los conceptos con su función",
+        "matchingPairs": [
+          { "leftItem": "Depositar", "rightItem": "Guardar dinero en el banco" },
+          { "leftItem": "Retirar", "rightItem": "Sacar dinero del banco" },
+          { "leftItem": "Consultar saldo", "rightItem": "Ver cuánto dinero tienes" }
+        ],
+        "shuffledRightItems": [
+          "Guardar dinero en el banco",
+          "Ver cuánto dinero tienes",
+          "Sacar dinero del banco"
+        ]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden de acciones",
+        "question": "Ordena los pasos para abrir una cuenta",
+        "orderedPairs": [
+          { "item": "Ir al banco", "correctPosition": 2 },
+          { "item": "Entregar documentos", "correctPosition": 1 },
+          { "item": "Abrir la cuenta", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa",
+        "question": "Una cuenta bancaria es un lugar ______ para guardar dinero.",
+        "options": ["seguro", "vacío", "peligroso", "confuso"],
+        "correctAnswer": "seguro"
+      }
+    ]
+  },
+  "leccion_005": {
+    "title": "Diferencia entre cuenta de ahorros y corriente",
+    "order": 5,
+    "baseExp": 210,
+    "baseDinero": 100,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Tipos de cuentas",
+        "explanation": "En un banco existen cuentas de ahorros y cuentas corrientes. La cuenta de ahorros guarda dinero y puede generar intereses. La cuenta corriente permite hacer pagos más rápidos usando chequeras o tarjetas."
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Cuál genera intereses?",
+        "question": "¿Qué tipo de cuenta puede generar intereses?",
+        "options": ["Cuenta de ahorros", "Cuenta corriente", "Cuenta de juegos", "Cuenta de dibujos"],
+        "correctAnswer": "Cuenta de ahorros"
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona los tipos de cuenta",
+        "question": "Une el tipo de cuenta con su característica",
+        "matchingPairs": [
+          { "leftItem": "Cuenta de ahorros", "rightItem": "Genera intereses" },
+          { "leftItem": "Cuenta corriente", "rightItem": "Uso de chequera o tarjeta" },
+          { "leftItem": "Ambas", "rightItem": "Guardan dinero en el banco" }
+        ],
+        "shuffledRightItems": [
+          "Guardan dinero en el banco",
+          "Genera intereses",
+          "Uso de chequera o tarjeta"
+        ]
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "La cuenta corriente permite hacer ______ rápidamente.",
+        "options": ["pagos", "dibujos", "viajes", "deportes"],
+        "correctAnswer": "pagos"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la oración",
+        "question": "Ordena las palabras: banco, en, cuentas, dos, hay",
+        "sentenceParts": ["banco", "En", "hay", "dos", "el", "cuentas"],
+        "correctOrder": ["En", "el", "banco", "hay", "dos", "cuentas"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden lógico",
+        "question": "Ordena de más usada para ahorrar a más usada para pagar",
+        "orderedPairs": [
+          { "item": "Cuenta corriente", "correctPosition": 2 },
+          { "item": "Cuenta de ahorros", "correctPosition": 1 }
+        ],
+        "showNumbers": true
+      }
+    ]
+  },
+  "leccion_006": {
+    "title": "¿Qué es una tarjeta bancaria?",
+    "order": 6,
+    "baseExp": 220,
+    "baseDinero": 110,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Tarjetas bancarias",
+        "explanation": "Una tarjeta bancaria es una herramienta que permite pagar sin usar dinero en efectivo. Puede ser tarjeta de débito o crédito."
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden de uso",
+        "question": "Ordena los pasos para usar una tarjeta",
+        "orderedPairs": [
+          { "item": "Insertar la tarjeta o acercarla", "correctPosition": 1 },
+          { "item": "Ingresar contraseña", "correctPosition": 2 },
+          { "item": "Confirmar el pago", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Qué permite una tarjeta?",
+        "question": "¿Para qué sirve una tarjeta bancaria?",
+        "options": ["Pagar sin efectivo", "Encender luces", "Hacer dibujos", "Escuchar música"],
+        "correctAnswer": "Pagar sin efectivo"
+      },
+      {
+        "type": "Matching",
+        "title": "Tipos de tarjetas",
+        "question": "Relaciona el tipo de tarjeta con su característica",
+        "matchingPairs": [
+          { "leftItem": "Tarjeta de débito", "rightItem": "Usa el dinero de tu cuenta" },
+          { "leftItem": "Tarjeta de crédito", "rightItem": "Permite pagar con dinero prestado" },
+          { "leftItem": "Ambas", "rightItem": "Sirven para pagar" }
+        ],
+        "shuffledRightItems": [
+          "Sirven para pagar",
+          "Permite pagar con dinero prestado",
+          "Usa el dinero de tu cuenta"
+        ]
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "La tarjeta de crédito permite usar dinero ______ del banco.",
+        "options": ["prestado", "imaginario", "falso", "viejo"],
+        "correctAnswer": "prestado"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la oración",
+        "question": "Ordena: pagar, sin, permite, efectivo, tarjeta",
+        "sentenceParts": ["La","permite", "tarjeta", "sin", "pagar", "efectivo"],
+        "correctOrder": ["La", "tarjeta", "permite", "pagar", "sin", "efectivo"]
+      }
+    ]
+  },
+  "leccion_007": {
+    "title": "¿Qué es un préstamo bancario?",
+    "order": 7,
+    "baseExp": 230,
+    "baseDinero": 120,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Préstamos",
+        "explanation": "Un préstamo es cuando el banco te da dinero que no tienes, pero debes devolverlo poco a poco y pagar un costo extra llamado interés."
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Qué es un préstamo?",
+        "question": "¿Qué ocurre en un préstamo?",
+        "options": [
+          "El banco presta dinero y debes devolverlo",
+          "El banco regala dinero",
+          "Nunca se devuelve nada",
+          "Solo puedes usar monedas"
+        ],
+        "correctAnswer": "El banco presta dinero y debes devolverlo"
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Al devolver el préstamo, también se paga un costo llamado ______.",
+        "options": ["interés", "premio", "regalo", "billete"],
+        "correctAnswer": "interés"
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden del préstamo",
+        "question": "Ordena los pasos de un préstamo",
+        "orderedPairs": [
+          { "item": "El banco entrega el préstamo", "correctPosition": 2 },
+          { "item": "Solicitar el dinero al banco", "correctPosition": 1 },
+          { "item": "Devolver el dinero con interés", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona conceptos",
+        "question": "Une los términos con su significado",
+        "matchingPairs": [
+          { "leftItem": "Préstamo", "rightItem": "Dinero que el banco te entrega" },
+          { "leftItem": "Interés", "rightItem": "Costo por usar ese dinero" },
+          { "leftItem": "Deuda", "rightItem": "Dinero que debes devolver" }
+        ],
+        "shuffledRightItems": [
+          "Costo por usar ese dinero",
+          "Dinero que debes devolver",
+          "Dinero que el banco te entrega"
+        ]
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la oración",
+        "question": "Ordena las palabras",
+        "sentenceParts": ["dinero", "al", "Se", "devuelve", "banco", "el"],
+        "correctOrder": ["Se", "devuelve", "el", "dinero", "al", "banco"]
+      }
+    ]
+  },
+  "leccion_008": {
+    "title": "¿Qué es una transacción bancaria?",
+    "order": 8,
+    "baseExp": 240,
+    "baseDinero": 130,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Transacciones bancarias",
+        "explanation": "Una transacción bancaria es cualquier movimiento de dinero que se hace en el banco, como depositar, retirar o transferir dinero. Cada transacción queda registrada en tu cuenta."
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona las acciones",
+        "question": "Une cada tipo de transacción con su descripción correcta",
+        "matchingPairs": [
+          { "leftItem": "Depósito", "rightItem": "Ingresar dinero en la cuenta" },
+          { "leftItem": "Retiro", "rightItem": "Sacar dinero de la cuenta" },
+          { "leftItem": "Transferencia", "rightItem": "Enviar dinero a otra cuenta" }
+        ],
+        "shuffledRightItems": [
+          "Ingresar dinero en la cuenta",
+          "Enviar dinero a otra cuenta",
+          "Sacar dinero de la cuenta"
+        ]
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Cuando envías dinero a otra persona desde tu cuenta haces una ______.",
+        "options": ["transferencia", "fiesta", "cuenta", "lluvia"],
+        "correctAnswer": "transferencia"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la oración",
+        "question": "Ordena: registra, banco, cada, el, transacción",
+        "sentenceParts": ["registra", "banco", "cada", "El", "transacción"],
+        "correctOrder": ["El", "banco", "registra", "cada", "transacción"]
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Movimiento de dinero",
+        "question": "¿Qué tipo de transacción es sacar dinero del banco?",
+        "options": ["Depósito", "Retiro", "Transferencia", "Préstamo"],
+        "correctAnswer": "Retiro"
+      },
+      {
+        "type": "DragPairs",
+        "title": "Clasifica las acciones",
+        "question": "Ordena de entrada a salida de dinero",
+        "orderedPairs": [
+          { "item": "Retiro", "correctPosition": 3 },
+          { "item": "Transferencia enviada", "correctPosition": 2 },
+          { "item": "Depósito", "correctPosition": 1 }
+        ],
+        "showNumbers": true
+      }
+    ]
+  },
+  "leccion_009": {
+    "title": "¿Qué son los intereses?",
+    "order": 9,
+    "baseExp": 250,
+    "baseDinero": 140,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Interés a favor y en contra",
+        "explanation": "El interés es una cantidad extra de dinero. Puede ser dinero que el banco te da por ahorrar (interés a favor) o dinero extra que pagas por un préstamo (interés en contra)."
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "El dinero extra que pagas al banco por un préstamo se llama ______.",
+        "options": ["interés", "regalo", "premio", "saldo"],
+        "correctAnswer": "interés"
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona conceptos",
+        "question": "Une cada tipo de interés con lo que significa",
+        "matchingPairs": [
+          { "leftItem": "Interés a favor", "rightItem": "Dinero que el banco te da por ahorrar" },
+          { "leftItem": "Interés en contra", "rightItem": "Dinero extra que pagas por un préstamo" }
+        ],
+        "shuffledRightItems": [
+          "Dinero que el banco te da por ahorrar",
+          "Dinero extra que pagas por un préstamo"
+        ]
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Cuál es interés a favor?",
+        "question": "¿Cuál de estos es un ejemplo de interés a favor?",
+        "options": [
+          "Te cobran más por un préstamo",
+          "El banco te da dinero por ahorrar",
+          "Pagas más en una tienda",
+          "Compras sin pagar"
+        ],
+        "correctAnswer": "El banco te da dinero por ahorrar"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena las palabras",
+        "question": "Ordena: ahorro, dinero, interés, por, recibes",
+        "sentenceParts": ["ahorro", "dinero", "interés", "por", "Recibes", "e"],
+        "correctOrder": ["Recibes", "dinero", "por", "ahorro", "e", "interés"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Intereses: positivo o negativo",
+        "question": "Arrastra según el tipo de interés",
+        "orderedPairs": [
+          { "item": "Interés del ahorro", "correctPosition": 1 },
+          { "item": "Interés del préstamo", "correctPosition": 2 }
+        ],
+        "showNumbers": true
+      }
+    ]
+  },
+  "leccion_010": {
+    "title": "¿Qué es un estado de cuenta?",
+    "order": 10,
+    "baseExp": 260,
+    "baseDinero": 150,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Estado de cuenta bancario",
+        "explanation": "Un estado de cuenta es un documento que muestra todos los movimientos de tu dinero en el banco: depósitos, retiros, transferencias y el saldo final."
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Información del estado de cuenta",
+        "question": "¿Qué información aparece en un estado de cuenta?",
+        "options": ["Tus movimientos bancarios", "Tus tareas escolares", "Tu comida favorita", "Tus juegos"],
+        "correctAnswer": "Tus movimientos bancarios"
+      },
+      {
+        "type": "FillBlank",
+        "title": "Saldo final",
+        "question": "El saldo es la cantidad de dinero que ______ en la cuenta.",
+        "options": ["queda", "vuela", "desaparece", "duerme"],
+        "correctAnswer": "queda"
+      },
+      {
+        "type": "Matching",
+        "title": "Partes del estado de cuenta",
+        "question": "Relaciona cada parte con su significado",
+        "matchingPairs": [
+          { "leftItem": "Saldo inicial", "rightItem": "Dinero al comenzar el período" },
+          { "leftItem": "Movimientos", "rightItem": "Depósitos, retiros y transferencias" },
+          { "leftItem": "Saldo final", "rightItem": "Dinero que queda al final" }
+        ],
+        "shuffledRightItems": [
+          "Dinero que queda al final",
+          "Depósitos, retiros y transferencias",
+          "Dinero al comenzar el período"
+        ]
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la oración",
+        "question": "Ordena: cuenta, registra, movimientos, estado, el",
+        "sentenceParts": ["cuenta", "registra", "movimientos", "estado", "El", "de"],
+        "correctOrder": ["El", "estado", "de", "cuenta", "registra", "movimientos"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden de lectura",
+        "question": "Ordena como normalmente se lee un estado de cuenta",
+        "orderedPairs": [
+          { "item": "Saldo inicial", "correctPosition": 1 },
+          { "item": "Saldo final", "correctPosition": 3 },
+          { "item": "Movimientos", "correctPosition": 2 }
+        ],
+        "showNumbers": true
       }
     ]
   }

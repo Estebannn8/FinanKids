@@ -1,6 +1,6 @@
 {
   "leccion_001": {
-    "title": "Pesito Comprador 🛍️🐷",
+    "title": "Comprar con inteligencia",
     "order": 1,
     "baseExp": 200,
     "baseDinero": 100,
@@ -8,100 +8,634 @@
     "activities": [
       {
         "type": "Teaching",
-        "title": "Comprar con cuidado 🛒🤔",
-        "explanation": "¡Hola! Soy Pesito Comprador 🐷💬. Comprar es divertido 🎉, pero debemos hacerlo con cuidado 🧠. ¡Compara precios 💵 y piensa antes de gastar! 💡"
+        "title": "¿Qué es comprar bien?",
+        "explanation": "Comprar bien significa pensar antes de gastar, elegir lo necesario y comparar precios para no desperdiciar dinero."
+      },
+      {
+        "type": "DragPairs",
+        "title": "Pasos para comprar bien",
+        "question": "Ordena los pasos correctos al comprar:",
+        "orderedPairs": [
+          { "item": "Pensar si lo necesitas", "correctPosition": 1 },
+          { "item": "Comparar precios", "correctPosition": 2 },
+          { "item": "Comprar con decisión", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Antes de comprar es importante ______ si realmente lo necesitas.",
+        "options": ["pensar", "correr", "guardar", "jugar"],
+        "correctAnswer": "pensar"
       },
       {
         "type": "MultipleChoice",
-        "title": "¿Qué hacer antes de comprar? 🧐✅",
-        "question": "¿Qué debes hacer antes de comprar algo? 💭",
-        "options": [
-          "Pensar si lo necesitas",
-          "Gastar todo",
-          "No mirar el precio",
-          "Comprar sin pensar"
+        "title": "Buena decisión",
+        "question": "¿Cuál es una buena acción antes de comprar?",
+        "options": ["Comparar precios", "Comprar sin ver", "Gastarlo todo", "Ignorar el precio"],
+        "correctAnswer": "Comparar precios"
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona conceptos",
+        "question": "Une cada palabra con su significado:",
+        "matchingPairs": [
+          { "leftItem": "Necesidad", "rightItem": "Algo importante que debes tener" },
+          { "leftItem": "Deseo", "rightItem": "Algo que quieres pero no necesitas" },
+          { "leftItem": "Precio", "rightItem": "Valor en dinero de un producto" }
         ],
-        "correctAnswer": "Pensar si lo necesitas"
+        "shuffledRightItems": [
+          "Valor en dinero de un producto",
+          "Algo importante que debes tener",
+          "Algo que quieres pero no necesitas"
+        ]
       },
       {
         "type": "SentenceBuilder",
-        "title": "Arma la frase 🧩📝",
-        "question": "Ordena las palabras sobre comprar: 💬🛒",
-        "sentenceParts": ["precios", "Comparar", "importante", "es"],
-        "correctOrder": ["Comparar", "precios", "es", "importante"]
+        "title": "Ordena la frase",
+        "question": "Organiza las palabras para formar la frase correcta:",
+        "sentenceParts": ["antes", "dinero", "gastar", "Piensa", "de"],
+        "correctOrder": ["Piensa", "antes", "de", "gastar", "dinero"]
       }
     ]
   },
   "leccion_002": {
-    "title": "Ofertas y precios 🏷️💲",
+    "title": "Ofertas y descuentos",
     "order": 2,
-    "baseExp": 250,
-    "baseDinero": 150,
-    "lives": 5,
-    "activities": [
-      {
-        "type": "Teaching",
-        "title": "Pesito te enseña 📚🐷",
-        "explanation": "A veces hay ofertas 🏷️ que nos permiten ahorrar 💰. Pero cuidado ⚠️, no siempre son necesarias. ¡Aprende a distinguir! 🧐"
-      },
-      {
-        "type": "Matching",
-        "title": "Une los conceptos 🔄🧠",
-        "question": "Empareja cada término con su significado: 🧩",
-        "matchingPairs": [
-          { "leftItem": "Oferta 🏷️", "rightItem": "Precio más bajo 💸" },
-          { "leftItem": "Necesidad ✅", "rightItem": "Algo importante 📌" },
-          { "leftItem": "Deseo 💭", "rightItem": "Algo que quieres 🤩" }
-        ],
-        "shuffledRightItems": [
-          "Precio más bajo 💸",
-          "Algo importante 📌",
-          "Algo que quieres 🤩"
-        ]
-      },
-      {
-        "type": "FillBlank",
-        "title": "Completa la frase ✍️📘",
-        "question": "Una ______ es cuando algo cuesta menos. 📉",
-        "options": ["oferta", "pelota", "casa", "fruta"],
-        "correctAnswer": "oferta"
-      }
-    ]
-  },
-  "leccion_003": {
-    "title": "Lista de compras 📝🛒",
-    "order": 3,
-    "baseExp": 180,
+    "baseExp": 220,
     "baseDinero": 120,
     "lives": 5,
     "activities": [
       {
         "type": "Teaching",
-        "title": "Pesito y su lista 🐷📝",
-        "explanation": "Hacer una lista de compras 🛒 ayuda a no gastar en cosas innecesarias 🚫. ¡Anota lo que necesitas ✅ y síguelo! 📋"
+        "title": "¿Qué es una oferta?",
+        "explanation": "Una oferta es cuando un producto tiene un precio más bajo por un tiempo limitado. Aunque sea más barato, debes pensar si realmente lo necesitas."
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Una oferta es cuando algo cuesta ______ que antes.",
+        "options": ["menos", "igual", "más", "todo"],
+        "correctAnswer": "menos"
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona conceptos",
+        "question": "Une cada palabra con su significado:",
+        "matchingPairs": [
+          { "leftItem": "Descuento", "rightItem": "Reducción del precio original" },
+          { "leftItem": "Oferta", "rightItem": "Producto temporalmente más barato" },
+          { "leftItem": "Precio final", "rightItem": "Cantidad que se paga al comprar" }
+        ],
+        "shuffledRightItems": [
+          "Reducción del precio original",
+          "Producto temporalmente más barato",
+          "Cantidad que se paga al comprar"
+        ]
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la idea",
+        "question": "Ordena las palabras para formar una frase:",
+        "sentenceParts": ["comparar", "Siempre", "es", "mejor", "precios"],
+        "correctOrder": ["Siempre", "es", "mejor", "comparar", "precios"]
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Buena decisión",
+        "question": "¿Qué debes hacer si ves una oferta?",
+        "options": [
+          "Pensar si lo necesitas",
+          "Comprar todo",
+          "Ignorar el precio",
+          "Gastar sin pensar"
+        ],
+        "correctAnswer": "Pensar si lo necesitas"
       },
       {
         "type": "DragPairs",
-        "title": "Ordena los pasos 📋🧠",
-        "question": "Pon en orden cómo hacer una compra inteligente: 🧠🛍️",
+        "title": "Orden correcto",
+        "question": "Ordena estas acciones al ver una oferta:",
         "orderedPairs": [
-          { "item": "Hacer una lista 📝", "correctPosition": 1 },
-          { "item": "Comparar precios 💰", "correctPosition": 2 },
-          { "item": "Comprar solo lo necesario ✅", "correctPosition": 3 }
+          { "item": "Ver el precio", "correctPosition": 1 },
+          { "item": "Decidir comprar o no", "correctPosition": 3 },
+          { "item": "Pensar si lo necesitas", "correctPosition": 2 }
+        ],
+        "showNumbers": true
+      }
+    ]
+  },
+  "leccion_003": {
+    "title": "Lista de compras",
+    "order": 3,
+    "baseExp": 230,
+    "baseDinero": 130,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Por qué hacer una lista?",
+        "explanation": "Hacer una lista de compras ayuda a recordar lo necesario y evitar gastar en cosas que no hacen falta."
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden de la lista",
+        "question": "Ordena los pasos para hacer una lista de compras útil:",
+        "orderedPairs": [
+          { "item": "Escribirlo en una lista", "correctPosition": 2 },
+          { "item": "Pensar qué necesitas", "correctPosition": 1 },
+          { "item": "Comprar solo lo anotado", "correctPosition": 3 }
         ],
         "showNumbers": true
       },
       {
         "type": "MultipleChoice",
-        "title": "¿Qué lleva una lista? 🛒✅",
-        "question": "¿Qué debe incluir una lista de compras? 💭",
+        "title": "Buena práctica",
+        "question": "¿Para qué sirve una lista de compras?",
         "options": [
-          "Solo lo necesario",
-          "Todo lo que ves",
-          "Cosas caras",
-          "Nada"
+          "Para no olvidar lo necesario",
+          "Para comprar todo lo que se ve",
+          "Para gastar más dinero",
+          "Para no comparar precios"
         ],
-        "correctAnswer": "Solo lo necesario"
+        "correctAnswer": "Para no olvidar lo necesario"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase",
+        "question": "Ordena las palabras:",
+        "sentenceParts": ["lista", "una", "compras", "de", "Hacer"],
+        "correctOrder": ["Hacer", "una", "lista", "de", "compras"]
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa correctamente",
+        "question": "La lista de compras te ayuda a no gastar en cosas ______.",
+        "options": ["innecesarias", "gratis", "rotas", "usadas"],
+        "correctAnswer": "innecesarias"
+      },
+      {
+        "type": "Matching",
+        "title": "Asocia ideas",
+        "question": "Une cada concepto con su utilidad:",
+        "matchingPairs": [
+          { "leftItem": "Lista de compras", "rightItem": "Evitar compras innecesarias" },
+          { "leftItem": "Presupuesto", "rightItem": "Límite de dinero para gastar" },
+          { "leftItem": "Comparar", "rightItem": "Elegir mejor precio o calidad" }
+        ],
+        "shuffledRightItems": [
+          "Límite de dinero para gastar",
+          "Evitar compras innecesarias",
+          "Elegir mejor precio o calidad"
+        ]
+      }
+    ]
+  },
+  "leccion_004": {
+    "title": "Necesidades y deseos",
+    "order": 4,
+    "baseExp": 240,
+    "baseDinero": 140,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Diferenciar necesidades de deseos",
+        "explanation": "Una necesidad es algo que realmente debes tener como comida o ropa. Un deseo es algo que quieres, pero puedes vivir sin ello."
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "La comida es una ______ porque es necesaria para vivir.",
+        "options": ["necesidad", "deseo", "decoración", "opción"],
+        "correctAnswer": "necesidad"
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Qué es un deseo?",
+        "question": "¿Cuál de los siguientes es un deseo?",
+        "options": [
+          "Un juguete nuevo",
+          "Agua para beber",
+          "Comida diaria",
+          "Ropa para el frío"
+        ],
+        "correctAnswer": "Un juguete nuevo"
+      },
+      {
+        "type": "Matching",
+        "title": "Empareja correctamente",
+        "question": "Relaciona cada ejemplo:",
+        "matchingPairs": [
+          { "leftItem": "Agua", "rightItem": "Necesidad" },
+          { "leftItem": "Chocolate", "rightItem": "Deseo" },
+          { "leftItem": "Medicinas", "rightItem": "Necesidad" }
+        ],
+        "shuffledRightItems": ["Necesidad", "Deseo", "Necesidad"]
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la idea",
+        "question": "Ordena las palabras para formar la frase:",
+        "sentenceParts": ["diferenciar", "Aprender", "deseos", "necesidades", "y", "a"],
+        "correctOrder": ["Aprender", "a", "diferenciar", "necesidades", "y", "deseos"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Clasifica correctamente",
+        "question": "Ordena de lo más necesario a lo menos necesario:",
+        "orderedPairs": [
+          { "item": "Comida", "correctPosition": 1 },
+          { "item": "Videojuegos", "correctPosition": 3 },
+          { "item": "Ropa básica", "correctPosition": 2 }
+        ],
+        "showNumbers": true
+      }
+    ]
+  },
+  "leccion_005": {
+    "title": "Comparar precios",
+    "order": 5,
+    "baseExp": 260,
+    "baseDinero": 150,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Por qué comparar precios?",
+        "explanation": "Comparar precios sirve para elegir la mejor opción antes de comprar. A veces el mismo producto cuesta diferente en otros lugares."
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Buena elección",
+        "question": "¿Qué es comparar precios?",
+        "options": [
+          "Ver cuánto cuesta en diferentes lugares",
+          "Comprar lo primero que ves",
+          "Gastar sin pensar",
+          "No mirar etiquetas"
+        ],
+        "correctAnswer": "Ver cuánto cuesta en diferentes lugares"
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden correcto",
+        "question": "Ordena los pasos para comparar precios:",
+        "orderedPairs": [
+          { "item": "Ver el producto", "correctPosition": 1 },
+          { "item": "Buscar su precio en distintos lugares", "correctPosition": 2 },
+          { "item": "Elegir la mejor opción", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa correctamente",
+        "question": "Comparar precios ayuda a gastar el dinero de manera ______.",
+        "options": ["inteligente", "aleatoria", "rápida", "innecesaria"],
+        "correctAnswer": "inteligente"
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona conceptos",
+        "question": "Empareja los términos con su significado:",
+        "matchingPairs": [
+          { "leftItem": "Precio bajo", "rightItem": "Cuesta menos dinero" },
+          { "leftItem": "Precio alto", "rightItem": "Cuesta más dinero" },
+          { "leftItem": "Comparar", "rightItem": "Revisar opciones antes de comprar" }
+        ],
+        "shuffledRightItems": [
+          "Cuesta menos dinero",
+          "Cuesta más dinero",
+          "Revisar opciones antes de comprar"
+        ]
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase",
+        "question": "Organiza las palabras:",
+        "sentenceParts": ["precios", "Comparar", "ayuda", "mejores", "a", "decisiones", "tus"],
+        "correctOrder": ["Comparar", "precios", "ayuda", "a", "mejorar", "tus", "decisiones"]
+      }
+    ]
+  },
+  "leccion_006": {
+    "title": "Elegir calidad y no solo precio",
+    "order": 6,
+    "baseExp": 260,
+    "baseDinero": 170,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Calidad antes que cantidad",
+        "explanation": "A veces lo más barato no es lo mejor. Comprar productos de buena calidad puede durar más tiempo y ser una mejor inversión."
+      },
+      {
+        "type": "DragPairs",
+        "title": "Ordena las ideas",
+        "question": "Pon en orden cómo elegir un producto de calidad:",
+        "orderedPairs": [
+          { "item": "Comparar diferentes productos", "correctPosition": 1 },
+          { "item": "Elegir el que dure más tiempo", "correctPosition": 3 },
+          { "item": "Revisar si es de buena calidad", "correctPosition": 2 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la idea",
+        "question": "Un producto de calidad dura más y evita gastar más ______.",
+        "options": ["dinero", "juguetes", "papel", "colores"],
+        "correctAnswer": "dinero"
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Qué es mejor?",
+        "question": "¿Qué es mejor al comprar?",
+        "options": [
+          "Comprar algo barato que se dañe rápido",
+          "Comprar algo de buena calidad aunque cueste más",
+          "Comprar lo primero que veas",
+          "Comprar sin revisar"
+        ],
+        "correctAnswer": "Comprar algo de buena calidad aunque cueste más"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Forma la frase",
+        "question": "Ordena las palabras:",
+        "sentenceParts": ["calidad", "elegir", "importante", "es", "la"],
+        "correctOrder": ["Elegir", "la", "calidad", "es", "importante"]
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona ejemplos",
+        "question": "Une calidad con ejemplo:",
+        "matchingPairs": [
+          { "leftItem": "Buena calidad", "rightItem": "Dura mucho tiempo" },
+          { "leftItem": "Mala calidad", "rightItem": "Se daña rápido" }
+        ],
+        "shuffledRightItems": ["Se daña rápido", "Dura mucho tiempo"]
+      }
+    ]
+  },
+
+  "leccion_007": {
+    "title": "Publicidad y decisiones",
+    "order": 7,
+    "baseExp": 270,
+    "baseDinero": 180,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Qué es la publicidad?",
+        "explanation": "La publicidad busca que compres productos usando imágenes, frases o descuentos. Es importante pensar si realmente lo necesitas."
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "La publicidad quiere que ______ un producto.",
+        "options": ["compres", "duermas", "pintes", "olvides"],
+        "correctAnswer": "compres"
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona conceptos",
+        "question": "Une cada tipo de publicidad con su ejemplo:",
+        "matchingPairs": [
+          { "leftItem": "Anuncio en internet", "rightItem": "Video antes de un juego" },
+          { "leftItem": "Cartel en tienda", "rightItem": "Póster con descuento" },
+          { "leftItem": "Comercial de TV", "rightItem": "Video entre programas" }
+        ],
+        "shuffledRightItems": ["Póster con descuento", "Video antes de un juego", "Video entre programas"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden correcto",
+        "question": "Ordena cómo analizar una publicidad:",
+        "orderedPairs": [
+          { "item": "Ver qué ofrece", "correctPosition": 1 },
+          { "item": "Pensar si lo necesito", "correctPosition": 2 },
+          { "item": "Decidir si comprar", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Construye la frase",
+        "question": "Ordena estas palabras:",
+        "sentenceParts": ["publicidad", "si", "necesitas", "Piensa", "la"],
+        "correctOrder": ["Piensa", "si", "necesitas", "la", "publicidad"]
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Pregunta rápida",
+        "question": "¿Qué debes hacer al ver una publicidad?",
+        "options": [
+          "Comprar sin pensar",
+          "Pensar si lo necesitas",
+          "Ignorarla siempre",
+          "Gastar todo tu dinero"
+        ],
+        "correctAnswer": "Pensar si lo necesitas"
+      }
+    ]
+  },
+
+  "leccion_008": {
+    "title": "Compras impulsivas",
+    "order": 8,
+    "baseExp": 280,
+    "baseDinero": 190,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Qué es comprar por impulso?",
+        "explanation": "Comprar por impulso es comprar algo sin pensarlo bien. Esto puede hacer que gastes dinero en cosas que no necesitas."
+      },
+      {
+        "type": "DragPairs",
+        "title": "Ordena los pasos",
+        "question": "¿Cómo evitar una compra impulsiva?",
+        "orderedPairs": [
+          { "item": "Pensar si lo necesitas", "correctPosition": 2 },
+          { "item": "Ver algo que te gusta", "correctPosition": 1 },
+          { "item": "Decidir con calma", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la idea",
+        "question": "Comprar sin pensar puede hacerte ______ dinero.",
+        "options": ["perder", "correr", "dormir", "saltar"],
+        "correctAnswer": "perder"
+      },
+      {
+        "type": "Matching",
+        "title": "Empareja",
+        "question": "Relaciona comportamiento con ejemplo:",
+        "matchingPairs": [
+          { "leftItem": "Compra impulsiva", "rightItem": "Lo vi y lo compré sin pensar" },
+          { "leftItem": "Compra planificada", "rightItem": "Lo pensé y estaba en mi lista" }
+        ],
+        "shuffledRightItems": ["Lo vi y lo compré sin pensar", "Lo pensé y estaba en mi lista"]
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Elige la respuesta",
+        "question": "¿Qué debes hacer si quieres algo que no estaba planeado?",
+        "options": [
+          "Comprar rápido",
+          "Pensarlo primero",
+          "Ignorar todo",
+          "Gastar todo"
+        ],
+        "correctAnswer": "Pensarlo primero"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase",
+        "question": "Ordena estas palabras:",
+        "sentenceParts": ["antes", "pensar", "comprar", "de", "Es", "importante"],
+        "correctOrder": ["Es", "importante", "pensar", "antes", "de", "comprar"]
+      }
+    ]
+  },
+  "leccion_009": {
+    "title": "Marcas y decisiones inteligentes",
+    "order": 9,
+    "baseExp": 300,
+    "baseDinero": 200,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Importa la marca?",
+        "explanation": "Al comprar, algunas personas eligen productos por la marca. Sin embargo, no siempre lo más conocido es lo mejor. Lo importante es comparar calidad, precio y utilidad."
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona ideas",
+        "question": "Une cada concepto con su significado:",
+        "matchingPairs": [
+          { "leftItem": "Marca conocida", "rightItem": "Muchos la reconocen" },
+          { "leftItem": "Marca menos conocida", "rightItem": "Puede ser más barata" },
+          { "leftItem": "Buena elección", "rightItem": "Compara precio y calidad" }
+        ],
+        "shuffledRightItems": [
+          "Muchos la reconocen",
+          "Puede ser más barata",
+          "Compara precio y calidad"
+        ]
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "No siempre la marca más famosa es la ______ opción.",
+        "options": ["mejor", "cara", "rápida", "ruidosa"],
+        "correctAnswer": "mejor"
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden de decisión",
+        "question": "Ordena los pasos para elegir entre marcas:",
+        "orderedPairs": [
+          { "item": "Comparar precios", "correctPosition": 1 },
+          { "item": "Elegir la mejor opción", "correctPosition": 3 },
+          { "item": "Revisar calidad", "correctPosition": 2 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Pregunta rápida",
+        "question": "¿Qué es lo más importante al comprar un producto?",
+        "options": [
+          "Que sea de la marca más famosa",
+          "Que tenga buen precio y calidad",
+          "Que todos lo compren",
+          "Que sea el más caro"
+        ],
+        "correctAnswer": "Que tenga buen precio y calidad"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Construye la frase",
+        "question": "Ordena las palabras:",
+        "sentenceParts": ["comparar", "importante", "Es", "marcas"],
+        "correctOrder": ["Es", "importante", "comparar", "marcas"]
+      }
+    ]
+  },
+
+  "leccion_010": {
+    "title": "Ser un consumidor responsable",
+    "order": 10,
+    "baseExp": 320,
+    "baseDinero": 220,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "Comprar con responsabilidad",
+        "explanation": "Ser un buen consumidor significa pensar antes de comprar, respetar el medio ambiente y no desperdiciar recursos."
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase",
+        "question": "Forma la frase correcta:",
+        "sentenceParts": ["responsable", "Ser", "consumidor", "un"],
+        "correctOrder": ["Se", "un", "consumidor", "responsable"]
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona ideas",
+        "question": "Une cada acción con su ejemplo:",
+        "matchingPairs": [
+          { "leftItem": "Consumir responsablemente", "rightItem": "Comprar solo lo necesario" },
+          { "leftItem": "Cuidar el ambiente", "rightItem": "Usar menos plástico" },
+          { "leftItem": "Desperdiciar", "rightItem": "Comprar y no usar" }
+        ],
+        "shuffledRightItems": [
+          "Comprar y no usar",
+          "Comprar solo lo necesario",
+          "Usar menos plástico"
+        ]
+      },
+      {
+        "type": "DragPairs",
+        "title": "¿Cómo ser responsable?",
+        "question": "Ordena las acciones correctas:",
+        "orderedPairs": [
+          { "item": "Elegir productos que duren", "correctPosition": 2 },
+          { "item": "Pensar antes de comprar", "correctPosition": 1 },
+          { "item": "No desperdiciar lo que compras", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la idea",
+        "question": "Ser responsable es cuidar tu dinero y también el ______.",
+        "options": ["planeta", "cuaderno", "juguete", "color"],
+        "correctAnswer": "planeta"
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Elige la correcta",
+        "question": "¿Qué hace un consumidor responsable?",
+        "options": [
+          "Compra sin pensar",
+          "Cuida su dinero y el ambiente",
+          "Compra lo más caro",
+          "Gasta todo lo que tiene"
+        ],
+        "correctAnswer": "Cuida su dinero y el ambiente"
       }
     ]
   }

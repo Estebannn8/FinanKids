@@ -1,6 +1,6 @@
 {
   "leccion_001": {
-    "title": "Pesito Ahorrador 🐷💰",
+    "title": "¿Qué es ahorrar?",
     "order": 1,
     "baseExp": 200,
     "baseDinero": 100,
@@ -8,86 +8,565 @@
     "activities": [
       {
         "type": "Teaching",
-        "title": "¿Qué es ahorrar? 🤔💵",
-        "explanation": "¡Hola! Soy Pesito Ahorrador 🐷💬. Ahorrar es guardar dinero poco a poco 💰 para usarlo después en algo importante 🎯. ¡Es como llenar una alcancía mágica! ✨🏦"
-      },
-      {
-        "type": "MultipleChoice",
-        "title": "¿Para qué ahorramos? 🎯💸",
-        "question": "¿Cuál es una buena razón para ahorrar? 🧠",
-        "options": ["Para comprar algo importante", "Para tirar el dinero", "Para perderlo", "Para regalarlo todo"],
-        "correctAnswer": "Para comprar algo importante"
-      },
-      {
-        "type": "SentenceBuilder",
-        "title": "Construye la frase 🧩📝",
-        "question": "Ordena las palabras sobre ahorrar: 💬💡",
-        "sentenceParts": ["el", "Ahorrar", "para", "es", "futuro"],
-        "correctOrder": ["Ahorrar", "es", "para", "el", "futuro"]
-      }
-    ]
-  },
-  "leccion_002": {
-    "title": "La alcancía mágica 🏦✨",
-    "order": 2,
-    "baseExp": 250,
-    "baseDinero": 150,
-    "lives": 5,
-    "activities": [
-      {
-        "type": "Teaching",
-        "title": "Pesito y su alcancía 🐷🔐",
-        "explanation": "Una alcancía es un lugar seguro para guardar tu dinero 🪙. Puede ser de cerámica, plástico o incluso una caja 📦. ¡Lo importante es no sacar el dinero sin pensar! 🤯"
-      },
-      {
-        "type": "Matching",
-        "title": "Une los conceptos 🔄🧠",
-        "question": "Empareja cada idea con su significado: 🧩",
-        "matchingPairs": [
-          { "leftItem": "Alcancía 🏦", "rightItem": "Lugar para guardar dinero 💰" },
-          { "leftItem": "Ahorrar 💵", "rightItem": "Guardar para después 🕒" },
-          { "leftItem": "Meta 🎯", "rightItem": "Objetivo a alcanzar 🏁" }
-        ],
-        "shuffledRightItems": ["Lugar para guardar dinero 💰", "Guardar para después 🕒", "Objetivo a alcanzar 🏁"]
+        "title": "Introducción al ahorro",
+        "explanation": "Ahorrar significa guardar una parte del dinero que recibimos para usarlo después en algo importante. Es una forma de estar preparados y no gastar todo de inmediato."
       },
       {
         "type": "FillBlank",
-        "title": "Completa la frase ✍️📘",
-        "question": "Una ______ guarda el dinero seguro. 🛡️",
-        "options": ["pelota", "alcancía", "galleta", "puerta"],
-        "correctAnswer": "alcancía"
-      }
-    ]
-  },
-  "leccion_003": {
-    "title": "Metas de ahorro 🎯📈",
-    "order": 3,
-    "baseExp": 180,
-    "baseDinero": 120,
-    "lives": 5,
-    "activities": [
+        "title": "Completa la frase",
+        "question": "Ahorrar es guardar dinero para el ______.",
+        "options": ["presente", "futuro", "juego", "azar"],
+        "correctAnswer": "futuro"
+      },
       {
-        "type": "Teaching",
-        "title": "Pesito te guía 🐷🗺️",
-        "explanation": "Es bueno tener metas de ahorro 🎯, como comprar un juguete 🧸 o un libro 📚. Así sabes cuánto necesitas guardar 💰 y no gastas en otras cosas 🚫."
+        "type": "SentenceBuilder",
+        "title": "Ordena las palabras",
+        "question": "Ordena las palabras para formar una idea sobre ahorrar:",
+        "sentenceParts": ["dinero", "guardar", "es", "Ahorrar"],
+        "correctOrder": ["Ahorrar", "es", "guardar", "dinero"]
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona los conceptos",
+        "question": "Une cada concepto con su significado:",
+        "matchingPairs": [
+          { "leftItem": "Ahorrar", "rightItem": "Guardar dinero" },
+          { "leftItem": "Gastar", "rightItem": "Usar dinero" },
+          { "leftItem": "Futuro", "rightItem": "Tiempo después" }
+        ],
+        "shuffledRightItems": ["Guardar dinero", "Usar dinero", "Tiempo después"]
       },
       {
         "type": "DragPairs",
-        "title": "Pasos para ahorrar 📋💡",
-        "question": "Ordena los pasos para alcanzar una meta: 🧠🪄",
+        "title": "Pasos básicos",
+        "question": "Ordena los pasos para ahorrar:",
         "orderedPairs": [
-          { "item": "Elegir una meta 🎯", "correctPosition": 1 },
-          { "item": "Guardar dinero 💵", "correctPosition": 2 },
-          { "item": "Comprar lo deseado 🛍️", "correctPosition": 3 }
+          { "item": "Guardar una parte", "correctPosition": 2 },
+          { "item": "No gastarlo todo", "correctPosition": 3 },
+          { "item": "Recibir dinero", "correctPosition": 1 }
         ],
         "showNumbers": true
       },
       {
         "type": "MultipleChoice",
-        "title": "¿Cuál es una buena meta? 🤔✅",
-        "question": "¿Qué es una buena meta de ahorro? 💭💰",
-        "options": ["Comprar un juguete", "Tirar el dinero", "Gastar todo", "No ahorrar"],
+        "title": "Pregunta de repaso",
+        "question": "¿Cuál es una razón para ahorrar?",
+        "options": ["Comprar algo importante", "Gastar todo en el momento", "Perder el dinero", "No pensar el gasto"],
+        "correctAnswer": "Comprar algo importante"
+      }
+    ]
+  },
+  "leccion_002": {
+    "title": "La alcancía y lugares para ahorrar",
+    "order": 2,
+    "baseExp": 220,
+    "baseDinero": 110,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Dónde guardamos el dinero?",
+        "explanation": "Una alcancía, caja segura o cuenta de ahorro son lugares donde se puede guardar dinero para evitar gastarlo sin pensar."
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Una ______ es un lugar seguro para guardar dinero.",
+        "options": ["alcancía", "pelota", "televisor", "cuaderno"],
+        "correctAnswer": "alcancía"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la idea",
+        "question": "Ordena las palabras:",
+        "sentenceParts": ["guardar", "dinero", "Una", "sirve", "alcancía", "para"],
+        "correctOrder": ["Una", "alcancía", "sirve", "para", "guardar", "dinero"]
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona los conceptos",
+        "question": "Une cada concepto con su función:",
+        "matchingPairs": [
+          { "leftItem": "Alcancía", "rightItem": "Guardar dinero en casa" },
+          { "leftItem": "Banco", "rightItem": "Guardar dinero de manera segura" },
+          { "leftItem": "Gasto", "rightItem": "Usar el dinero" }
+        ],
+        "shuffledRightItems": ["Guardar dinero en casa", "Usar el dinero", "Guardar dinero de manera segura"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden de uso",
+        "question": "Ordena las acciones al usar una alcancía:",
+        "orderedPairs": [
+          { "item": "Decidir guardar dinero", "correctPosition": 1 },
+          { "item": "No sacarlo sin necesidad", "correctPosition": 3 },
+          { "item": "Ponerlo en la alcancía", "correctPosition": 2 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "¿Qué es correcto?",
+        "question": "¿Por qué es útil una alcancía?",
+        "options": ["Ayuda a no gastar el dinero de inmediato", "Sirve para jugar", "Se usa para cocinar", "Se rompe para gastar todo"],
+        "correctAnswer": "Ayuda a no gastar el dinero de inmediato"
+      }
+    ]
+  },
+  "leccion_003": {
+    "title": "Metas de ahorro",
+    "order": 3,
+    "baseExp": 230,
+    "baseDinero": 120,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Qué es una meta de ahorro?",
+        "explanation": "Una meta de ahorro es un objetivo para el cual guardamos dinero, como comprar un libro, un juguete o ayudar en casa. Las metas nos ayudan a saber cuánto ahorrar."
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Una meta es un ______ que queremos alcanzar.",
+        "options": ["problema", "objetivo", "gasto", "juego"],
+        "correctAnswer": "objetivo"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Forma la frase",
+        "question": "Ordena las palabras:",
+        "sentenceParts": ["tener", "bueno", "es", "Una", "meta"],
+        "correctOrder": ["Una", "meta", "es", "bueno", "tener"]
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona metas",
+        "question": "Une cada meta con su ejemplo:",
+        "matchingPairs": [
+          { "leftItem": "Meta a corto plazo", "rightItem": "Ahorrar para un cuaderno" },
+          { "leftItem": "Meta a mediano plazo", "rightItem": "Ahorrar para una bicicleta" },
+          { "leftItem": "Meta a largo plazo", "rightItem": "Ahorrar para estudios futuros" }
+        ],
+        "shuffledRightItems": ["Ahorrar para estudios futuros", "Ahorrar para un cuaderno", "Ahorrar para una bicicleta"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Pasos para lograr una meta",
+        "question": "Ordena los pasos para alcanzar una meta de ahorro:",
+        "orderedPairs": [
+          { "item": "Elegir la meta", "correctPosition": 1 },
+          { "item": "Calcular cuánto se necesita ahorrar", "correctPosition": 2 },
+          { "item": "Guardar dinero poco a poco", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Pregunta final",
+        "question": "¿Cuál es un buen ejemplo de meta de ahorro?",
+        "options": ["Comprar un juguete", "Gastarlo hoy todo", "No pensar en el dinero", "No guardar nada"],
         "correctAnswer": "Comprar un juguete"
+      }
+    ]
+  },
+"leccion_004": {
+  "title": "Diferencia entre necesidades y deseos",
+  "order": 4,
+  "baseExp": 240,
+  "baseDinero": 130,
+  "lives": 5,
+  "activities": [
+    {
+      "type": "Teaching",
+      "title": "¿Qué necesitamos y qué solo queremos?",
+      "explanation": "Las necesidades son cosas importantes para vivir, como comida, ropa o un lugar donde dormir. Los deseos son cosas que nos gustaría tener, pero no son indispensables."
+    },
+    {
+      "type": "FillBlank",
+      "title": "Completa la frase",
+      "question": "La comida es una ______ porque es necesaria para vivir.",
+      "options": ["necesidad", "deseo", "decoración", "opción"],
+      "correctAnswer": "necesidad"
+    },
+    {
+      "type": "SentenceBuilder",
+      "title": "Ordena la idea",
+      "question": "Ordena las palabras:",
+      "sentenceParts": ["necesidad", "es", "El", "abrigo", "una"],
+      "correctOrder": ["El", "abrigo", "es", "una", "necesidad"]
+    },
+    {
+      "type": "Matching",
+      "title": "Clasifica",
+      "question": "Relaciona cada elemento con su categoría:",
+      "matchingPairs": [
+        { "leftItem": "Agua", "rightItem": "Necesidad" },
+        { "leftItem": "Videojuegos", "rightItem": "Deseo" },
+        { "leftItem": "Ropa", "rightItem": "Necesidad" }
+      ],
+      "shuffledRightItems": ["Deseo", "Necesidad", "Necesidad"]
+    },
+    {
+      "type": "DragPairs",
+      "title": "Orden para decidir",
+      "question": "Ordena los pasos para decidir si comprar algo:",
+      "orderedPairs": [
+        { "item": "Tomar la decisión de comprar o esperar", "correctPosition": 3 },
+        { "item": "Ver si tengo dinero ahorrado", "correctPosition": 2 },
+        { "item": "Pensar si es una necesidad o deseo", "correctPosition": 1 }
+      ],
+      "showNumbers": true
+    },
+    {
+      "type": "MultipleChoice",
+      "title": "Decisión correcta",
+      "question": "¿Cuál es una necesidad?",
+      "options": ["Comida", "Nuevo videojuego", "Gorra de moda", "Juguete"],
+      "correctAnswer": "Comida"
+    }
+  ]
+},
+"leccion_005": {
+  "title": "Crear un plan de ahorro",
+  "order": 5,
+  "baseExp": 260,
+  "baseDinero": 140,
+  "lives": 5,
+  "activities": [
+    {
+      "type": "Teaching",
+      "title": "¿Cómo hacer un plan de ahorro?",
+      "explanation": "Un plan de ahorro es una guía que nos ayuda a saber cuánto dinero guardar, en cuánto tiempo y para qué lo estamos haciendo."
+    },
+    {
+      "type": "FillBlank",
+      "title": "Completa la frase",
+      "question": "Un plan de ahorro nos ayuda a saber cuánto dinero ______.",
+      "options": ["guardar", "gastar", "perder", "tirar"],
+      "correctAnswer": "guardar"
+    },
+    {
+      "type": "SentenceBuilder",
+      "title": "Ordena la frase",
+      "question": "Ordena las palabras:",
+      "sentenceParts": ["plan", "Un", "ahorro", "de", "es", "útil"],
+      "correctOrder": ["Un", "plan", "de", "ahorro", "es", "útil"]
+    },
+    {
+      "type": "Matching",
+      "title": "Relaciona los pasos",
+      "question": "Une cada paso del plan con su idea:",
+      "matchingPairs": [
+        { "leftItem": "Definir meta", "rightItem": "Saber qué quieres lograr" },
+        { "leftItem": "Ahorrar dinero", "rightItem": "Guardar una parte regularmente" },
+        { "leftItem": "Tiempo", "rightItem": "Cuánto tardarás en conseguirlo" }
+      ],
+      "shuffledRightItems": ["Guardar una parte regularmente", "Cuánto tardarás en conseguirlo", "Saber qué quieres lograr"]
+    },
+    {
+      "type": "DragPairs",
+      "title": "Orden correcto",
+      "question": "Ordena los pasos para un plan de ahorro:",
+      "orderedPairs": [
+        { "item": "Elegir la meta", "correctPosition": 1 },
+        { "item": "Decidir cuánto ahorrar", "correctPosition": 2 },
+        { "item": "Guardar el dinero regularmente", "correctPosition": 3 }
+      ],
+      "showNumbers": true
+    },
+    {
+      "type": "MultipleChoice",
+      "title": "Pregunta final",
+      "question": "¿Qué es lo primero para hacer un plan de ahorro?",
+      "options": ["Elegir una meta", "Comprar algo", "Gastar dinero", "Pedir un préstamo"],
+      "correctAnswer": "Elegir una meta"
+    }
+  ]
+},
+"leccion_006": {
+  "title": "Ahorrar con ingresos pequeños",
+  "order": 6,
+  "baseExp": 270,
+  "baseDinero": 150,
+  "lives": 5,
+  "activities": [
+    {
+      "type": "Teaching",
+      "title": "¿Se puede ahorrar aunque ganemos poco?",
+      "explanation": "Sí es posible ahorrar aunque recibamos poco dinero. Guardar una pequeña parte de forma constante ayuda a formar el hábito del ahorro."
+    },
+    {
+      "type": "FillBlank",
+      "title": "Completa la frase",
+      "question": "Ahorrar aunque sea una ______ cantidad es importante.",
+      "options": ["pequeña", "grande", "vacía", "imposible"],
+      "correctAnswer": "pequeña"
+    },
+    {
+      "type": "SentenceBuilder",
+      "title": "Ordena la idea",
+      "question": "Ordena las palabras:",
+      "sentenceParts": ["poco", "Se", "con", "puede", "ahorrar"],
+      "correctOrder": ["Se", "puede", "ahorrar", "con", "poco"]
+    },
+    {
+      "type": "Matching",
+      "title": "Relaciona ideas",
+      "question": "Une cada idea con su significado:",
+      "matchingPairs": [
+        { "leftItem": "Ahorrar poco", "rightItem": "Guardar una parte pequeña" },
+        { "leftItem": "Constancia", "rightItem": "Hacer algo muchas veces" },
+        { "leftItem": "Hábito", "rightItem": "Costumbre que repetimos" }
+      ],
+      "shuffledRightItems": ["Guardar una parte pequeña", "Hacer algo muchas veces", "Costumbre que repetimos"]
+    },
+    {
+      "type": "DragPairs",
+      "title": "Orden de hábito",
+      "question": "Ordena los pasos para crear el hábito del ahorro:",
+      "orderedPairs": [
+        { "item": "Guardar una cantidad fija", "correctPosition": 1 },
+        { "item": "Repetirlo cada semana o mes", "correctPosition": 2 },
+        { "item": "Evitar gastarlo sin necesidad", "correctPosition": 3 }
+      ],
+      "showNumbers": true
+    },
+    {
+      "type": "MultipleChoice",
+      "title": "Decisión correcta",
+      "question": "¿Qué es mejor cuando recibes poco dinero?",
+      "options": ["Guardar una parte", "Gastarlo todo", "No ahorrar nada", "Esperar a recibir más"],
+      "correctAnswer": "Guardar una parte"
+    }
+  ]
+},
+
+"leccion_007": {
+  "title": "Evitar gastos innecesarios",
+  "order": 7,
+  "baseExp": 280,
+  "baseDinero": 160,
+  "lives": 5,
+  "activities": [
+    {
+      "type": "Teaching",
+      "title": "¿Qué es un gasto innecesario?",
+      "explanation": "Un gasto innecesario es cuando usamos dinero en cosas que no necesitamos y que no nos ayudan a cumplir nuestras metas. Evitarlos nos permite ahorrar más."
+    },
+    {
+      "type": "FillBlank",
+      "title": "Completa la frase",
+      "question": "Un gasto innecesario es usar dinero en algo que no es ______.",
+      "options": ["importante", "nuevo", "invisible", "gratis"],
+      "correctAnswer": "importante"
+    },
+    {
+      "type": "SentenceBuilder",
+      "title": "Ordena las palabras",
+      "question": "Ordena las palabras para formar la frase:",
+      "sentenceParts": ["cuando", "compramos", "no", "necesitamos", "algo", "es", "Gasto", "innecesario", "que"],
+      "correctOrder": ["Gasto", "innecesario", "es", "cuando", "compramos", "algo", "que", "no", "necesitamos"]
+    },
+    {
+      "type": "Matching",
+      "title": "Relaciona ejemplos",
+      "question": "Relaciona cada situación con su tipo:",
+      "matchingPairs": [
+        { "leftItem": "Comprar dulces todos los días", "rightItem": "Gasto innecesario" },
+        { "leftItem": "Ahorrar para un libro", "rightItem": "Gasto necesario" },
+        { "leftItem": "Pagar útiles escolares", "rightItem": "Gasto necesario" }
+      ],
+      "shuffledRightItems": ["Gasto necesario", "Gasto necesario", "Gasto innecesario"]
+    },
+    {
+      "type": "DragPairs",
+      "title": "Orden de decisiones",
+      "question": "Ordena los pasos para evitar gastar sin necesidad:",
+      "orderedPairs": [
+        { "item": "Preguntar si lo necesito", "correctPosition": 1 },
+        { "item": "Pensar si afecta mis ahorros", "correctPosition": 2 },
+        { "item": "Tomar la decisión final", "correctPosition": 3 }
+      ],
+      "showNumbers": true
+    },
+    {
+      "type": "MultipleChoice",
+      "title": "Pregunta final",
+      "question": "¿Qué ayuda a ahorrar más?",
+      "options": ["Evitar gastos innecesarios", "Gastar todo lo que tengo", "No pensar antes de comprar", "Comprar por impulso"],
+      "correctAnswer": "Evitar gastos innecesarios"
+    }
+  ]
+},
+"leccion_008": {
+  "title": "Ahorrar para el futuro",
+  "order": 8,
+  "baseExp": 290,
+  "baseDinero": 170,
+  "lives": 5,
+  "activities": [
+    {
+      "type": "Teaching",
+      "title": "¿Por qué ahorrar para el futuro?",
+      "explanation": "Ahorrar para el futuro significa guardar dinero para necesidades que pueden aparecer más adelante, como estudios, emergencias o proyectos importantes."
+    },
+    {
+      "type": "FillBlank",
+      "title": "Completa la frase",
+      "question": "Ahorrar para el ______ nos ayuda a estar preparados.",
+      "options": ["futuro", "pasado", "desorden", "azar"],
+      "correctAnswer": "futuro"
+    },
+    {
+      "type": "SentenceBuilder",
+      "title": "Ordena la frase",
+      "question": "Ordena las palabras:",
+      "sentenceParts": ["el", "para", "Ahorrar", "futuro", "es", "importante"],
+      "correctOrder": ["Ahorrar", "para", "el", "futuro", "es", "importante"]
+    },
+    {
+      "type": "Matching",
+      "title": "Relaciona ideas",
+      "question": "Relaciona el motivo con su explicación:",
+      "matchingPairs": [
+        { "leftItem": "Emergencias", "rightItem": "Situaciones inesperadas" },
+        { "leftItem": "Estudios", "rightItem": "Invertir en aprender" },
+        { "leftItem": "Metas grandes", "rightItem": "Proyectos que requieren más dinero" }
+      ],
+      "shuffledRightItems": ["Proyectos que requieren más dinero", "Invertir en aprender", "Situaciones inesperadas"]
+    },
+    {
+      "type": "DragPairs",
+      "title": "Pasos para ahorrar a futuro",
+      "question": "Ordena los pasos para ahorrar pensando en el futuro:",
+      "orderedPairs": [
+        { "item": "Pensar en qué puedo necesitar más adelante", "correctPosition": 1 },
+        { "item": "Guardar una parte del dinero regularmente", "correctPosition": 2 },
+        { "item": "No gastar los ahorros sin motivo", "correctPosition": 3 }
+      ],
+      "showNumbers": true
+    },
+    {
+      "type": "MultipleChoice",
+      "title": "Pregunta final",
+      "question": "¿Por qué es importante ahorrar para el futuro?",
+      "options": ["Para estar preparados", "Para gastar sin pensar", "Para no tener metas", "Para no ahorrar nunca"],
+      "correctAnswer": "Para estar preparados"
+    }
+  ]
+},
+"leccion_009": {
+  "title": "Hábito y disciplina al ahorrar",
+  "order": 9,
+  "baseExp": 300,
+  "baseDinero": 180,
+  "lives": 5,
+  "activities": [
+    {
+      "type": "Teaching",
+      "title": "¿Qué es la disciplina al ahorrar?",
+      "explanation": "La disciplina para ahorrar significa ser constantes, no gastar el dinero guardado sin una razón y mantener el hábito aunque sea difícil."
+    },
+    {
+      "type": "FillBlank",
+      "title": "Completa la frase",
+      "question": "La disciplina es mantener un ______ aunque cueste hacerlo.",
+      "options": ["hábito", "juego", "premio", "olvido"],
+      "correctAnswer": "hábito"
+    },
+    {
+      "type": "SentenceBuilder",
+      "title": "Ordena la idea",
+      "question": "Ordena las palabras para formar una frase:",
+      "sentenceParts": ["requiere", "Disciplina", "constancia"],
+      "correctOrder": ["Disciplina", "requiere", "constancia"]
+    },
+    {
+      "type": "Matching",
+      "title": "Relaciona los conceptos",
+      "question": "Une cada idea con su significado:",
+      "matchingPairs": [
+        { "leftItem": "Disciplina", "rightItem": "Hacer lo correcto aunque cueste" },
+        { "leftItem": "Hábito", "rightItem": "Algo que repetimos muchas veces" },
+        { "leftItem": "Tentación", "rightItem": "Ganas de gastar sin pensar" }
+      ],
+      "shuffledRightItems": ["Hacer lo correcto aunque cueste", "Ganas de gastar sin pensar", "Algo que repetimos muchas veces"]
+    },
+    {
+      "type": "DragPairs",
+      "title": "Pasos para ser disciplinado",
+      "question": "Ordena los pasos para mantener la disciplina al ahorrar:",
+      "orderedPairs": [
+        { "item": "Guardar dinero regularmente", "correctPosition": 1 },
+        { "item": "Evitar gastarlo sin razón", "correctPosition": 2 },
+        { "item": "Recordar la meta de ahorro", "correctPosition": 3 }
+      ],
+      "showNumbers": true
+    },
+    {
+      "type": "MultipleChoice",
+      "title": "Pregunta final",
+      "question": "¿Qué ayuda a mantener el hábito de ahorrar?",
+      "options": ["Ser constante", "Gastar sin pensar", "Olvidar la meta", "No planear nada"],
+      "correctAnswer": "Ser constante"
+    }
+  ]
+},
+  "leccion_010": {
+    "title": "Tomar decisiones responsables con el dinero",
+    "order": 10,
+    "baseExp": 320,
+    "baseDinero": 200,
+    "lives": 5,
+    "activities": [
+      {
+        "type": "Teaching",
+        "title": "¿Qué es una decisión responsable?",
+        "explanation": "Tomar decisiones responsables con el dinero significa pensar antes de gastar, comparar opciones y elegir lo que más ayuda a nuestras metas y necesidades."
+      },
+      {
+        "type": "FillBlank",
+        "title": "Completa la frase",
+        "question": "Una decisión responsable se toma después de ______ bien.",
+        "options": ["pensar", "gastar", "olvidar", "esperar"],
+        "correctAnswer": "pensar"
+      },
+      {
+        "type": "SentenceBuilder",
+        "title": "Ordena la frase",
+        "question": "Ordena las palabras:",
+        "sentenceParts": ["pensar", "antes", "Es", "de", "gastar", "importante"],
+        "correctOrder": ["Es", "importante", "pensar", "antes", "de", "gastar"]
+      },
+      {
+        "type": "Matching",
+        "title": "Relaciona decisiones",
+        "question": "Relaciona cada situación con su decisión correcta:",
+        "matchingPairs": [
+          { "leftItem": "Comparar precios", "rightItem": "Elegir la mejor opción" },
+          { "leftItem": "Comprar sin pensar", "rightItem": "Decisión impulsiva" },
+          { "leftItem": "Ahorrar para una meta", "rightItem": "Decisión responsable" }
+        ],
+        "shuffledRightItems": ["Decisión responsable", "Decisión impulsiva", "Elegir la mejor opción"]
+      },
+      {
+        "type": "DragPairs",
+        "title": "Orden para decidir bien",
+        "question": "Ordena los pasos para tomar una decisión responsable:",
+        "orderedPairs": [
+          { "item": "Pensar si es necesario", "correctPosition": 1 },
+          { "item": "Comparar opciones", "correctPosition": 2 },
+          { "item": "Elegir lo mejor para la meta", "correctPosition": 3 }
+        ],
+        "showNumbers": true
+      },
+      {
+        "type": "MultipleChoice",
+        "title": "Pregunta final",
+        "question": "¿Qué es tomar una decisión responsable con el dinero?",
+        "options": ["Pensar antes de gastar", "Gastar sin control", "Comprar todo lo que quiero", "No ahorrar nunca"],
+        "correctAnswer": "Pensar antes de gastar"
       }
     ]
   }
