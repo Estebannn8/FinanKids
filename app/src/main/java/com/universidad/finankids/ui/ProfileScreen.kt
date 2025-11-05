@@ -212,9 +212,9 @@ fun ProfileScreen(
     ): Int {
         val baseName = when (categoria) {
             "Ahorro" -> "ic_insignia_ahorro"
-            "Compra" -> "ic_insignia_compra"
+            "Centro Comercial" -> "ic_insignia_compra"
             "Inversiones" -> "ic_insignia_inversion"
-            "Basica" -> "ic_insignia_basica"
+            "Banco" -> "ic_insignia_basica"
             else -> "ic_insignia_basica"
         }
 
@@ -508,7 +508,7 @@ fun ProfileScreen(
                             listOf(
                                 "Basica",
                                 "Ahorro",
-                                "Compra",
+                                "Centro Comercial",
                                 "Inversiones"
                             ).forEach { categoria ->
 
@@ -659,13 +659,13 @@ fun ProfileScreen(
                             R.drawable.rectangulo_estadistica_amarillo,
                             R.drawable.ic_pesito_original,
                             listOf(R.drawable.ic_estrella_amarillo, R.drawable.ic_precision_amarillo),
-                            "Ahorro"
+                            "Banco"
                         ),
                         CategoryItem(
                             R.drawable.rectangulo_estadistica_morado,
                             R.drawable.ic_pesito_ahorrador,
                             listOf(R.drawable.ic_estrella_morado, R.drawable.ic_precision_morado),
-                            "Centro Comercial"
+                            "Ahorro"
                         ),
                         CategoryItem(
                             R.drawable.rectangulo_estadistica_naranja,
@@ -677,7 +677,7 @@ fun ProfileScreen(
                             R.drawable.rectangulo_estadistica_azul,
                             R.drawable.ic_pesito_comprador,
                             listOf(R.drawable.ic_estrella_azul, R.drawable.ic_precision_azul),
-                            "Banco"
+                            "Centro Comercial"
                         )
                     )
 
