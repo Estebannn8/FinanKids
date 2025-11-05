@@ -128,7 +128,7 @@ fun AchievementDetailDialog(
                     text = when {
                         !unlocked -> "Sigue mejorando…"
                         unlocked && !claimedLocal -> "¡Reclama tu recompensa!"
-                        else -> "Premio reclamado ✅"
+                        else -> "Recompensa reclamada"
                     },
                     fontSize = 13.sp,
                     fontFamily = ItimRegular,
@@ -150,18 +150,44 @@ fun AchievementDetailDialog(
 
             // Botón reclamar (flotante)
             if (unlocked && !claimedLocal) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_boton_comprar),
-                    contentDescription = null,
+                Box(
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .offset(y = 26.dp)
-                        .size(110.dp)
+                        .background(Color.White, RoundedCornerShape(16.dp))
                         .clickable {
-                            claimedLocal = true
+                            claimedLocal = true  // cambia UI inmediatamente
                             onClaim()
                         }
-                )
+                        .padding(horizontal = 20.dp, vertical = 12.dp)
+                        .align(Alignment.Center),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Image(
+                            painter = painterResource(id = R.drawable.multiple_coins),
+                            contentDescription = null,
+                            modifier = Modifier.size(60.dp)
+                        )
+                        Text(
+                            text = "RECLAMAR",
+                            fontSize = 22.sp,
+                            fontFamily = PoppinsBold
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_coin),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "${logroUI.logro.dineroRecompensa}",
+                                fontSize = 19.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
             }
         }
     }
