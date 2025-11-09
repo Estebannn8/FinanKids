@@ -25,6 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -48,6 +50,8 @@ import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.universidad.finankids.R
 import com.universidad.finankids.data.model.UserSettings
+import com.universidad.finankids.data.sound.MusicManager
+import com.universidad.finankids.data.sound.SoundManager
 
 @Composable
 fun Settings(
@@ -57,6 +61,7 @@ fun Settings(
     onLogout: () -> Unit = {},
     userSettings: UserSettings = UserSettings()
 ) {
+    val context = LocalContext.current
 
     var showColorPicker by remember { mutableStateOf(false) }
 
@@ -73,9 +78,22 @@ fun Settings(
 
     val colorPickerController = rememberColorPickerController()
 
-    var musicaOn = userSettings.musicaActiva
-    var sonidoOn = userSettings.sonidoActiva
+    val musicaOn = userSettings.musicaActiva
+    val sonidoOn = userSettings.sonidoActiva
 
+    LaunchedEffect(userSettings.musicaActiva) {
+        MusicManager.enabled = userSettings.musicaActiva
+        if (userSettings.musicaActiva) {
+            // start requiere Context
+            MusicManager.start(context)
+        } else {
+            MusicManager.pause()
+        }
+    }
+
+    LaunchedEffect(userSettings.sonidoActiva) {
+        SoundManager.enabled = userSettings.sonidoActiva
+    }
 
     Box(
         modifier = Modifier
@@ -144,7 +162,6 @@ fun Settings(
                             indication = null
                         ) {
                             musicaClicked = true
-                            musicaOn = !musicaOn
                             onToggleMusica()
                         }
                 )
@@ -186,7 +203,6 @@ fun Settings(
                             indication = null
                         ) {
                             sonidoClicked = true
-                            sonidoOn = !sonidoOn
                             onToggleSonido()
                         }
                 )
@@ -390,8 +406,6 @@ fun GrayScaleRow(
         }
     }
 }
-
-
 
 @Preview
 @Composable

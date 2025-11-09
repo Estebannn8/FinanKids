@@ -9,11 +9,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.universidad.finankids.data.model.JsonUploader
+import com.universidad.finankids.data.sound.MusicManager
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.navigation.AppNavigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Inicializar SoundManager y MusicManager
+        SoundManager.init(this)
+        MusicManager.start(this)
+
         // JsonUploader.cargarYSubirLecciones(this)
         enableEdgeToEdge()
         setContent {
@@ -22,4 +29,17 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+        MusicManager.pause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (MusicManager.enabled) {
+            MusicManager.start(this)
+        }
+    }
+
 }

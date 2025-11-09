@@ -1,16 +1,20 @@
 package com.universidad.finankids.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.universidad.finankids.data.model.UserSettings
+import com.universidad.finankids.data.sound.MusicManager
+import com.universidad.finankids.data.sound.SoundManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class UserSettingsViewModel : ViewModel() {
+class UserSettingsViewModel(application: Application) : AndroidViewModel(application)
+{
     private val firestore = FirebaseFirestore.getInstance()
 
     private val _settings = MutableStateFlow(UserSettings())
@@ -61,6 +65,12 @@ class UserSettingsViewModel : ViewModel() {
                     .update("musicaActiva", newValue).await()
 
                 _settings.value = _settings.value.copy(musicaActiva = newValue)
+                MusicManager.enabled = newValue
+                if (newValue) {
+                    MusicManager.start(getApplication())
+                } else {
+                    MusicManager.pause()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -75,6 +85,8 @@ class UserSettingsViewModel : ViewModel() {
                     .update("sonidoActiva", newValue).await()
 
                 _settings.value = _settings.value.copy(sonidoActiva = newValue)
+
+                SoundManager.enabled = newValue
             } catch (e: Exception) {
                 e.printStackTrace()
             }
