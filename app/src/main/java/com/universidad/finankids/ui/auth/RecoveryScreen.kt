@@ -38,6 +38,8 @@ import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.ui.theme.AppTypography
 import com.universidad.finankids.viewmodel.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.universidad.finankids.data.sound.AppSound
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.ui.components.CustomButton
 import com.universidad.finankids.ui.components.CustomTextField
 import kotlinx.coroutines.delay
@@ -76,6 +78,7 @@ fun RecoveryScreen(navController: NavController) {
                 .size(32.dp)
                 .clickable {
                     authViewModel.clearRecoveryState()
+                    SoundManager.play(AppSound.BUTTON)
                     navController.navigate(
                         AppScreens.AuthScreen.createRoute(startInLogin = true)
                     ) {
@@ -144,7 +147,9 @@ fun RecoveryScreen(navController: NavController) {
 
         CustomTextField(
             value = state.recoveryEmail,
-            onValueChange = { email ->
+            onValueChange = {
+                email ->
+                SoundManager.play(AppSound.KEYBOARD)
                 authViewModel.onEvent(AuthEvent.RecoveryEmailChanged(email))
             },
             placeholder = "Ingrese correo",
@@ -160,6 +165,7 @@ fun RecoveryScreen(navController: NavController) {
                 gradientDark = Color(0xFF431441),
                 baseColor = Color(0xFF53164F),
                 onClick = {
+                    SoundManager.play(AppSound.BUTTON)
                     authViewModel.onEvent(AuthEvent.SendPasswordReset)
                 },
                 enabled = !state.isLoading

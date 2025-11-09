@@ -50,6 +50,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.universidad.finankids.R
+import com.universidad.finankids.data.sound.AppSound
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.events.AchievementTrigger
 import com.universidad.finankids.events.AchievementsEventBus
 import com.universidad.finankids.events.AvatarEvent
@@ -307,6 +309,8 @@ fun ProfileScreen(
                                         .fillMaxSize()
                                         .padding(8.dp),
                                     contentScale = ContentScale.Crop
+
+
                                 )
                             } else {
                                 Image(
@@ -429,6 +433,7 @@ fun ProfileScreen(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = null
                                 ) {
+                                    SoundManager.play(AppSound.BUTTON)
                                     editClicked = true
                                     showEditName = true
                                 }
@@ -455,6 +460,7 @@ fun ProfileScreen(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = null
                                 ) {
+                                    SoundManager.play(AppSound.BUTTON)
                                     settingsClicked = true
                                     showSettings = true
                                 }
@@ -580,6 +586,7 @@ fun ProfileScreen(
                                         interactionSource = remember { MutableInteractionSource() },
                                         indication = null
                                     ) {
+                                        SoundManager.play(AppSound.BUTTON)
                                         if (label == "DIAS DE RACHA") {
                                             boxClicked = true
                                             showStreakCalendar = true
@@ -769,7 +776,8 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         if (showOverlay) {
-            Dialog(onDismissRequest = { showOverlay = false }) {
+            Dialog(onDismissRequest = {
+                showOverlay = false }) {
                 ChangeAvatarOverlay(
                     userViewModel = userViewModel,
                     avataresViewModel = avataresViewModel,
@@ -786,11 +794,13 @@ fun ProfileScreen(
                 EditNameOverlay(
                     text = newName,
                     onValueChange = {
+                        SoundManager.play(AppSound.KEYBOARD)
                         newName = it
                         userViewModel.clearError()
                     },
                     onDismiss = { showEditName = false },
                     onSave = {
+                        SoundManager.play(AppSound.BUTTON)
                         triedToSave = true
                         userViewModel.sendEvent(UserEvent.ChangeNickname(newName))
                     },
@@ -811,12 +821,15 @@ fun ProfileScreen(
             Dialog(onDismissRequest = { showSettings = false }) {
                 Settings(
                     onToggleMusica = {
+                        SoundManager.play(AppSound.BUTTON)
                         userSettingsViewModel.toggleMusica(userState.userData.uid)
                     },
                     onToggleSonido = {
+                        SoundManager.play(AppSound.BUTTON)
                         userSettingsViewModel.toggleSonido(userState.userData.uid)
                     },
                     onChangeFondoPerfil = { colorHex ->
+                        SoundManager.play(AppSound.BUTTON)
                         userSettingsViewModel.updateBackgroundColor(userState.userData.uid, colorHex)
                     },
                     onLogout = {
@@ -836,6 +849,7 @@ fun ProfileScreen(
                     val context = LocalContext.current
 
                     TextButton(onClick = {
+                        SoundManager.play(AppSound.BUTTON)
                         showConfirmLogout = false
                         showSettings = false
 
@@ -850,12 +864,14 @@ fun ProfileScreen(
                             launchSingleTop = true
                         }
                     }) {
+                        SoundManager.play(AppSound.BUTTON)
                         Text("Sí")
                     }
 
                 },
                 dismissButton = {
                     TextButton(onClick = {
+                        SoundManager.play(AppSound.BUTTON)
                         showConfirmLogout = false
                     }) {
                         Text("Cancelar")

@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
 import com.universidad.finankids.R
+import com.universidad.finankids.data.sound.AppSound
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.events.BancoEvent
 import com.universidad.finankids.viewmodel.BancoViewModel
 import com.universidad.finankids.viewmodel.UserViewModel
@@ -222,6 +224,8 @@ fun BankKeyboard(
                                                 indication = null,
                                                 interactionSource = remember { MutableInteractionSource() }
                                             ) {
+                                                SoundManager.play(AppSound.CAJERO)
+
                                                 if (value.isNotEmpty()) {
                                                     scope.launch {
                                                         pressed = true
@@ -236,6 +240,7 @@ fun BankKeyboard(
 
                                                     montoInput += value
                                                     if (montoInput.length > 9) {
+                                                        SoundManager.play(AppSound.ERROR)
                                                         montoInput = montoInput.dropLast(1)
                                                         errorMessage = "Monto máximo excedido"
                                                     }
@@ -272,6 +277,7 @@ fun BankKeyboard(
                                     indication = null,
                                     interactionSource = remember { MutableInteractionSource() }
                                 ) {
+                                    SoundManager.play(AppSound.CAJERO)
                                     montoInput = ""
                                     errorMessage = null
                                     bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
@@ -290,26 +296,31 @@ fun BankKeyboard(
                                     indication = null,
                                     interactionSource = remember { MutableInteractionSource() }
                                 ) {
+                                    SoundManager.play(AppSound.CAJERO)
+
                                     errorMessage = null
                                     bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
 
                                     if (montoInput.isEmpty() || montoInput == "0") {
+                                        SoundManager.play(AppSound.ERROR)
                                         errorMessage = "Ingresa un monto válido"
                                         return@clickable
                                     }
 
                                     val monto = montoInput.toIntOrNull()
                                     if (monto == null || monto <= 0) {
+                                        SoundManager.play(AppSound.ERROR)
                                         errorMessage = "Monto inválido"
                                         return@clickable
                                     }
 
                                     val saldoBanco = state.banco?.saldo ?: 0
                                     if (monto > saldoBanco) {
+                                        SoundManager.play(AppSound.ERROR)
                                         errorMessage = "Saldo insuficiente en el banco"
                                         return@clickable
                                     }
-
+                                    SoundManager.play(AppSound.TRANSACCION)
                                     bancoViewModel.onEvent(BancoEvent.Retirar(monto))
                                 }
                         )
@@ -326,26 +337,32 @@ fun BankKeyboard(
                                     indication = null,
                                     interactionSource = remember { MutableInteractionSource() }
                                 ) {
+
+                                    SoundManager.play(AppSound.CAJERO)
+
                                     errorMessage = null
                                     bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)
 
                                     if (montoInput.isEmpty() || montoInput == "0") {
+                                        SoundManager.play(AppSound.ERROR)
                                         errorMessage = "Ingresa un monto válido"
                                         return@clickable
                                     }
 
                                     val monto = montoInput.toIntOrNull()
                                     if (monto == null || monto <= 0) {
+                                        SoundManager.play(AppSound.ERROR)
                                         errorMessage = "Monto inválido"
                                         return@clickable
                                     }
 
                                     val dineroUsuario = userState.userData.dinero
                                     if (monto > dineroUsuario) {
+                                        SoundManager.play(AppSound.ERROR)
                                         errorMessage = "No tienes suficiente dinero"
                                         return@clickable
                                     }
-
+                                    SoundManager.play(AppSound.TRANSACCION)
                                     bancoViewModel.onEvent(BancoEvent.Depositar(monto))
                                 }
                         )

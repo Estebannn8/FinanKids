@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.universidad.finankids.R
+import com.universidad.finankids.data.sound.AppSound
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.ui.components.CustomButton
 import com.universidad.finankids.ui.theme.AppTypography
@@ -100,7 +102,10 @@ fun MainScreen(navController: NavController) {
                     gradientLight = Color(0xFF9C749A),
                     gradientDark = Color(0xFF431441),
                     baseColor = Color(0xFF53164F),
-                    onClick = { navController.navigate(AppScreens.AuthScreen.createRoute(startInLogin = false)) }
+                    onClick = {
+                        SoundManager.play(AppSound.BUTTON)
+                        navController.navigate(AppScreens.AuthScreen.createRoute(startInLogin = false))
+                    }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 CustomButton(
@@ -108,7 +113,10 @@ fun MainScreen(navController: NavController) {
                     gradientLight = Color(0xFF9C749A),
                     gradientDark = Color(0xFF431441),
                     baseColor = Color(0xFF53164F),
-                    onClick = { navController.navigate(AppScreens.AuthScreen.createRoute(startInLogin = true)) }
+                    onClick = {
+                        SoundManager.play(AppSound.BUTTON)
+                        navController.navigate(AppScreens.AuthScreen.createRoute(startInLogin = true))
+                    }
                 )
             }
         }

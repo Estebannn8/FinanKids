@@ -47,6 +47,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.universidad.finankids.R
 import com.universidad.finankids.data.model.Avatar
+import com.universidad.finankids.data.sound.AppSound
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.events.AvatarEvent
 import com.universidad.finankids.events.UserEvent
 import com.universidad.finankids.navigation.navigateToScreen
@@ -246,10 +248,12 @@ fun StoreScreen(
                     errorMessage = userState.errorMessage,
                     onBuy = {
                         // enviamos el evento, pero no cerramos todavía
+                        SoundManager.play(AppSound.BUTTON)
                         userViewModel.sendEvent(UserEvent.BuyAvatar(selectedAvatar!!))
                     },
                     onCancel = {
                         // limpiar error y cerrar
+                        SoundManager.play(AppSound.BUTTON)
                         userViewModel.clearError()
                         selectedAvatar = null
                     }
@@ -261,6 +265,7 @@ fun StoreScreen(
         LaunchedEffect(userState.userData.avataresDesbloqueados) {
             if (selectedAvatar != null && selectedAvatar!!.id in userState.userData.avataresDesbloqueados) {
                 selectedAvatar = null
+                SoundManager.play(AppSound.SUCESSFULL_BUY)
                 userViewModel.clearError()
             }
         }
@@ -297,6 +302,7 @@ fun AvatarItem(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) {
+                SoundManager.play(AppSound.BUTTON)
                 clicked = true
             },
         contentAlignment = Alignment.Center

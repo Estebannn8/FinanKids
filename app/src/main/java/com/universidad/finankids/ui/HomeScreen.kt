@@ -49,6 +49,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.universidad.finankids.R
+import com.universidad.finankids.data.sound.AppSound
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.events.AvatarEvent
 import com.universidad.finankids.events.UserEvent
 import com.universidad.finankids.navigation.navigateToLesson
@@ -454,6 +456,7 @@ fun HomeScreen(
                                     interactionSource = interactionSource2,
                                     indication = null // <-- esto elimina el sombreado
                                 ) {
+                                    SoundManager.play(AppSound.BUTTON)
                                     leftArrowClicked = true
                                     userViewModel.setCurrentSection((currentSectionIndex - 1 + sections.size) % sections.size)
                                 }
@@ -497,6 +500,7 @@ fun HomeScreen(
                                     interactionSource = interactionSource,
                                     indication = null // <-- esto elimina el sombreado
                                 ) {
+                                    SoundManager.play(AppSound.BUTTON)
                                     rightArrowClicked = true
                                     userViewModel.setCurrentSection((currentSectionIndex + 1) % sections.size)
                                 }
@@ -546,6 +550,7 @@ fun HomeScreen(
                                     "Inversiones" -> "inversion"
                                     else -> "ahorro"
                                 }
+                                SoundManager.play(AppSound.BUTTON)
                                 navigateToLesson(navController, categoryId)
                             },
                         contentScale = ContentScale.Fit
@@ -562,6 +567,7 @@ fun HomeScreen(
             selectedItem = selectedItem,
             onItemSelected = { item ->
                 selectedItem = item
+                SoundManager.play(AppSound.BUTTON)
                 navigateToScreen(navController, item)
             }
         )

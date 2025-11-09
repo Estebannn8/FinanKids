@@ -40,6 +40,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.universidad.finankids.R
+import com.universidad.finankids.data.sound.AppSound
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.events.BancoEvent
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.components.BankKeyboard
@@ -216,6 +218,7 @@ fun BankScreen(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = null
                                 ) {
+                                    SoundManager.play(AppSound.BUTTON)
                                     Log.d("BankScreen", "Click en cuadrado rojo - abriendo teclado")
                                     // LIMPIAR MENSAJES ANTES DE ABRIR
                                     bancoViewModel.onEvent(BancoEvent.LimpiarMensajeOperacion)

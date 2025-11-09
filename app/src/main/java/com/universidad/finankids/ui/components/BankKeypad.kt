@@ -44,6 +44,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.universidad.finankids.R
+import com.universidad.finankids.data.sound.AppSound
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.events.BancoEvent
 import com.universidad.finankids.viewmodel.BancoViewModel
 import kotlinx.coroutines.launch
@@ -192,6 +194,9 @@ fun BankKeypad(
                                         interactionSource = remember { MutableInteractionSource() },
                                         indication = null // 🔕 sin ripple
                                     ) {
+
+                                        SoundManager.play(AppSound.CAJERO)
+
                                         clicked = true
                                         when (icon) {
                                             "borrar" -> if (pin.isNotEmpty()) pin = pin.dropLast(1)

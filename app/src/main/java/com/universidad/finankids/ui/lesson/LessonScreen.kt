@@ -36,6 +36,8 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.universidad.finankids.R
 import com.universidad.finankids.data.model.ActivityType
+import com.universidad.finankids.data.sound.AppSound
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.events.LessonEvent
 import com.universidad.finankids.navigation.AppScreens
 import com.universidad.finankids.state.LessonState
@@ -234,6 +236,11 @@ fun LessonContentScreen(
 
         when {
             lessonState.showCompleteScreen -> {
+
+                LaunchedEffect(Unit) {
+                    SoundManager.play(AppSound.WIN)
+                }
+
                 LessonCompleteScreen(
                     exp = lessonState.earnedExp,
                     dinero = lessonState.earnedDinero,
@@ -369,6 +376,7 @@ fun LessonContentScreen(
                             text = { Text("Si sales ahora perderás el progreso de esta lección.") },
                             confirmButton = {
                                 TextButton(onClick = {
+                                    SoundManager.play(AppSound.BUTTON)
                                     onEvent(LessonEvent.HideExitConfirmation)
                                     onEvent(LessonEvent.ExitLesson)
                                 }) {
@@ -377,6 +385,7 @@ fun LessonContentScreen(
                             },
                             dismissButton = {
                                 TextButton(onClick = {
+                                    SoundManager.play(AppSound.BUTTON)
                                     onEvent(LessonEvent.HideExitConfirmation)
                                 }) {
                                     Text("Continuar")

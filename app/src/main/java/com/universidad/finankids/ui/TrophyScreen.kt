@@ -47,6 +47,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.universidad.finankids.R
 import com.universidad.finankids.data.model.LogroUI
+import com.universidad.finankids.data.sound.AppSound
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.navigation.navigateToScreen
 import com.universidad.finankids.ui.components.AchievementDetailDialog
 import com.universidad.finankids.ui.components.BottomMenu
@@ -182,9 +184,12 @@ fun TrophyScreen(
             AchievementDetailDialog(
                 logroUI = selectedAchievement!!,
                 onClaim = {
+                    SoundManager.play(AppSound.PESITOS)
                     achievementsViewModel.claimReward(uid, selectedAchievement!!.logro.id)
                 },
-                onDismiss = { selectedAchievement = null }
+                onDismiss = {
+                    SoundManager.play(AppSound.BUTTON)
+                    selectedAchievement = null }
             )
         }
     }
@@ -203,7 +208,9 @@ fun AchievementItem(
             .aspectRatio(1f)
             .clip(RoundedCornerShape(12.dp))
             .border(2.dp, Color.Black, RoundedCornerShape(12.dp))
-            .clickable { onClick() },
+            .clickable {
+                SoundManager.play(AppSound.BUTTON)
+                onClick() },
         contentAlignment = Alignment.Center
     ) {
         Image(

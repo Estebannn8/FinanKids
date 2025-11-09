@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -56,6 +57,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.universidad.finankids.R
+import com.universidad.finankids.data.sound.AppSound
+import com.universidad.finankids.data.sound.SoundManager
 import com.universidad.finankids.events.AuthEvent
 import com.universidad.finankids.events.AvatarEvent
 import com.universidad.finankids.events.UserEvent
@@ -209,8 +212,12 @@ fun AuthScreen(
 
                     AuthHeader(
                         isLoginSelected = authState.isLoginSelected,
-                        onLoginClick = { authViewModel.onEvent(AuthEvent.NavigateToLogin) },
-                        onRegisterClick = { authViewModel.onEvent(AuthEvent.NavigateToRegister) }
+                        onLoginClick = {
+                            SoundManager.play(AppSound.BUTTON)
+                            authViewModel.onEvent(AuthEvent.NavigateToLogin)},
+                        onRegisterClick = {
+                            SoundManager.play(AppSound.BUTTON)
+                            authViewModel.onEvent(AuthEvent.NavigateToRegister) }
                     )
 
                     Spacer(modifier = Modifier.height(29.dp))
@@ -283,7 +290,10 @@ fun AuthScreen(
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.clickable { onRegisterClick() }
+                modifier = Modifier
+                    .clickable {
+                        onRegisterClick()
+                    }
             ) {
                 Text(
                     text = "Registrarse",
@@ -321,7 +331,9 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(14.dp))
             CustomTextField(
                 value = state.email,
-                onValueChange = { onEvent(AuthEvent.EmailChanged(it)) },
+                onValueChange = {
+                    SoundManager.play(AppSound.KEYBOARD)
+                    onEvent(AuthEvent.EmailChanged(it)) },
                 placeholder = "Ingrese correo",
                 leadingIcon = painterEmail
             )
@@ -332,7 +344,9 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(14.dp))
             CustomTextField(
                 value = state.password,
-                onValueChange = { onEvent(AuthEvent.PasswordChanged(it)) },
+                onValueChange = {
+                    SoundManager.play(AppSound.KEYBOARD)
+                    onEvent(AuthEvent.PasswordChanged(it)) },
                 placeholder = "Ingrese contraseña",
                 leadingIcon = painterPassword,
                 isPassword = true
@@ -345,9 +359,11 @@ fun AuthScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text("Contraseña Incorrecta", fontSize = 12.sp, color = Color(0xFFFF9E1B), fontFamily = AppTypography.PoppinsFont)
-                Text("¿Olvidaste la Contraseña?", fontSize = 12.sp, color = Color(0xFF52154E),fontWeight = FontWeight.SemiBold, fontFamily = AppTypography.PoppinsFont, modifier = Modifier.clickable {
-                    navController.navigate(AppScreens.RecoveryScreen.route)
-                })
+                Text("¿Olvidaste la Contraseña?", fontSize = 12.sp, color = Color(0xFF52154E),fontWeight = FontWeight.SemiBold, fontFamily = AppTypography.PoppinsFont,
+                    modifier = Modifier.clickable {
+                        SoundManager.play(AppSound.BUTTON)
+                        navController.navigate(AppScreens.RecoveryScreen.route)
+                    })
             }
 
             Spacer(modifier = Modifier.height(29.dp))
@@ -358,7 +374,9 @@ fun AuthScreen(
                     gradientLight = Color(0xFF9C749A),
                     gradientDark = Color(0xFF431441),
                     baseColor = Color(0xFF53164F),
-                    onClick = { onEvent(AuthEvent.Login) }
+                    onClick = {
+                        SoundManager.play(AppSound.BUTTON)
+                        onEvent(AuthEvent.Login) }
                 )
             }
 
@@ -390,7 +408,9 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(14.dp))
             CustomTextField(
                 value = state.username,
-                onValueChange = { onEvent(AuthEvent.UsernameChanged(it)) },
+                onValueChange = {
+                    SoundManager.play(AppSound.KEYBOARD)
+                    onEvent(AuthEvent.UsernameChanged(it)) },
                 placeholder = "Ingrese nombre de usuario",
                 leadingIcon = painterUser,
                 showCharacterCounter = true,
@@ -404,7 +424,9 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(14.dp))
             CustomTextField(
                 value = state.email,
-                onValueChange = { onEvent(AuthEvent.EmailChanged(it)) },
+                onValueChange = {
+                    SoundManager.play(AppSound.KEYBOARD)
+                    onEvent(AuthEvent.EmailChanged(it)) },
                 placeholder = "Ingrese correo",
                 leadingIcon = painterEmail
             )
@@ -416,7 +438,9 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(14.dp))
             CustomTextField(
                 value = state.password,
-                onValueChange = { onEvent(AuthEvent.PasswordChanged(it)) },
+                onValueChange = {
+                    SoundManager.play(AppSound.KEYBOARD)
+                    onEvent(AuthEvent.PasswordChanged(it)) },
                 placeholder = "Ingrese contraseña",
                 leadingIcon = painterPassword,
                 isPassword = true
@@ -431,7 +455,9 @@ fun AuthScreen(
             ) {
                 Checkbox(
                     checked = state.termsAccepted,
-                    onCheckedChange = { onEvent(AuthEvent.TermsAcceptedChanged(it)) },
+                    onCheckedChange = {
+                        SoundManager.play(AppSound.BUTTON)
+                        onEvent(AuthEvent.TermsAcceptedChanged(it)) },
                     colors = CheckboxDefaults.colors(
                         checkedColor = Color(0xFF52154E),
                         checkmarkColor = Color.White
@@ -462,7 +488,9 @@ fun AuthScreen(
                     gradientLight = Color(0xFF9C749A),
                     gradientDark = Color(0xFF431441),
                     baseColor = Color(0xFF53164F),
-                    onClick = { onEvent(AuthEvent.Register) }
+                    onClick = {
+                        SoundManager.play(AppSound.BUTTON)
+                        onEvent(AuthEvent.Register) }
                 )
             }
 
@@ -478,31 +506,48 @@ fun AuthScreen(
             if (showTermsDialog) {
                 AlertDialog(
                     onDismissRequest = { showTermsDialog = false },
-                    title = { Text("Términos y Condiciones", style = MaterialTheme.typography.titleLarge) },
-                    text = {
+                    title = {
                         Text(
-                            buildString {
-                                append("Bienvenido a nuestra app de educación financiera.\n\n")
-                                append("Al utilizar esta aplicación, aceptas los siguientes términos:\n\n")
-                                append("1. Uso Responsable:\n")
-                                append("Esta aplicación está diseñada para enseñar finanzas personales de forma lúdica y educativa. No debe usarse como asesoramiento financiero profesional.\n\n")
-                                append("2. Edad Mínima:\n")
-                                append("Esta app está dirigida a niños y jóvenes. Si no tienes una cuenta de correo electrónico propia, puedes usar la de uno de tus padres o tutores con su permiso y bajo su supervisión. El uso de la aplicación en estos casos es responsabilidad del adulto responsable.\n\n")
-                                append("3. Cuenta de Usuario:\n")
-                                append("Para guardar tu progreso, necesitas registrarte con un correo válido. Eres responsable de mantener segura tu cuenta.\n\n")
-                                append("4. Privacidad:\n")
-                                append("Tus datos se almacenan de forma segura en Firebase. No compartimos tu información personal con terceros sin tu consentimiento.\n\n")
-                                append("5. Contenido y Recompensas:\n")
-                                append("Todos los elementos visuales, monedas virtuales, niveles, logros y avatares son parte de la experiencia educativa y no tienen valor monetario real.\n\n")
-                                append("6. Modificaciones:\n")
-                                append("Nos reservamos el derecho de modificar estos términos en cualquier momento. Te notificaremos si hay cambios importantes.\n\n")
-                                append("Al continuar usando esta app, aceptas estos términos.")
-                            },
-                            style = MaterialTheme.typography.bodyMedium
+                            "Términos y Condiciones",
+                            style = MaterialTheme.typography.titleLarge
                         )
                     },
+                    text = {
+                        // 🔹 Contenedor con scroll
+                        Box(
+                            modifier = Modifier
+                                .heightIn(max = 350.dp) // límite de alto del cuadro
+                                .verticalScroll(rememberScrollState()) // activa el scroll
+                        ) {
+                            Text(
+                                buildString {
+                                    append("Bienvenido a nuestra app de educación financiera.\n\n")
+                                    append("Al utilizar esta aplicación, aceptas los siguientes términos:\n\n")
+                                    append("1. Uso Responsable:\n")
+                                    append("Esta aplicación está diseñada para enseñar finanzas personales de forma lúdica y educativa. No debe usarse como asesoramiento financiero profesional.\n\n")
+                                    append("2. Edad Mínima:\n")
+                                    append("Esta app está dirigida a niños y jóvenes. Si no tienes una cuenta de correo electrónico propia, puedes usar la de uno de tus padres o tutores con su permiso y bajo su supervisión. El uso de la aplicación en estos casos es responsabilidad del adulto responsable.\n\n")
+                                    append("3. Cuenta de Usuario:\n")
+                                    append("Para guardar tu progreso, necesitas registrarte con un correo válido. Eres responsable de mantener segura tu cuenta.\n\n")
+                                    append("4. Privacidad:\n")
+                                    append("Tus datos se almacenan de forma segura en Firebase. No compartimos tu información personal con terceros sin tu consentimiento.\n\n")
+                                    append("5. Contenido y Recompensas:\n")
+                                    append("Todos los elementos visuales, monedas virtuales, niveles, logros y avatares son parte de la experiencia educativa y no tienen valor monetario real.\n\n")
+                                    append("6. Modificaciones:\n")
+                                    append("Nos reservamos el derecho de modificar estos términos en cualquier momento. Te notificaremos si hay cambios importantes.\n\n")
+                                    append("Al continuar usando esta app, aceptas estos términos.")
+                                },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    },
                     confirmButton = {
-                        TextButton(onClick = { showTermsDialog = false }) {
+                        TextButton(
+                            onClick = {
+                                SoundManager.play(AppSound.BUTTON)
+                                showTermsDialog = false
+                            }
+                        ) {
                             Text("Aceptar")
                         }
                     }
@@ -552,7 +597,10 @@ fun AuthScreen(
 
             // Botón Google
             OutlinedButton(
-                onClick = onSignInWithGoogle,
+                onClick = {
+                    SoundManager.play(AppSound.BUTTON)
+                    onSignInWithGoogle()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
@@ -624,6 +672,7 @@ fun AuthScreen(
                     fontWeight = FontWeight.Bold,
                     fontFamily = AppTypography.PoppinsFont,
                     modifier = Modifier.clickable {
+                        SoundManager.play(AppSound.BUTTON)
                         if (isLogin) onNavigateToRegister?.invoke() else onNavigateToLogin?.invoke()
                     }
                 )
