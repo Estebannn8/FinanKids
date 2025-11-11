@@ -201,11 +201,11 @@
       "title": "Clasifica",
       "question": "Relaciona cada elemento con su categoría:",
       "matchingPairs": [
-        { "leftItem": "Agua", "rightItem": "Necesidad" },
-        { "leftItem": "Videojuegos", "rightItem": "Deseo" },
-        { "leftItem": "Ropa", "rightItem": "Necesidad" }
+        { "leftItem": "Agua", "rightItem": "Necesidad básica" },
+        { "leftItem": "Videojuegos", "rightItem": "Entretenimiento" },
+        { "leftItem": "Ropa", "rightItem": "Vestimenta" }
       ],
-      "shuffledRightItems": ["Deseo", "Necesidad", "Necesidad"]
+      "shuffledRightItems": ["Necesidad básica", "Entretenimiento", "Vestimenta"]
     },
     {
       "type": "DragPairs",
